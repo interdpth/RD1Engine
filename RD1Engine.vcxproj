@@ -29,6 +29,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -72,6 +73,8 @@
     <IncludePath>C:\GLEW\include\GL;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\GLEW\bin\Release\Win32;$(ExecutablePath)</ExecutablePath>
     <LibraryPath>C:\GLEW\lib\Release\Win32;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)d</TargetName>
+    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,6 +82,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +124,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="backbuffer.cpp" />
+    <ClCompile Include="cCopyData.cpp" />
     <ClCompile Include="cEnitityManager.cpp" />
+    <ClCompile Include="clsPreviewSprite.cpp" />
+    <ClCompile Include="clsRoomScrolls.cpp" />
+    <ClCompile Include="clsScroll.cpp" />
+    <ClCompile Include="cOAMManager.cpp" />
+    <ClCompile Include="cprs_lz.cpp" />
+    <ClCompile Include="cUndoBuffer.cpp" />
+    <ClCompile Include="DoorManager.cpp" />
     <ClCompile Include="FusionSamus.cpp" />
     <ClCompile Include="GameConfiguration.cpp" />
     <ClCompile Include="GBABase.cpp" />
@@ -128,8 +140,12 @@
     <ClCompile Include="GBAMethods.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="LeakFinder.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="MapEditingState.cpp" />
+    <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="MemFile.cpp" />
     <ClCompile Include="MetroidFusion.cpp" />
+    <ClCompile Include="nMapBuffer.cpp" />
     <ClCompile Include="OamFrameTable.cpp" />
     <ClCompile Include="OffsetStorage.cpp" />
     <ClCompile Include="OpenGL2.cpp" />
@@ -139,6 +155,7 @@
     <ClCompile Include="SimpleJSON-master\src\JSON.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSONValue.cpp" />
     <ClCompile Include="tilebuffer.cpp" />
+    <ClCompile Include="TilesetMananger.cpp" />
     <ClCompile Include="WarioLand.cpp" />
     <ClCompile Include="ZeroMission.cpp" />
     <ClCompile Include="AnimatedTiles.cpp" />
@@ -156,6 +173,7 @@
     <ClInclude Include="clsScroll.h" />
     <ClInclude Include="cOAMManager.h" />
     <ClInclude Include="ConnectionsEditor.h" />
+    <ClInclude Include="cprs.h" />
     <ClInclude Include="cUndoBuffer.h" />
     <ClInclude Include="doormanager.h" />
     <ClInclude Include="FusionSamus.h" />
@@ -165,6 +183,7 @@
     <ClInclude Include="GBAMethods.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="LeakFinder.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="MemFile.h" />
     <ClInclude Include="MetroidFusion.h" />
     <ClInclude Include="OAM.h" />

@@ -2,7 +2,6 @@
 #include "GBAMethods.h"
 #include <Windows.h>
 #include "DoorManager.h"
-#include "globals.h"
 #include "SpriteObjectManager.h"
 #include "clsRoomScrolls.h"
 #include "BaseGame.h"
@@ -11,8 +10,8 @@
 void MapManager::MoveObject(LPARAM lParam) {
 	editingStates thisState = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetState();//Wait what
 	if (thisState == editingStates::MAP) {
-		mpMap.sY = GetY(lParam) / 16;
-		mpMap.sX = GetX(lParam) / 16;
+		/*mpMap.sY = GetY(lParam) / 16;
+		mpMap.sX = GetX(lParam) / 16;*/
 	}
 	else if (thisState == editingStates::DOOR) {
 
@@ -22,11 +21,10 @@ void MapManager::MoveObject(LPARAM lParam) {
 			MousePointer *myDoor = &RD1Engine::theGame->mgrDoors->Doors[objID].virtualDoor;
 			myDoor->Height -= myDoor->sY;
 			myDoor->Width -= myDoor->sX;
-			myDoor->sX = GetX(lParam) / 16 + nHScroll[sHMap];
-			myDoor->sY = GetY(lParam) / 16 + nVScroll[sVMap];
+			myDoor->sX = GetX(lParam) / 16;//;
+			myDoor->sY = GetY(lParam) / 16;//;
 			myDoor->Height += myDoor->sY;
 			myDoor->Width += myDoor->sX;
-			RD1Engine::theGame->DrawRoom();
 		}
 	}
 	else if (thisState == editingStates::SPRITE) {
@@ -34,22 +32,22 @@ void MapManager::MoveObject(LPARAM lParam) {
 		//Get shit to our door
 		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
 		if (objID != -1) {
-			switch ((unsigned char)Combos[cSpriteSet].GetListIndex()) {
-			case 0:
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].X = (GetX(lParam) / 16) + nHScroll[sHMap];
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].Y = (GetY(lParam) / 16) + nVScroll[sVMap];
-				break;
-			case 1:
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].X = (GetX(lParam) / 16) + nHScroll[sHMap];
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].Y = (GetY(lParam) / 16) + nVScroll[sVMap];
-				break;
-			case 2:
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].X = (GetX(lParam) / 16) + nHScroll[sHMap];
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].Y = (GetY(lParam) / 16) + nVScroll[sVMap];
-				break;
-			}
+			//switch ((unsigned char)Combos[cSpriteSet].GetListIndex()) {
+			//case 0:
+			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].X = (GetX(lParam) / 16);//;
+			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].Y = (GetY(lParam) / 16);//;
+			//	break;
+			//case 1:
+			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].X = (GetX(lParam) / 16);//;
+			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].Y = (GetY(lParam) / 16);//;
+			//	break;
+			//case 2:
+			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].X = (GetX(lParam) / 16);//;
+			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].Y = (GetY(lParam) / 16);//;
+			//	break;
+			//}
 
-			RD1Engine::theGame->DrawRoom();
+		
 		}
 	}
 	else if (thisState == editingStates::SCROLL) {
@@ -63,13 +61,12 @@ void MapManager::MoveObject(LPARAM lParam) {
 		thisScroll->Height -= thisScroll->sY;
 
 
-		thisScroll->sX = GetX(lParam) / 16 + nHScroll[sHMap];
-		thisScroll->sY = GetY(lParam) / 16 + nVScroll[sVMap];
+		thisScroll->sX = GetX(lParam) / 16;//;
+		thisScroll->sY = GetY(lParam) / 16;//;
 		thisScroll->Width += thisScroll->sX;
 		thisScroll->Height += thisScroll->sY;
 
-		RD1Engine::theGame->DrawRoom();
-
+		
 	}
 
 }
@@ -113,7 +110,7 @@ void MapManager::Blank()
 {
 	
 	Destroy();
-	GlobalVars::gblVars->ThisBackBuffer.Clear();
+	//GlobalVars::gblVars->ThisBackBuffer.Clear();
 	TheLevelData = new nMapBuffer();
 	TheBackLayer = new nMapBuffer();
 	TheForeGround = new nMapBuffer();
@@ -168,26 +165,30 @@ int MapManager::SaveLayer(GBAMethods* GBA, MemFile* fp, unsigned char layerbyte,
 	return 0;
 
 }
-void MapManager::Resize(editingStates thisState, editingActions thisAction, WPARAM wParam, LPARAM lParam) {
-	MousePointer *tmp = NULL;
+// tmp = &curGame->mgrScrolls->GetScrollInfo()->Scrolls[cboScroll.GetListIndex()].rect
+/*int objID = curGame->mainRoom->mapMgr->GetState()->GetObjId();
+		if (objID != -1) {
+			tmp = &curGame->mgrDoors->Doors[objID].virtualDoor;
+		}
+		
+		mpMap;
+		*/
+void MapManager::Resize(editingStates thisState, editingActions thisAction, WPARAM wParam, LPARAM lParam, MousePointer* tmp) {
+	
 	RD1Engine* curGame = RD1Engine::theGame;
 	if (thisState == editingStates::SCROLL) {
-
-		 tmp = &curGame->mgrScrolls->GetScrollInfo()->Scrolls[cboScroll.GetListIndex()].rect;
-		
-
 
 	}
 	else if (thisState == editingStates::DOOR) {
 		//Not supported 
 		int objID = curGame->mainRoom->mapMgr->GetState()->GetObjId();
 		if (objID != -1) {
-			tmp = &curGame->mgrDoors->Doors[objID].virtualDoor;
+			//tmp = &curGame->mgrDoors->Doors[objID].virtualDoor;
 		}
 	}
 	else if (thisState == editingStates::MAP) {
 	
-			tmp = &mpMap;
+			//tmp = &mpMap;
 	}
 
 
@@ -216,16 +217,16 @@ void MapManager::Resize(editingStates thisState, editingActions thisAction, WPAR
 		//	if(tmp->Width>16)tmp->Width = 16;
 		//	if(tmp->Height>16)tmp->Height = 16;
 		//check for out of bounds 
-		if (tmp->nX < 0) tmp->nX = 0;
+	/*	if (tmp->nX < 0) tmp->nX = 0;
 		if (tmp->nX > GetLayer(MapManager::LevelData)->X)
 			tmp->nX = GetLayer(MapManager::LevelData)->X;
 		if (tmp->nY < 0) tmp->nY = 0;
 		if (tmp->nY > GetLayer(MapManager::LevelData)->Y) tmp->nY = GetLayer(MapManager::LevelData)->Y;
-
+*/
 	}
 
-	curGame->DrawRoom();
+	/*
 
 	InvalidateRect(UiState::stateManager->GetTilesetWindow(), 0, 1);
-	InvalidateRect(UiState::stateManager->GetMapWindow(), 0, 1);
+	InvalidateRect(UiState::stateManager->GetMapWindow(), 0, 1);*/
 }

@@ -3,9 +3,6 @@
 #include "BaseGame.h"
 #include "Frames.h"
 //#include "cOAMEdit.h"
-int GetBitField(long reg, long bitStart, long bitLength) {
-	return	(reg / (1 << bitStart)) & ((1 << bitLength) - 1);
-}
 using namespace std;
 class Frame;
 ///Holds info about the current animation

@@ -11,10 +11,11 @@ vDoor::vDoor(sDoor src) {
 
 
 
-DoorManager::DoorManager()
+DoorManager::DoorManager(GBAMethods* gba)
 {
 	doorInfoContainer = NULL;
 	OriginalDoorCount = 0;
+	_gbaMethods = gba;
 }
 
 
@@ -52,7 +53,9 @@ int   DoorManager::DeleteDoor(int Room, int doorNum)
 	LoadDoors(Room);
 	return CurrentRoomDoorIndexes.size();
 }
-int   DoorManager::GetDoor(int X, int Y)
+
+//Combos[cRoom].GetListIndex()
+int   DoorManager::GetDoor(int Room, int X, int Y)
 {
 	int             i = 0;
 	int             door = 0;
@@ -65,7 +68,7 @@ int   DoorManager::GetDoor(int X, int Y)
 	for (i = 0; i < CurrentRoomDoorIndexes.size(); i++)
 	{
 
-		if (Doors[CurrentRoomDoorIndexes[i]].rawDoor.OwnerRoom == Combos[cRoom].GetListIndex())
+		if (Doors[CurrentRoomDoorIndexes[i]].rawDoor.OwnerRoom == Room)
 		{
 			curX = Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sX;
 			curY = Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY;
@@ -131,8 +134,8 @@ unsigned long DoorManager::GetAreaOffset(int Area) {
 	}
 	return doorInfoContainer->DataArray[Area];
 }
-
-int DoorManager::SaveDoors() {
+//Combos[cArea].GetListIndex() 
+int DoorManager::SaveDoors(int area) {
 
 	unsigned char h = 0;
 	int i = 0;
@@ -144,8 +147,8 @@ int DoorManager::SaveDoors() {
 
 	if (DoorNum() > OriginalDoorCount) {
 		overWriteDataPointer = true;
-		int newOffset = GBA.FindFreeSpace(DoorNum()*sizeof(sDoor) + sizeof(sDoor), 0xFF);
-		SetAreaOffset(Combos[cArea].GetListIndex(), newOffset+0x8000000);
+		int newOffset = _gbaMethods->FindFreeSpace(DoorNum()*sizeof(sDoor) + sizeof(sDoor), 0xFF);
+		SetAreaOffset(area, newOffset+0x8000000);
 		SaveDoorOffsets();
 	}
 
@@ -155,15 +158,15 @@ int DoorManager::SaveDoors() {
 
 
 
-	thisFile->seek(GetAreaOffset(Combos[cArea].GetListIndex()) - 0x8000000);
+	thisFile->seek(GetAreaOffset(area) - 0x8000000);
 	
 
 
 
 	for (i = 0; i < DoorNum(); i++) {
 		sDoor tmpDoor;
-		memcpy(&tmpDoor, 			&RD1Engine::theGame->mgrDoors->Doors[i].rawDoor, sizeof(sDoor));
-		MousePointer* actualMP = &RD1Engine::theGame->mgrDoors->Doors[i].virtualDoor;
+		memcpy(&tmpDoor, 			&Doors[i].rawDoor, sizeof(sDoor));
+		MousePointer* actualMP = &Doors[i].virtualDoor;
 		thisFile->fwrite(&tmpDoor.DoorType, sizeof(unsigned char), 1, (FILE*)NULL);
 		thisFile->fwrite(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1, (FILE*)NULL);
 		
@@ -189,14 +192,18 @@ int DoorManager::SaveDoors() {
 	thisFile->fwrite(&endPoint, 4, 1, (FILE*) NULL);
 	thisFile->fwrite(&endPoint, 4, 1, (FILE*)NULL);
 	thisFile->fwrite(&endPoint, 4, 1, (FILE*)NULL);
-	//fclose(GBA.ROM);
-	//GBA.ROM = fopen(GBA.FileLoc,"r+bw+b");
+	//fclose(_gbaMethods->ROM);
+	//_gbaMethods->ROM = fopen(_gbaMethods->FileLoc,"r+bw+b");
 
 	
 
 	return 0;
 }
 
+//please call 	
+/*Combos[cD1].Clear();
+Combos[cD2].Clear();
+*/
 int DoorManager::SetupDoors(long area) {
 
 	int i = 0;
@@ -205,33 +212,31 @@ int DoorManager::SetupDoors(long area) {
 
 
 
-	
-	Combos[cD1].Clear();
-	Combos[cD2].Clear();
+
 
 	
 	Doors.clear();
-	if (GBA.ROM) {
+	if (_gbaMethods->ROM) {
 
 		MemFile::currentFile->seek(GetAreaOffset(area) - 0x8000000);
 	
 
 		for (i = 0; i < 255; i++) {
 			sDoor tmpDoor;
-			MemFile::currentFile->fread(&tmpDoor.DoorType, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.XEntrance, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.DWidth, sizeof(unsigned char), 1, GBA.ROM);
+			MemFile::currentFile->fread(&tmpDoor.DoorType, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.XEntrance, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.DWidth, sizeof(unsigned char), 1, _gbaMethods->ROM);
 
-			MemFile::currentFile->fread(&tmpDoor.YEntrance, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.DHeight, sizeof(unsigned char), 1, GBA.ROM);
+			MemFile::currentFile->fread(&tmpDoor.YEntrance, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.DHeight, sizeof(unsigned char), 1, _gbaMethods->ROM);
 
-			MemFile::currentFile->fread(&tmpDoor.DestDoor, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.xExitDistance, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.yExitDistance, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.doorNum, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.u3, sizeof(unsigned char), 1, GBA.ROM);
-			MemFile::currentFile->fread(&tmpDoor.u4, sizeof(unsigned char), 1, GBA.ROM);
+			MemFile::currentFile->fread(&tmpDoor.DestDoor, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.xExitDistance, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.yExitDistance, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.doorNum, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.u3, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.u4, sizeof(unsigned char), 1, _gbaMethods->ROM);
 
 			bool stopReading = true;
 			if (i == 98) {
@@ -330,6 +335,8 @@ int DoorManager::LoadDoors(int Room) {
 }
 
 int DoorManager::DisplayDoors(unsigned char Room) {
+	throw "DisplayDoors to UI";
+	/*
 	int minX;
 	int maxX;
 	int minY;
@@ -379,10 +386,11 @@ int DoorManager::DisplayDoors(unsigned char Room) {
 
 
 	}
-
+	*/
 	return 0;
 }
 int DoorManager::LoadThisDoor(int DoorNo){
+	throw "LoadTHisdoorNEeds to be ui";/*
 	char	cboBuf[512] = {0};
 	if (DoorNo == -1) return 0;
 	int CurrentRoomIndex = CurrentRoomDoorIndexes[DoorNo];
@@ -407,11 +415,13 @@ int DoorManager::LoadThisDoor(int DoorNo){
 		ConnControls(1);
 	}else{
 		ConnControls(0);
-	}
+	}*/
 	return 0;
 }
 
 int DoorManager::ConnectDoor(unsigned char TD) {
+	throw "ConnectDoo needs to be in UI";
+	/*
 	char Buf[512];
 	unsigned char condoor = RD1Engine::theGame->mgrDoors->Doors[TD].rawDoor.DestDoor;
 

@@ -4,6 +4,7 @@
 #include "MapEditingState.h"
 #include "backbuffer.h"
 #include "MemFile.h"
+#include "structures.h"
 class MapManager
 {
 
@@ -64,7 +65,7 @@ public:
 	}
 	void Clear();
 	
-	void Resize(editingStates thisState, editingActions thisAction, WPARAM wParam, LPARAM lParam);
+	void Resize(editingStates thisState, editingActions thisAction, WPARAM wParam, LPARAM lParam, MousePointer* tmp);
 	MapManager();
 
 	~MapManager();

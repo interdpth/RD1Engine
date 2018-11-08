@@ -43,6 +43,7 @@ class RoomClass;
 class DoorManager;
 class TilesetManager;
 class cOAMManager;
+int GetBitField(long reg, long bitStart, long bitLength);
 class RD1Engine
 {
 public:
@@ -73,7 +74,7 @@ public:
 	vector<long> RoomOffsets;
 	DoorManager * mgrDoors;
 	clsRoomScrolls * mgrScrolls;
-	RD1Engine(SupportedTitles theTitle);
+	RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable,TileBuffer * bg, TileBuffer* TileImage);
 	int GetPalSize(int sprID);
 	BackBuffer ThisBackBuffer;
 	int currentRomType;

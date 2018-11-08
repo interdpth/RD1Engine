@@ -6,7 +6,7 @@
 #include "GBAGraphics.h"
 //#include "BaseGame.h"
 #include "image.h"
-
+#include "GBAMethods.h"
 class TilesetManager
 {
 public:
@@ -14,24 +14,28 @@ public:
 	/*gTileData   RoomTilesets[0x50];
 	gTileData   RoomTilesets[0x80];*/
 	vector<gTileData> RoomTilesets;
+	TileBuffer* TileImage;
 	//gTileData* GetTileset(int TilesetNum) {
 	//	
 	//	return &RoomTilesets[TilesetNum];;
 	//}
 	AnimatedTiles* animTiles;
-	void GetBaseTileset(unsigned char TilesetVal);
+	GBAMethods* _gbaMethods;
+	void GetBaseTileset(unsigned char TilesetVal, int area);
 	void ReadTable();
 	void UpdateEffects();
 	void RefreshTileset();
 	void ReadTSA(gTileData* tileData);
 	void GetPal(gTileData* tileset);
-	void GetBaseGFX(gTileData* tileset);
+	void GetBaseGFX(gTileData* tileset, int area);
+	TileBuffer* BGImage;
+	int currentRomType;
 	//SE SpecialEffects[16];
-	TilesetManager();
+	TilesetManager(GBAMethods* gba, int crf, TileBuffer * bg, TileBuffer* TileImage);
 	~TilesetManager();
-	int GetTileset(unsigned char TilesetVal, int bg3);
+	int GetTileset(Image* dst, int area, unsigned char TilesetVal, int bg3);
 	int DrawBlock(Image* src, short Map16n, int destX, int destY);
-	void DrawTileset();
+	void DrawTileset(Image* imgTileset);
 	int ZMGlobalGFX(unsigned char Area);
 	int MFGlobalGFX();
 	int GetCBG(unsigned long backgroundPointer);
@@ -39,6 +43,6 @@ public:
 	int SaveTilesetPal(int romSwitch, unsigned char TilesetVal);
 	int LoadSpecialEffects(long EffectNum);
 	int GetBackground(gTileData* thisTileset);
-	void Render();
+	void Render(Image* srcImage);
 };
 

@@ -32,18 +32,18 @@ void FrameManager::UnpackOAM(EncodedOAM* src, DecodedOAM* decodedOam)
 	unsigned short OAM2 = src->OAM2;
 	decodedOam->yCoord = (OAM0 & 0xFF);
 
-	decodedOam->objRot = cOAMManager::GetBitField(OAM0, 8, 1);
-	decodedOam->DSaOD = cOAMManager::GetBitField(OAM0, 9, 1);
-	decodedOam->ObjMode = cOAMManager::GetBitField(OAM0, 10, 2);
-	decodedOam->ObjMosiac = cOAMManager::GetBitField(OAM0, 12, 1);
-	decodedOam->Paltype = cOAMManager::GetBitField(OAM0, 13, 1);
-	decodedOam->ObjShape = cOAMManager::GetBitField(OAM0, 14, 2);
+	decodedOam->objRot =GetBitField(OAM0, 8, 1);
+	decodedOam->DSaOD =GetBitField(OAM0, 9, 1);
+	decodedOam->ObjMode =GetBitField(OAM0, 10, 2);
+	decodedOam->ObjMosiac =GetBitField(OAM0, 12, 1);
+	decodedOam->Paltype =GetBitField(OAM0, 13, 1);
+	decodedOam->ObjShape =GetBitField(OAM0, 14, 2);
 
 	//OAM1
 	decodedOam->xCoord = OAM1 & 511;
 
-	if (cOAMManager::GetBitField(OAM0, 8, 1) == 1) {
-		decodedOam->rotation = cOAMManager::GetBitField(OAM1, 9, 5);
+	if (GetBitField(OAM0, 8, 1) == 1) {
+		decodedOam->rotation =GetBitField(OAM1, 9, 5);
 	}
 	else {
 		decodedOam->HorizontalFlip = (OAM1 & 0x400 ? 1 : 0);

@@ -4,11 +4,21 @@ extern sSpritev idkVRAM;
 extern int currentRomType;
 void DumpLayers();
 
-cOAMManager::cOAMManager()
+unsigned char cOAMManager::maxsprite;
+const char* sizesStr[3][4] = {
+	{ "8, 8\0", "16,16\0","32,32\0", "64,64\0" },
+	{ "16,8\0", "32,8\0" ,"32,16\0", "64,32\0" },
+	{ "8,16\0", "8,32\0" ,"16,32\0", "32,64\0" },
+};
+
+cOAMManager::cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, int crf)
 {
 	memset(&oamPiece, 0, 2 * 17);
 	memset(&roomSpriteIds, 0, sizeof(sprite_entry) * 32);
 	memset(&MFSprSize, 0, 2 * 384);
+	OAMFrameTable = _oAMFrameTable;
+	_gbaMethods = gba;
+	currentRomType = crf;
 }
 
 
@@ -20,7 +30,7 @@ cOAMManager::~cOAMManager()
 
 char* cOAMManager::GetSpriteSize(int a, int b) {
 
-	return (char*)&RD1Engine::theGame->mgrOAM->sizesStr[a][b][0];
+	return (char*)&sizesStr[a][b][0];
 }
 
 void DrawPart(SprGBuf* SpriteDetails, int x, int y)
@@ -569,12 +579,6 @@ int cOAMManager::DecodeOAM(FILE* ROM, bool OAMED, SprGBuf* tSprite, unsigned lon
 	return 0;
 }
 
-
-
-int GetBitField(long reg, long bitStart, long bitLength) {
-	return	(reg / (1 << bitStart)) & ((1 << bitLength) - 1);
-}
-
 int cOAMManager::LoadRoomOAM() {
 	unsigned short spritecount = 0;
 	unsigned char spriteID = 0;
@@ -598,21 +602,22 @@ int cOAMManager::LoadRoomOAM() {
 	for (spritecount = 0; spritecount < mgrOAM->maxsprite; spritecount++)
 	{
 		spriteID = mgrOAM->roomSpriteIds[spritecount].spriteID;
-		if (spriteID == 0 || GlobalVars::gblVars->frameTables->OAMFrameTable[spriteID].size() == 0)
+		if (spriteID == 0 || OAMFrameTable[spriteID].size() == 0)
 		{
 			continue;
 		}
 
-		if (GlobalVars::gblVars->frameTables->OAMFrameTable[spriteID].size() == 0)//&& !GlobalVars::gblVars->frameTables->OAMFrameTable[spriteID].front())
+		if (OAMFrameTable[spriteID].size() == 0)//&& !OAMFrameTable[spriteID].front())
 		{
 			continue;
 		}
 
 
-		MemFile::currentFile->seek(GlobalVars::gblVars->frameTables->OAMFrameTable[spriteID].front());
+		MemFile::currentFile->seek(OAMFrameTable->at(spriteID)[0]);
 		sprintf(windowText, "Processing %d\n", spriteID);
 		Logger::log->LogIt(Logger::DEBUG, windowText);
-		FrameManager* newFrameSet = new FrameManager(GlobalVars::gblVars->frameTables->OAMFrameTable[spriteID].front(), GBA.ROM, spriteID, currentRomType, idkVRAM.RAM, GBAGraphics::VRAM->SprPal);
+		std::vector<unsigned long>& frameTable = (OAMFrameTable->at(spriteID));
+		FrameManager* newFrameSet = new FrameManager(_gbaMethods,frameTable[0], _gbaMethods->ROM, spriteID, currentRomType, RD1Engine::theGame->idkVRAM.RAM, GBAGraphics::VRAM->SprPal);
 		if (newFrameSet != NULL)
 		{
 			for each(Frame* f in newFrameSet->theFrames)
@@ -634,7 +639,7 @@ int cOAMManager::LoadRoomOAM() {
 }
 
 
-int cOAMManager::LoadSpriteToMem(bool romSwitch, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb) {
+int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb) {
 	unsigned long addybuf = 0;
 	unsigned long size = 0;
 	unsigned short i = 0;
@@ -642,9 +647,9 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GFXData* ginfo, sprite_entry* s
 	unsigned long dst = 0;
 	unsigned char* decompbuf = new unsigned char[0x10000];
 	unsigned char*  compBuffer = new unsigned char[64691];
-	cSSE::SpriteSet->usedGFX = 0;
+	//cSSE::SpriteSet->usedGFX = 0;
 	memset(&GraphicsBuffer[0x4000], 0, 0x4000);
-	GBA.Reopen();
+	gba->Reopen();
 	for (i = 0; i < 15; i++) {
 		unsigned char thisSprite = spriteset[i].spriteID;
 		dst = 0x4000 + (ginfo[i].MemDst);
@@ -658,19 +663,19 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GFXData* ginfo, sprite_entry* s
 		switch (romSwitch) {
 		case 0:
 			MemFile::currentFile->seek(ginfo[i].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 4, 1, GBA.ROM);
+			MemFile::currentFile->fread(&addybuf, 4, 1, gba->ROM);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
-			MemFile::currentFile->fread(compBuffer, 1, 64691, GBA.ROM);
-			size = GBA.LZ77UnComp(compBuffer, decompbuf);
+			MemFile::currentFile->fread(compBuffer, 1, 64691,gba->ROM);
+			size = gba->LZ77UnComp(compBuffer, decompbuf);
 			memcpy(&GraphicsBuffer[dst], decompbuf, size);
 			break;
 		case 1:
 			MemFile::currentFile->seek(ginfo[i].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 1, 4, GBA.ROM);
+			MemFile::currentFile->fread(&addybuf, 1, 4, gba->ROM);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
-			//MemFile::currentFile->fread(&GraphicsBuffer[dst],size, 1,  GBA.ROM);
-			size = RD1Engine::theGame->mgrOAM->MFSprSize[(thisSprite - 0x10) << 1];
-			MemFile::currentFile->fread(&decompbuf[dst], size, 1, GBA.ROM);
+			//MemFile::currentFile->fread(&GraphicsBuffer[dst],size, 1,  _gbaMethods->ROM);
+			size = RD1Engine::theGame->fusionInstance->MFSprSize[(thisSprite - 0x10) << 1];
+			MemFile::currentFile->fread(&decompbuf[dst], size, 1, gba->ROM);
 			for (szCounter = 0; szCounter < size; szCounter++)
 			{
 				if (dst + szCounter > 0x8000)
@@ -685,7 +690,7 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GFXData* ginfo, sprite_entry* s
 			}
 			break;
 		}
-		if (GlobalVars::gblVars->SSE == true) cSSE::SpriteSet->usedGFX += size;
+		//if (//GlobalVars::gblVars->SSE == true) cSSE::SpriteSet->usedGFX += size;
 
 	}
 
@@ -723,19 +728,19 @@ int cOAMManager::DrawOAM()
 			for each(Frame* curFrame in thisSprite->theFrames) {
 				if (curFrame->frameOffset == 0x082f46b2)
 				{
-					GlobalVars::gblVars->OAMED = true;
+					//GlobalVars::gblVars->OAMED = true;
 				}
 				sprintf(buffer, "Loading %x\n ", curFrame->frameOffset);
 				Logger::log->LogIt(Logger::DEBUG, buffer);
-
-				GlobalVars::gblVars->OAMED = true;
+				throw "OamEditor destroyed";
+				//GlobalVars::gblVars->OAMED = true;
 				/*	curFrame->theSprite->selfInitGFX = true;
 					curFrame->theSprite->selfInitPal = true;*/
-					//cOAMEdit::SetupPreview(GBA.ROM, currentRomType, curFrame);
+					//cOAMEdit::SetupPreview(_gbaMethods->ROM, currentRomType, curFrame);
+				throw "Not actually decoding OAM";
+				//DecodeOAM(_gbaMethods->ROM, GlobalVars::gblVars->OAMED, curFrame->theSprite, curFrame->frameOffset - 0x8000000);
 
-				RD1Engine::theGame->mgrOAM->DecodeOAM(GBA.ROM, GlobalVars::gblVars->OAMED, curFrame->theSprite, curFrame->frameOffset - 0x8000000);
-
-				GlobalVars::gblVars->OAMED = false;
+				//GlobalVars::gblVars->OAMED = false;
 				DrawPSprite(curFrame->theSprite);
 				//DumpLayers();
 				curFrame->frameInited = true;

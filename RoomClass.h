@@ -24,8 +24,8 @@ public:
 	int Area;
 	int Room;
 	int currentRomType;
-	RoomClass(int romType, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset, FILE* fp);
-	RoomClass(int romType, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames);
+	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset, FILE* fp);
+	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames);
 	
 	~RoomClass();
 	MapManager * mapMgr;
@@ -36,7 +36,7 @@ public:
 	int LoadData();
 	void LoadUpSprites(int SpriteSetIndex);
 	int LoadHeader(long Offset);
-	void Load(int area, int room, unsigned long offset, FILE* ROM);
+	void Load(Image* tileset, int area, int room, unsigned long offset, FILE* ROM);
 	int GetLayerData(unsigned char compression, unsigned char Layer, unsigned long offset);
 	void Export(char* name);
 	void Import(char* name);

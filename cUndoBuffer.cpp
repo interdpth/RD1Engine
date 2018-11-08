@@ -46,7 +46,7 @@ int cUndoBuffer::Undo() {
 	if (UndoBuffer[UndoNum].copyAddress != 0 || UndoBuffer[UndoNum].buffer.size() == 0) {
 		///GBA.LZ77UnComp((unsigned char*)&UndoBuffer[UndoNum].buffer[0],(unsigned char*)UndoBuffer[UndoNum].copyAddress);
 		//memcpy(UndoBuffer[UndoNum].copyAddress,&UndoBuffer[UndoNum].buffer[0],UndoBuffer[UndoNum].buffer.size());
-		std::copy(UndoBuffer[UndoNum].buffer.begin(), UndoBuffer[UndoNum].buffer.end(), UndoBuffer[UndoNum].copyAddress);
+		//std::copy(UndoBuffer[UndoNum].buffer.begin(), UndoBuffer[UndoNum].buffer.end(), UndoBuffer[UndoNum].copyAddress);
 		UndoBuffer[UndoNum].buffer.resize(0);
 		UndoBuffer[UndoNum].copyAddress = 0;
 

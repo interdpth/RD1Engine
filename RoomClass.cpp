@@ -193,14 +193,14 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 }
 
 
-void RoomClass::Load(int area, int room, unsigned long offset, FILE* ROM)
+void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset, FILE* ROM)
 {
 	//int area = Combos[cArea].GetListIndex();
 	//int room = Combos[cRoom].GetListIndex();
 
 	LoadHeader(offset);
 	
-	int load = RD1Engine::theGame->mgrTileset->GetTileset(roomHeader.bTileset, roomHeader.lBg3);
+	int load = RD1Engine::theGame->mgrTileset->GetTileset(tilesetsrc, area, roomHeader.bTileset, roomHeader.lBg3);
 	
 	LoadData();
 	RD1Engine::theGame->mgrDoors->LoadDoors(room);
@@ -213,7 +213,7 @@ void RoomClass::Load(int area, int room, unsigned long offset, FILE* ROM)
 }
 
 
-RoomClass::RoomClass(int romType, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset, FILE* fp)
+RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset, FILE* fp)
 {
 	currentRomType = romType;
 	_gbaMethods = gba;
@@ -223,11 +223,11 @@ RoomClass::RoomClass(int romType, SpritesetData* spriteset, GBAMethods* gba, std
 	memset(&roomHeader, 0, sizeof(RHeader));
 	Area = area;
 	Room = room;
-	Load(area, room, offset, fp);
+	Load(tilsetsrc, area, room, offset, fp);
 }
 
 
-RoomClass::RoomClass(int romType, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames)
+RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames)
 {
 	currentRomType = romType;
 	_gbaMethods = gba;

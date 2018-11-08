@@ -6,13 +6,16 @@
 #include "SprGBuf.h"
 #include "FrameManager.h"
 #include "Frames.h"
+#include "GBAMethods.h"
+
 #include <vector>
 class cOAMManager
 {
 public:
 	static int CalcSpriteBounds(SprGBuf* SpriteDetails);
-	cOAMManager();
+	cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, int crf);
 	~cOAMManager();
+	GBAMethods* _gbaMethods;
 	unsigned short*  MFSprSize;
 	const unsigned char objSizes[3][4][2] =
 	{
@@ -20,13 +23,8 @@ public:
 		{ { 16, 8 },{ 32, 8 },{ 32,16 },{ 64,32 } },
 		{ { 8,16 },{ 8,32 },{ 16,32 },{ 32,64 } },
 	};
-
-	const char* cOAMManager::sizesStr[3][4] = {
-		{ "8, 8\0", "16,16\0","32,32\0", "64,64\0" },
-		{ "16,8\0", "32,8\0" ,"32,16\0", "64,32\0" },
-		{ "8,16\0", "8,32\0" ,"16,32\0", "32,64\0" },
-	};
-
+	
+	std::map<int, std::vector<unsigned long>>* OAMFrameTable;
 	sprite_entry roomSpriteIds[32];
 	unsigned short oamPiece[17];
 	OverAllOAM thisoam[0x100][512];
@@ -47,9 +45,7 @@ public:
 	int DrawOAM();
 	int SaveSprite(FILE* ROM, SaveOptions savetype, SprGBuf* tSprite, unsigned long Offset);
 	static int DecodeOAM(FILE* ROM, bool OAMED, SprGBuf* tSprite, unsigned long Offset);
-	static int LoadSpriteToMem(bool romSwitch, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb);
-	static int GetBitField(long reg, long bitStart, long bitLength) {
-		return	(reg / (1 << bitStart)) & ((1 << bitLength) - 1);
-	}
+	static int LoadSpriteToMem(bool romSwitch,GBAMethods* gba, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb);
+	int currentRomType;
 };
 

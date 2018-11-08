@@ -11,8 +11,11 @@ GBAMethods::~GBAMethods()
 
 }
 
+short GBAMethods::GBAPal[1024];
 
-
+char GBAMethods::FileLoc[MAX_PATH];
+FILE* GBAMethods::ROM;
+ FILE* GBAMethods::REDIT;
 //==================================================================================
 // Expand difference compression data
 // ==================================================================================

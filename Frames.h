@@ -6,6 +6,7 @@
 #include "cOAMManager.h"
 #include "backbuffer.h"
 #include "Structures.h"
+#include "BaseGame.h"
 using namespace std;
 #define SET_BIT(val,bitIndex) val& = (val << bitIndex)
 #define CLEAR_BIT(val, bitIndex) val &= ~(1 << bitIndex)

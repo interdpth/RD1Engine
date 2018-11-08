@@ -1,4 +1,7 @@
 #include "BaseGame.h"
+ int GetBitField(long reg, long bitStart, long bitLength) {
+	return	(reg / (1 << bitStart)) & ((1 << bitLength) - 1);
+}
 RD1Engine* RD1Engine::theGame;
 int  DrawRect(HDC hdc, long theColor, RECT* mpointer, int mul)
 {
@@ -62,7 +65,7 @@ void RD1Engine::LoadRoom(int area, int room, unsigned long offset, FILE* fp)
 		mainRoom = NULL;
 	}
 
-	mainRoom = new RoomClass(currentRomType, (SpritesetData*) NULL, _gbaMethods,  (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*) NULL,  area, room, offset, fp);
+	mainRoom = new RoomClass(currentRomType, NULL, (SpritesetData*) NULL, _gbaMethods,  (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*) NULL,  area, room, offset, fp);
 }
 
 int RD1Engine::GetPalSize(int sprID)
@@ -135,13 +138,15 @@ int RD1Engine::LoadAreaTable()
 }
 
 
-RD1Engine::RD1Engine(SupportedTitles theTitle)
+RD1Engine::RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable, TileBuffer * bg, TileBuffer* TileImage)
 {
 	_theLog = Logger::log;
-	mgrDoors = new DoorManager();
-	mgrTileset = new TilesetManager();
+	_gbaMethods = new GBAMethods();
+	mgrDoors = new DoorManager(_gbaMethods);
+	mgrTileset = new TilesetManager(_gbaMethods, currentRomType, bg, TileImage);
 	mgrScrolls = new clsRoomScrolls();
-	mgrOAM = new cOAMManager();
+	mgrOAM = new cOAMManager(_oAMFrameTable, _gbaMethods,(int)theTitle);
+
 	fusionInstance = NULL;
 	zmInstance = NULL;
 	this->thisTitle = theTitle;
@@ -171,7 +176,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle)
 
 	}
 	throw new exception("ROOM CLASS HAS NULLS");
-	mainRoom = new RoomClass((int)theTitle, (SpritesetData*)NULL, new GBAMethods(),NULL, NULL );
+	mainRoom = new RoomClass((int)theTitle, NULL, (SpritesetData*)NULL,_gbaMethods,NULL, NULL );
 }
 void RD1Engine::LoadModifiers(char* fn)
 {
@@ -524,7 +529,7 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 			for (thisX = 0; thisX < Map->X; thisX++) {
 				for (thisY = 0; thisY < Map->Y; thisY++){
 					throw new exception("Drawing bg needs to be reimplemented");
-				//pic->Draw(BGImage, (ScenRep * 32) + (thisX) * 8, (mainRoom->roomHeader.bSceneryYPos - 1) * 16 + (thisY) * 8, TileBuf2D[(thisX)+(thisY*X)]);
+				//pic->Draw(GlobalVars::gblVars->BGImage, (ScenRep * 32) + (thisX) * 8, (mainRoom->roomHeader.bSceneryYPos - 1) * 16 + (thisY) * 8, TileBuf2D[(thisX)+(thisY*X)]);
 			}
 			}
 		}
