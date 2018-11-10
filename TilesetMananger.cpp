@@ -14,6 +14,7 @@ TilesetManager::TilesetManager(GBAMethods* gba, int crf, TileBuffer * bg, TileBu
 
 TilesetManager::~TilesetManager()
 {
+	if(BGImage)
 	BGImage->Destroy();
 }
 

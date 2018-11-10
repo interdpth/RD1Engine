@@ -13,6 +13,7 @@
 #include "LeakFinder.h"
 #include "backbuffer.h"
 #include "OamFrameTable.h"
+
 using namespace std;
 int  DrawTileRect(HDC hdc, long theColor, MousePointer mpointer, int mul);
 struct PosModify
@@ -74,7 +75,7 @@ public:
 	vector<long> RoomOffsets;
 	DoorManager * mgrDoors;
 	clsRoomScrolls * mgrScrolls;
-	RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable,TileBuffer * bg, TileBuffer* TileImage);
+	RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable,TileBuffer * bg, TileBuffer* TileImage, Image* Tileset);
 	int GetPalSize(int sprID);
 	BackBuffer ThisBackBuffer;
 	int currentRomType;

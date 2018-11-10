@@ -626,7 +626,7 @@ int SpriteObjectManager::PopulateSpriteArray(char * appPath, int crf) {
 	if (!crf) sprintf(filepath, "%s\\SpriteList.txt", appPath);
 	if (crf) sprintf(filepath, "%s\\MF_oam.txt", appPath);
 //	GlobalVars::gblVars->frameTables = new OamFrameTable(crf, filepath);
-	throw "populatespritearray needs to get objectifed";
+	//throw "populatespritearray needs to get objectifed";
 	return 0;
 }
 

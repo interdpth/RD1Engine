@@ -138,8 +138,9 @@ int RD1Engine::LoadAreaTable()
 }
 
 
-RD1Engine::RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable, TileBuffer * bg, TileBuffer* TileImage)
+RD1Engine::RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable, TileBuffer * bg, TileBuffer* TileImage, Image* ImageTileset)
 {
+	ThisBackBuffer.Create(1024, 1024);
 	_theLog = Logger::log;
 	_gbaMethods = new GBAMethods();
 	mgrDoors = new DoorManager(_gbaMethods);
@@ -175,8 +176,8 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigne
 		break;
 
 	}
-	throw new exception("ROOM CLASS HAS NULLS");
-	mainRoom = new RoomClass((int)theTitle, NULL, (SpritesetData*)NULL,_gbaMethods,NULL, NULL );
+
+	mainRoom = new RoomClass((int)theTitle,ImageTileset,NULL,_gbaMethods,  _oAMFrameTable, NULL );
 }
 void RD1Engine::LoadModifiers(char* fn)
 {
