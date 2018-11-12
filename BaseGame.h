@@ -48,6 +48,8 @@ int GetBitField(long reg, long bitStart, long bitLength);
 class RD1Engine
 {
 public:
+	TileBuffer *_bgBuffer; 
+	Image* _tileset;
 	Logger* _theLog;
 	std::map<int, PosModify> poseModifier;
 	static RD1Engine* theGame;
@@ -60,22 +62,23 @@ public:
 	SupportedTitles thisTitle;
 	cOAMManager*mgrOAM;
 	OamFrameTable* frameTables;
+	int DisplayDoors(unsigned char Room);
 	drawstate DrawStatus;
 	int DrawBackGround(Image* img, TileBuffer* bimage);
 	int LoadAreaTable();
 	void LoadModifiers(char* fn);
-	void LoadRoom(int Area, int Offset, int spriteset = 0);
-	void LoadRoom(int Area, int Offset, unsigned long offset, FILE* fp);
+	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);
+	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset, FILE* fp);
 	void DrawSprites(Image* pic);
 	int DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype);
 	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBackLayer, bool DrawLevelLayer, 
 		bool DrawForeground, bool HideSprites, bool ShowScrolls, bool ShowClip, int ScrollIndex);
-	void DumpAreaAsImage(char* fn);
+	void DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage);
 	void DrawDoorIndicators(HDC g);
 	vector<long> RoomOffsets;
 	DoorManager * mgrDoors;
 	clsRoomScrolls * mgrScrolls;
-	RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable,TileBuffer * bg, TileBuffer* TileImage, Image* Tileset);
+	RD1Engine(SupportedTitles theTitle, OamFrameTable* frametables,TileBuffer * bg, TileBuffer* TileImage, Image* Tileset);
 	int GetPalSize(int sprID);
 	BackBuffer ThisBackBuffer;
 	int currentRomType;

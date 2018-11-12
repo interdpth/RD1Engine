@@ -10,6 +10,7 @@
 #include "BaseGame.h"
 #include "FrameManager.h"
 #include <vector>
+
 using namespace std;
 class SpriteObjectManager;
 class cEntityManager;
@@ -34,7 +35,7 @@ public:
 	RHeader roomHeader;
 	RHeader copyHeader;
 	int LoadData();
-	void LoadUpSprites(int SpriteSetIndex);
+	void LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage);
 	int LoadHeader(long Offset);
 	void Load(Image* tileset, int area, int room, unsigned long offset, FILE* ROM);
 	int GetLayerData(unsigned char compression, unsigned char Layer, unsigned long offset);

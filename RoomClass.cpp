@@ -17,7 +17,7 @@ int RoomClass::LoadData() {
 }
 
 
-void RoomClass::LoadUpSprites(int SpriteSetIndex) {
+void RoomClass::LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage) {
 	
 	FILE           *fp = NULL;
 	int             sprch = 0; 
@@ -61,15 +61,14 @@ void RoomClass::LoadUpSprites(int SpriteSetIndex) {
 			mgrEntities->MFLoadSet(currentRomType,mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
 		}
 		mgrEntities->LoadPal(mgrSpriteObj->paltransfer, mgrOAM->roomSpriteIds, GBAGraphics::VRAM->SprPal);
-		throw new exception("Hack for compiling, uncomment load sprite to mem");
-		//cOAMManager::LoadSpriteToMem(currentRomType, mgrSpriteObj->gfxpnt_dst, mgrOAM->roomSpriteIds, idkVRAM.RAM, &SpriteImage);
+		cOAMManager::LoadSpriteToMem(currentRomType,_gbaMethods, mgrSpriteObj->gfxpnt_dst, mgrOAM->roomSpriteIds, RD1Engine::theGame->idkVRAM.RAM, SpriteImage);
 
 		RD1Engine::theGame->mgrOAM->LoadRoomOAM();
 
-		/*for (i = 0; i < mgrOAM->maxsprite; i++)
-		{*/
+		for (i = 0; i < mgrOAM->maxsprite; i++)
+		{
 		RD1Engine::theGame->mgrOAM->DrawOAM();
-		//}
+		}
 		//DumpLayers();
 		
 		
@@ -120,6 +119,7 @@ int RoomClass::LoadHeader(long Offset) {//Needs to be seperate
 int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsigned long offset) {
 	unsigned char*  compBuffer = new unsigned char[64691];
 	memset(compBuffer, 0, 64691);
+
 	nMapBuffer* ELayer[5] = { mapMgr->GetLayer(MapManager::ForeGround),mapMgr->GetLayer(MapManager::LevelData),mapMgr->GetLayer(MapManager::Backlayer),mapMgr->GetLayer(MapManager::BackgroundLayer),mapMgr->GetLayer(MapManager::Clipdata) };//Edit Layer
 	MemFile::currentFile->seek(offset);
 	if (compression == 0x10) {
@@ -131,14 +131,14 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 		ELayer[Layer]->Dirty = true;
 		//_gbaMethods->ZMUncompRle(compBuffer, (unsigned char*)BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->TileBuf2D ,BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X*BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y, 1);
 
-	/*	if (ELayer[Layer]->BImage != NULL)
+		if (ELayer[Layer]->BImage != NULL)
 		{
 			delete ELayer[Layer]->BImage;
-		}*/
+		}
 
-		/*ELayer[Layer]->BImage = new Image(ELayer[Layer]->X * 16, ELayer[Layer]->Y * 16);
+		ELayer[Layer]->BImage = new Image(ELayer[Layer]->X * 16, ELayer[Layer]->Y * 16);
 		ELayer[Layer]->BImage->Create(ELayer[Layer]->X * 16, ELayer[Layer]->Y * 16);
-		ELayer[Layer]->BImage->SetPalette(GBAGraphics::VRAM->PcPalMem);*/
+		ELayer[Layer]->BImage->SetPalette(GBAGraphics::VRAM->PcPalMem);
 		if (ELayer[Layer]->TileBuf2D)
 		{
 			delete ELayer[Layer]->TileBuf2D;
@@ -178,15 +178,15 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 		memset(ELayer[Layer]->TileBuf2D, 0, 2 * ELayer[Layer]->X * ELayer[Layer]->Y);
 
 		ELayer[Layer]->oSize = _gbaMethods->LZ77UnComp(compBuffer, (unsigned char*)ELayer[Layer]->TileBuf2D);
-	/*	if (ELayer[Layer]->BImage != NULL)
+		if (ELayer[Layer]->BImage != NULL)
 		{
 			delete ELayer[Layer]->BImage;
-		}*/
+		}
 
-	/*	ELayer[Layer]->BImage = new Image(1024, 1024);
+		ELayer[Layer]->BImage = new Image(1024, 1024);
 		ELayer[Layer]->BImage->Create(1024, 1024);
-		ELayer[Layer]->BImage->SetPalette(GBAGraphics::VRAM->PcPalMem);*/
-		//memcpy(ELayer[Layer]->TileBuf2D,decompbuf,ELayer[Layer]->oSize);
+		ELayer[Layer]->BImage->SetPalette(GBAGraphics::VRAM->PcPalMem);
+		memcpy(ELayer[Layer]->TileBuf2D, compBuffer,ELayer[Layer]->oSize);
 	}
 	delete[] compBuffer;
 	return 0;

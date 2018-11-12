@@ -35,7 +35,7 @@ public:
 	~TilesetManager();
 	int GetTileset(Image* dst, int area, unsigned char TilesetVal, int bg3);
 	int DrawBlock(Image* src, short Map16n, int destX, int destY);
-	void DrawTileset(Image* imgTileset);
+	void DrawTileset(Image** imgTileset);
 	int ZMGlobalGFX(unsigned char Area);
 	int MFGlobalGFX();
 	int GetCBG(unsigned long backgroundPointer);

@@ -509,17 +509,18 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 			SpriteY += modifer->y;
 		}
 
-		
-		if (!_OAMFrameTable->count(sprite_in->spriteID) > 0) {
+		_OAMFrameTable = &RD1Engine::theGame->frameTables->OAMFrameTable;
+		std::vector<unsigned long>* thisGuy =& _OAMFrameTable->at(sprite_in->spriteID);
+		if (!(thisGuy->size() > 0)) {
 
 			continue;
 		}
 	
-		if (_OAMFrameTable[sprite_in->spriteID].size() == 0)
+		if (thisGuy->size() == 0)
 		{
 			continue;
 		}
-		if (_OAMFrameTable[sprite_in->spriteID].size() && !badFrame)
+		if (thisGuy->size() && !badFrame)
 		{
 			//If sprite doesn't exist draw nothing but the S
 			if (show) {
@@ -612,23 +613,7 @@ int SpriteObjectManager::SaveSprites(RHeader* roomHeader) {
 
 	return 0;
 }
-//GlobalVars::gblVars->AppPath
-int SpriteObjectManager::PopulateSpriteArray(char * appPath, int crf) {
-	char buffer[512] = { 0 };
-	unsigned long tmp = 0;
 
-
-	char filepath[1024] = { 0 };
-	if ((strlen(filepath) + 20) >= 1024) {
-		MessageBox(0, "Please move your file someplace else as the path is too long.", "Error.", MB_OK);
-		return 0;
-	}
-	if (!crf) sprintf(filepath, "%s\\SpriteList.txt", appPath);
-	if (crf) sprintf(filepath, "%s\\MF_oam.txt", appPath);
-//	GlobalVars::gblVars->frameTables = new OamFrameTable(crf, filepath);
-	//throw "populatespritearray needs to get objectifed";
-	return 0;
-}
 
 int InitPosArray() {
 	int i = 0;

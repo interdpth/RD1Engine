@@ -196,7 +196,7 @@ void TilesetManager::Render(Image* srcImage)
 	//LoadSpecialEffects(thisTileset->EffectSet);
 	TileImage->Load(GBAGraphics::VRAM->fGbuf, 1024);
 
-	DrawTileset(srcImage);
+	DrawTileset(&srcImage);
 
 	//animated
 	for (int bgCounter = 0; bgCounter < 512; bgCounter++)
@@ -262,26 +262,26 @@ int TilesetManager::DrawBlock(Image* src, short Map16n, int destX, int destY) {
 
 	return 0;
 }
-void TilesetManager::DrawTileset(Image* imgTileset) {
+void TilesetManager::DrawTileset(Image** imgTileset) {
 	int k = 0;
 	int i = 0;
 	int TC = 0;
 	int end = 768;
 
-	if (imgTileset)
-	{
-		delete imgTileset;
-	}
-	imgTileset = new Image(512, 1024);
+	//if (imgTileset)
+	//{
+	//	delete imgTileset;
+	//}
+	//*imgTileset = new Image(512, 1024);
 
-	imgTileset->SetPalette(GBAGraphics::VRAM->PcPalMem);
+	(*imgTileset)->SetPalette(GBAGraphics::VRAM->PcPalMem);
 	//	BBTileset.Create(512,512);
-	Image* tileset = imgTileset;
+	Image* tileset = *imgTileset;
 
 	for (i = 0; i < TSA.max; i++)
 	{
 
-		DrawBlock(imgTileset, i * 4, (i % 16) * 16, ((i / 16)) * 16);
+		DrawBlock(tileset, i * 4, (i % 16) * 16, ((i / 16)) * 16);
 
 
 	}
