@@ -17,7 +17,7 @@ int  DrawRect(HDC hdc, long theColor, RECT* mpointer, int mul)
 	return 0;
 }
 #include "FusionSamus.h"
-void RD1Engine::LoadRoom(int area, int room, int spriteindex)
+void RD1Engine::LoadRoom(int area, int room, Image* Tileset,TileBuffer* SpriteImage, int spriteindex)
 {
 	mgrDoors->SetupDoors(area);
 	DrawStatus.dirty = true;
@@ -48,13 +48,13 @@ void RD1Engine::LoadRoom(int area, int room, int spriteindex)
 	sprintf(buffer, "Loading Area: %d Room: %x, Offset %x", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
 	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
-	LoadRoom(area, room, offset,(FILE*)NULL);
+	LoadRoom(area, room, Tileset, SpriteImage, offset,(FILE*)NULL);
 	////Change to room header 
-	mainRoom->LoadUpSprites(spriteindex);
+	mainRoom->LoadUpSprites(spriteindex, SpriteImage);
 
 }
 
-void RD1Engine::LoadRoom(int area, int room, unsigned long offset, FILE* fp)
+void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset, FILE* fp)
 {
 	char buffer[256];
 	sprintf(buffer, "Loading Area: %d Room: %x, Offset %x", area, room, offset);
@@ -65,7 +65,7 @@ void RD1Engine::LoadRoom(int area, int room, unsigned long offset, FILE* fp)
 		mainRoom = NULL;
 	}
 
-	mainRoom = new RoomClass(currentRomType, NULL, (SpritesetData*) NULL, _gbaMethods,  (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*) NULL,  area, room, offset, fp);
+	mainRoom = new RoomClass(currentRomType, Tileset, (SpritesetData*) NULL, _gbaMethods,  (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*) NULL,  area, room, offset, fp);
 }
 
 int RD1Engine::GetPalSize(int sprID)
@@ -138,16 +138,19 @@ int RD1Engine::LoadAreaTable()
 }
 
 
-RD1Engine::RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigned long>>* _oAMFrameTable, TileBuffer * bg, TileBuffer* TileImage, Image* ImageTileset)
+RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, TileBuffer * bg, TileBuffer* TileImage, Image* ImageTileset)
 {
 	ThisBackBuffer.Create(1024, 1024);
 	_theLog = Logger::log;
+	currentRomType = (int)theTitle;
 	_gbaMethods = new GBAMethods();
 	mgrDoors = new DoorManager(_gbaMethods);
 	mgrTileset = new TilesetManager(_gbaMethods, currentRomType, bg, TileImage);
 	mgrScrolls = new clsRoomScrolls();
-	mgrOAM = new cOAMManager(_oAMFrameTable, _gbaMethods,(int)theTitle);
-
+	frameTables = _oAMFrameTable;
+	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods,(int)theTitle);
+	_bgBuffer = bg;
+	_tileset = ImageTileset;
 	fusionInstance = NULL;
 	zmInstance = NULL;
 	this->thisTitle = theTitle;
@@ -177,7 +180,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, std::map<int, std::vector<unsigne
 
 	}
 
-	mainRoom = new RoomClass((int)theTitle,ImageTileset,NULL,_gbaMethods,  _oAMFrameTable, NULL );
+	mainRoom = new RoomClass((int)theTitle,ImageTileset,NULL,_gbaMethods, &frameTables->OAMFrameTable, NULL );
 }
 void RD1Engine::LoadModifiers(char* fn)
 {
@@ -295,12 +298,12 @@ void RD1Engine::DrawSprites(Image* pic) {
 			SpriteX += modifer->x;
 			SpriteY += modifer->y;
 		}
-
-		if (frameTables->OAMFrameTable[sprite_in->spriteID].size() == 0)
+		
+		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).size() == 0)
 		{
 			continue;
 		}
-		if (frameTables->OAMFrameTable[sprite_in->spriteID].front() && !badFrame)
+		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).front() && !badFrame)
 		{
 			//If sprite doesn't exist draw nothing but the S
 			if (true) {
@@ -372,6 +375,67 @@ void RD1Engine::DrawSprites(Image* pic) {
 
 //RD1Engine::theGame->DrawRoom(GlobalVars::gblVars->checkBoxViewB.value() == BST_CHECKED, GlobalVars::gblVars->checkBoxViewL.value() == BST_CHECKED, GlobalVars::gblVars->checkBoxViewF.value() == BST_CHECKED);
 
+int RD1Engine::DisplayDoors(unsigned char Room) {
+	
+	
+	int minX;
+	int maxX;
+	int minY;
+	int maxY;
+	int curW, curH, curX, curY;
+	int i = 0;
+	char cBuf[512] = { 0 };
+
+
+	//First we get the current display area Displays 23x 21 Tiles at a time
+	//so Get scrollbar for basics then get add proper constant
+
+
+	//minX =nHScroll[sHMap];
+	//maxX =nHScroll[sHMap] + 23;
+	//minY = nVScroll[sVMap];
+	//maxY = nVScroll[sVMap] + 21;
+
+
+	minX =0;
+	maxX =0 + 23;
+	minY = 0;
+	maxY = 0 + 21;
+	unsigned long que = 0;
+	///RECT blah={0,0,0,0};
+	SetBkMode(ThisBackBuffer.DC(), TRANSPARENT);
+	for (i = 0; i<mgrDoors->CurrentRoomDoorIndexes.size(); i++) {
+	int CurDoorIndex = mgrDoors->CurrentRoomDoorIndexes[i];
+	MousePointer* thisDoor = &mgrDoors->Doors[CurDoorIndex].virtualDoor;
+	if (mgrDoors->Doors[CurDoorIndex].rawDoor.OwnerRoom ==Room ) {
+	curX = thisDoor->sX;
+	curY = thisDoor->sY;
+	curH = thisDoor->Height;//-Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY)+1;
+	curW = thisDoor->Width;//-Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sX)+1;
+	//	ShowWindow((HWND)hDoors[i],SW_SHOW);
+	//	MoveWindow((HWND)hDoors[i],(unsigned short)(curX-minX)*16,(unsigned short)(curY-minY)*16,(curW+1)*16,(curH-curY+1)*16,0);
+	RECT blah;
+	for (int d = 0; d<2; d++) {
+	blah.left = (curX)* 16 + d;
+	blah.top = (curY)* 16 + d;
+	blah.right = (curW + 1) * 16 + d;
+	blah.bottom = (curH + 1) * 16 + d;
+	HBRUSH curbrush = CreateSolidBrush(RGB(255, 255, 255));
+
+	FrameRect(ThisBackBuffer.DC(), &blah, curbrush);
+	DeleteObject(curbrush);
+	}
+
+	TextOut(ThisBackBuffer.DC(),
+	((curX)+(((curW - curX) / 2)))*(16),
+	((curY)+(((curH - curY) / 2)))*(16), "D", 1);
+	}
+
+
+	}
+	
+	return 0;
+}
 
 
 int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBackLayer, bool DrawLevelLayer, bool DrawForeground, bool HideSprites, bool ShowScrolls, bool ShowClip, int ScrollIndex) {
@@ -409,51 +473,51 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 	SetTextColor(ThisBackBuffer.DC(), RGB(255, 255, 255));
 
 	//Setup rendermap
-	Image imgMap;
-	imgMap.Create(Width, Height);
-	imgMap.SetPalette(GBAGraphics::VRAM->PcPalMem);
+	Image* imgMap = new Image();
+	imgMap->Create(Width, Height);
+	imgMap->SetPalette(GBAGraphics::VRAM->PcPalMem);
 
 	if (mainRoom->roomHeader.lBg3 & 0x40) {
-		DrawBackGround(&imgMap, BGImage);
-		imgMap.Blit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
+		DrawBackGround(imgMap, BGImage);
+		imgMap->Blit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 	}
 
-	imgMap.Clear();
+	imgMap->Clear();
 
 	if (DrawStatus.BG2) {
 
-		DrawLayer(buffBackLayer, &imgMap, mainRoom->roomHeader.bBg2);//Backlayer
-		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
+		DrawLayer(buffBackLayer, imgMap, mainRoom->roomHeader.bBg2);//Backlayer
+		imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 		buffBackLayer->Dirty = 0;
 
 	}
 
-	imgMap.Clear();
+	imgMap->Clear();
 	if (DrawStatus.BG1) {
 
 		int
 			alphaHigh = 16;
 		int alphaLow = 0;
-		DrawLayer(buffLevelData, &imgMap, mainRoom->roomHeader.bBg1);
+		DrawLayer(buffLevelData, imgMap, mainRoom->roomHeader.bBg1);
 
-		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
+		imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 
 
 		buffLevelData->Dirty = 0;
 
 	}
-	imgMap.Clear();
+	imgMap->Clear();
 	bool val = HideSprites;; //SendMessage(GetDlgItem(GlobalVars::gblVars->frameControls, chkHS), BM_GETCHECK, 0, 0) == 0;
 
-	DrawSprites(&imgMap);//Foreground
+	DrawSprites(imgMap);//Foreground
 	mainRoom->mgrSpriteObjects->ShowSprites(val, 0, &ThisBackBuffer);
 
 
-	imgMap.Clear();
+	imgMap->Clear();
 
 	if (DrawStatus.BG0) {
 
-		DrawLayer(buffForeground, &imgMap, mainRoom->roomHeader.bBg0);//Foreground
+		DrawLayer(buffForeground, imgMap, mainRoom->roomHeader.bBg0);//Foreground
 
 		if (mainRoom->roomHeader.TransForeground > 0)
 		{
@@ -462,11 +526,11 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 			bfn.BlendFlags = 0;
 			bfn.SourceConstantAlpha = 150;;//Need to unhard code
 			bfn.AlphaFormat = 0;// AC_SRC_ALPHA;
-			AlphaBlend(ThisBackBuffer.DC(), 0, 0, Width, Height, imgMap.DC(), 0, 0, Width, Height, bfn); // Display bitmap
+			AlphaBlend(ThisBackBuffer.DC(), 0, 0, Width, Height, imgMap->DC(), 0, 0, Width, Height, bfn); // Display bitmap
 			//	imgMap.AlphaBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0, alphaLow, alphaHigh);
 		}
 		else {
-			imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader.bSceneryYPos, Width, Height, 0, 0);
+			imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader.bSceneryYPos, Width, Height, 0, 0);
 		}
 
 		buffForeground->Dirty = 0;
@@ -477,7 +541,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 
 	buffForeground->Dirty = 0;
 
-	mgrDoors->DisplayDoors(mainRoom->Room);
+	DisplayDoors(mainRoom->Room);
 
 	if (ShowClip)//GlobalVars::gblVars->ViewClip.value() == 1)
 	{
@@ -494,11 +558,8 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
 
-	throw new exception("Commented code needs to be sent to UI");
-	/*InvalidateRect(UiState::stateManager->GetMapWindow(), 0, 1);
+	delete imgMap;
 
-	SendMessage(UiState::stateManager->GetMapWindow(), WM_SIZE, 1, 1);*/
-	//memset(&DrawState, 0, sizeof(drawstate));
 	DrawStatus.dirty = false;
 	return 0;
 }
@@ -529,8 +590,8 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 		for (int ScenRep = 0; ScenRep < mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; ScenRep++) {
 			for (thisX = 0; thisX < Map->X; thisX++) {
 				for (thisY = 0; thisY < Map->Y; thisY++){
-					throw new exception("Drawing bg needs to be reimplemented");
-				//pic->Draw(GlobalVars::gblVars->BGImage, (ScenRep * 32) + (thisX) * 8, (mainRoom->roomHeader.bSceneryYPos - 1) * 16 + (thisY) * 8, TileBuf2D[(thisX)+(thisY*X)]);
+				
+				pic->Draw(*_bgBuffer, (ScenRep * 32) + (thisX) * 8, (mainRoom->roomHeader.bSceneryYPos - 1) * 16 + (thisY) * 8, TileBuf2D[(thisX)+(thisY*X)]);
 			}
 			}
 		}
@@ -545,8 +606,8 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 
 				for (thisX = 0; thisX < (Map->X); thisX++) {// from here if something is enabled then draw it 
 					TILE = (TileBuf2D[thisX + (thisY * X)]);
-					throw new exception("Drawing layer needs to be reimplemented");
-					//BitBlt(pic->DC(), (thisX) << 4, (thisY) << 4, 16, 16, GlobalVars::gblVars->imgTileset->DC(), (TILE % 16) << 4, (TILE >> 4) << 4, SRCCOPY);
+				
+					BitBlt(pic->DC(), (thisX) << 4, (thisY) << 4, 16, 16,_tileset->DC(), (TILE % 16) << 4, (TILE >> 4) << 4, SRCCOPY);
 				}
 			}
 		}
@@ -644,7 +705,7 @@ void RD1Engine::DrawDoorIndicators(HDC g)
 	}
 }
 
-void RD1Engine::DumpAreaAsImage(char* fn)
+void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage)
 {
 	//Font thisFont = new Font("Arial", 16);
 	DataContainer* roomsPerArea = GameConfiguration::mainCFG->GetDataContainer("RoomsPerArea");
@@ -656,7 +717,7 @@ void RD1Engine::DumpAreaAsImage(char* fn)
 	int maxMapHeight = 0;
 	for (int roomCounter = 0; roomCounter < maxRooms / 8; roomCounter++)
 	{
-		LoadRoom(thisArea, roomCounter);
+		LoadRoom(thisArea, roomCounter,Tileset,SpriteImage );
 
 		RHeader* header = &theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
@@ -677,7 +738,7 @@ void RD1Engine::DumpAreaAsImage(char* fn)
 	{
 		
 		char infoString[2048];
-		LoadRoom(thisArea, roomCounter);
+		LoadRoom(thisArea, roomCounter, Tileset,SpriteImage);
 		DrawStatus.dirty = 1;
 		//DrawRoom();
 		vector<nEnemyList>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;

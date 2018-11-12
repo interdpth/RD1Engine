@@ -334,61 +334,6 @@ int DoorManager::LoadDoors(int Room) {
 	return 0;
 }
 
-int DoorManager::DisplayDoors(unsigned char Room) {
-	throw "DisplayDoors to UI";
-	/*
-	int minX;
-	int maxX;
-	int minY;
-	int maxY;
-	int curW, curH, curX, curY;
-	int i = 0;
-	char cBuf[512] = { 0 };
-
-
-	//First we get the current display area Displays 23x 21 Tiles at a time
-	//so Get scrollbar for basics then get add proper constant
-
-
-	minX =nHScroll[sHMap];
-	maxX =nHScroll[sHMap] + 23;
-	minY = nVScroll[sVMap];
-	maxY = nVScroll[sVMap] + 21;
-	unsigned long que = 0;
-	///RECT blah={0,0,0,0};
-	SetBkMode(GlobalVars::gblVars->ThisBackBuffer.DC(), TRANSPARENT);
-	for (i = 0; i<CurrentRoomDoorIndexes.size(); i++) {
-		int CurDoorIndex = CurrentRoomDoorIndexes[i];
-		MousePointer* thisDoor = &Doors[CurDoorIndex].virtualDoor;
-		if (Doors[CurDoorIndex].rawDoor.OwnerRoom ==Room ) {
-			curX = thisDoor->sX;
-			curY = thisDoor->sY;
-			curH = thisDoor->Height;//-Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY)+1;
-			curW = thisDoor->Width;//-Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sX)+1;
-														//	ShowWindow((HWND)hDoors[i],SW_SHOW);
-														//	MoveWindow((HWND)hDoors[i],(unsigned short)(curX-minX)*16,(unsigned short)(curY-minY)*16,(curW+1)*16,(curH-curY+1)*16,0);
-			RECT blah;
-			for (int d = 0; d<2; d++) {
-				blah.left = (curX)* 16 + d;
-				blah.top = (curY)* 16 + d;
-				blah.right = (curW + 1) * 16 + d;
-				blah.bottom = (curH + 1) * 16 + d;
-				HBRUSH curbrush = CreateSolidBrush(RGB(255, 255, 255));
-			
-				FrameRect(GlobalVars::gblVars->ThisBackBuffer.DC(), &blah, curbrush);
-				DeleteObject(curbrush);
-			}
-
-			TextOut(GlobalVars::gblVars->ThisBackBuffer.DC(),
-				((curX)+(((curW - curX) / 2)))*(16),
-				((curY)+(((curH - curY) / 2)))*(16), "D", 1);
-		}
-
-
-	}
-	*/
-	return 0;
-}
 int DoorManager::LoadThisDoor(int DoorNo){
 	throw "LoadTHisdoorNEeds to be ui";/*
 	char	cboBuf[512] = {0};

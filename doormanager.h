@@ -28,7 +28,7 @@ public:
 	int DeleteDoor(int Room, int doorNum);//Send it the currentroomindexes 
 	int SetupDoors(long area);
 	int LoadDoors(int Room);
-	int DisplayDoors(unsigned char Room);
+	
 	int SaveDoors(int area);
 	int LoadThisDoor(int DoorNo);
 	//sDoor Doors[0xFF];

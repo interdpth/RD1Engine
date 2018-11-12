@@ -130,6 +130,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="clsPreviewSprite.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MapEditingState.cpp">
       <Filter>Source Files</Filter>

@@ -602,12 +602,12 @@ int cOAMManager::LoadRoomOAM() {
 	for (spritecount = 0; spritecount < mgrOAM->maxsprite; spritecount++)
 	{
 		spriteID = mgrOAM->roomSpriteIds[spritecount].spriteID;
-		if (spriteID == 0 || OAMFrameTable[spriteID].size() == 0)
+		if (spriteID == 0 || OAMFrameTable->at(spriteID).size() == 0)
 		{
 			continue;
 		}
 
-		if (OAMFrameTable[spriteID].size() == 0)//&& !OAMFrameTable[spriteID].front())
+		if (OAMFrameTable->at(spriteID).size() == 0)//&& !OAMFrameTable[spriteID].front())
 		{
 			continue;
 		}
@@ -732,13 +732,12 @@ int cOAMManager::DrawOAM()
 				}
 				sprintf(buffer, "Loading %x\n ", curFrame->frameOffset);
 				Logger::log->LogIt(Logger::DEBUG, buffer);
-				throw "OamEditor destroyed";
+			//	throw "OamEditor destroyed";
 				//GlobalVars::gblVars->OAMED = true;
 				/*	curFrame->theSprite->selfInitGFX = true;
 					curFrame->theSprite->selfInitPal = true;*/
 					//cOAMEdit::SetupPreview(_gbaMethods->ROM, currentRomType, curFrame);
-				throw "Not actually decoding OAM";
-				//DecodeOAM(_gbaMethods->ROM, GlobalVars::gblVars->OAMED, curFrame->theSprite, curFrame->frameOffset - 0x8000000);
+								DecodeOAM(_gbaMethods->ROM, true, curFrame->theSprite, curFrame->frameOffset - 0x8000000);
 
 				//GlobalVars::gblVars->OAMED = false;
 				DrawPSprite(curFrame->theSprite);

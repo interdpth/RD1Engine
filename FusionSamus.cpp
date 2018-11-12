@@ -533,13 +533,13 @@ void FusionSamus::Logic()
 					}
 					else
 					{
-						PalPointer = ((unsigned short *)rawFile[0x28DD7C]);
+						PalPointer = (unsigned short *)(&rawFile[0x28DD7C]);
 						if (SamusSuitStatus & 0x10)
 							PalPointer = &((unsigned short *)rawFile[0x28DD7C])[8];
 					}
 					UpdateSAXSamusPal(PalPointer, 0, 16, 0);
 					if (CurrentPose != 52)
-						PalPointer = ((unsigned short *)rawFile[0x28DE1C]);
+						PalPointer =(unsigned short *) (&rawFile[0x28DE1C]);
 					UpdateSAXSamusPal(PalPointer, 16, 16, 0);
 					return;
 				}
