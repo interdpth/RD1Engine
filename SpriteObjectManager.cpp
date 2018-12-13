@@ -142,10 +142,11 @@ int SpriteObjectManager::SaveGFX(int RomSwitch) {
 	memset(GFXbuf, 0, 32192);
 	unsigned long size = 0;
 	int SpriteID =_currentFrames->GetStaticFrame()->theSprite->id - 0x10;
+	SprGBuf* currSprite = _currentFrames->GetStaticFrame()->theSprite;
 	if (RomSwitch == 0) {
-		//T'will be kind of hard. 
-		size = _gbaMethods->LZ77Comp(_currentFrames->GetStaticFrame()->theSprite->graphicsize, &_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000], sizeof(_currentFrames->GetStaticFrame()->theSprite->PreRAM - 0x4000), GFXbuf);
-		//Just find new space fuck the old >_>
+	
+		size = _gbaMethods->LZ77Comp(currSprite->graphicsize, &currSprite->PreRAM[0x4000], sizeof(currSprite->PreRAM - 0x4000), GFXbuf);
+		//Just find new space 
 		GFXPointer = _gbaMethods->FindFreeSpace(size, 0xFF);
 		MemFile::currentFile->seek(GFXPointer);
 		MemFile::currentFile->fwrite(&GFXbuf, 1, size, _gbaMethods->ROM);
@@ -157,18 +158,18 @@ int SpriteObjectManager::SaveGFX(int RomSwitch) {
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteID * 4));
 		MemFile::currentFile->fread(&GFXPointer, 1, 4, _gbaMethods->ROM);
 		GFXPointer -= 0x8000000;
-		if (RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]<_currentFrames->GetStaticFrame()->theSprite->graphicsize || RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]>_currentFrames->GetStaticFrame()->theSprite->graphicsize) {
-			RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1] =_currentFrames->GetStaticFrame()->theSprite->graphicsize;
+		if (RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]<currSprite->graphicsize || RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]>currSprite->graphicsize) {
+			RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1] = currSprite->graphicsize;
 			MemFile::currentFile->seek(0x2E4A50);
 			MemFile::currentFile->fwrite(&RD1Engine::theGame->mgrOAM->MFSprSize, 4, 0xC0, _gbaMethods->ROM);
-			GFXPointer = _gbaMethods->FindFreeSpace(_currentFrames->GetStaticFrame()->theSprite->graphicsize, 0xFF);
+			GFXPointer = _gbaMethods->FindFreeSpace(currSprite->graphicsize, 0xFF);
 
 		}
 		MemFile::currentFile->seek(GFXPointer);
 
-		MemFile::currentFile->fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000],_currentFrames->GetStaticFrame()->theSprite->graphicsize, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&currSprite->PreRAM[0x4000], currSprite->graphicsize, 1, _gbaMethods->ROM);
 		GFXPointer += 0x8000000;
-		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (_currentFrames->GetStaticFrame()->theSprite->id - 0x10) * 4);
+		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (currSprite->id - 0x10) * 4);
 		MemFile::currentFile->fwrite(&GFXPointer, 1, 4, _gbaMethods->ROM);
 		_gbaMethods->Reopen();
 	}
@@ -371,7 +372,7 @@ int SpriteObjectManager::LoadEnemies(RHeader* roomHeader) {
 
 	unsigned char loopcounter = 0;
 	unsigned char max = 0;
-	int i = 0, j = 0;
+	unsigned int i = 0, j = 0;
 	int EnemySet = 0;
 	long curroffset = 0;
 	unsigned long offsetlist[3] = { roomHeader->lSpritePointer,roomHeader->lSpritePointer2,roomHeader->lSpritePointer3 };
@@ -416,11 +417,11 @@ void DumpLayers()
 	int sprCounter = 0;
 
 	{
-		for (int sprCounter = 0; sprCounter < theSprites->size(); sprCounter++)
+		for (unsigned int sprCounter = 0; sprCounter < theSprites->size(); sprCounter++)
 		{
 			FrameManager*thisSprite = theSprites->at(sprCounter);
 			thisSprite->SetStaticFrame(0);
-			for (int frameCounter = 0; frameCounter < thisSprite->theFrames.size(); frameCounter++)
+			for (unsigned int frameCounter = 0; frameCounter < thisSprite->theFrames.size(); frameCounter++)
 			{
 				thisSprite->SetStaticFrame(frameCounter);
 				Frame* curFrame = thisSprite->GetStaticFrame();
@@ -611,40 +612,5 @@ int SpriteObjectManager::SaveSprites(RHeader* roomHeader) {
 	_gbaMethods->ROM = fopen(_gbaMethods->FileLoc, "r+b");
 
 
-	return 0;
-}
-
-
-int InitPosArray() {
-	int i = 0;
-	//for (i = 0; i < 255; i++) {
-	//	ZMSpritePos[i][0] = 0;
-	//	ZMSpritePos[i][1] = 0;
-	//}
-	////Poses are in tiles. 
-	//ZMSpritePos[0x24][1] = ZMSpritePos[0x23][1] = ZMSpritePos[0x22][1] = 32;
-	//for (i = 0; i < 0xD; i++)
-	//	ZMSpritePos[0x25 + i][1] = (i % 2 ? 32 : 64);
-	//ZMSpritePos[0x3A][0] = 16;
-	//ZMSpritePos[0x3A][1] = 96;
-	//ZMSpritePos[0x48][0] = 24;
-	//ZMSpritePos[0x4B][1] = 16;
-	//ZMSpritePos[0x4E][0] = 20;
-	//ZMSpritePos[0x95][0] = 40;
-	//ZMSpritePos[0x95][1] = 80;
-	//ZMSpritePos[0x50][0] = 7;
-	//ZMSpritePos[0x50][1] = -16;
-	//ZMSpritePos[0x60][0] = 16;
-	//ZMSpritePos[0x60][1] = 72;
-	//ZMSpritePos[0x6E][0] = 16;
-	//ZMSpritePos[0x8A][0] = 48;
-	//ZMSpritePos[0x8A][1] = 64;
-	//ZMSpritePos[0x8C][1] = 32;
-	//ZMSpritePos[0x8C][0] = 14;
-	//ZMSpritePos[0x8C][1] = 32;
-	//ZMSpritePos[0xA3][0] = -16;
-	//ZMSpritePos[0xA3][1] = 56;
-	//ZMSpritePos[0xA4][0] = 90;
-	//ZMSpritePos[0xA4][1] = 50;
 	return 0;
 }

@@ -37,9 +37,6 @@ void TilesetManager::ReadTable()
 int TilesetManager::SaveTileset(unsigned char TilesetVal) {
 
 
-	fclose(_gbaMethods->ROM);
-	fopen(_gbaMethods->FileLoc, "r+b");
-
 	unsigned long myoffset = 0x833DFDC;
 	//fusionMemFile::currentFile->seek(0x3BF888);//Tileset
 	/*
@@ -64,9 +61,6 @@ int TilesetManager::SaveTileset(unsigned char TilesetVal) {
 
 
 	return 0;
-
-
-
 }
 
 
@@ -219,7 +213,7 @@ int TilesetManager::GetBackground(gTileData* thisTileset)
 	MemFile::currentFile->seek(thisTileset->gBackground - 0x8000000);
 	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691, _gbaMethods->ROM);//Read compression
 	int size = _gbaMethods->LZ77UnComp(compBuffer, decompbuf);
-	memcpy(&GBAGraphics::VRAM->BGBuf[0x7DE0 - size], &decompbuf[0], size);
+	memcpy(&GBAGraphics::VRAM->BGBuf[0x7dE0- size], decompbuf, size);
 	delete[] decompbuf;
 	delete[] compBuffer;
 	return 0;
@@ -247,12 +241,9 @@ int TilesetManager::GetTileset(Image* dst, int area, unsigned char TilesetVal, i
 	}
 	
 	Render(dst);
-	
-	
-
 	return 0;
-
 }
+
 int TilesetManager::DrawBlock(Image* src, short Map16n, int destX, int destY) {
 
 	src->Draw(*TileImage, (destX), (destY), (short)TSA.nTSA[Map16n]);
@@ -262,20 +253,16 @@ int TilesetManager::DrawBlock(Image* src, short Map16n, int destX, int destY) {
 
 	return 0;
 }
+
 void TilesetManager::DrawTileset(Image** imgTileset) {
 	int k = 0;
 	int i = 0;
 	int TC = 0;
 	int end = 768;
 
-	//if (imgTileset)
-	//{
-	//	delete imgTileset;
-	//}
-	//*imgTileset = new Image(512, 1024);
-
+	(*imgTileset)->Clear();
 	(*imgTileset)->SetPalette(GBAGraphics::VRAM->PcPalMem);
-	//	BBTileset.Create(512,512);
+
 	Image* tileset = *imgTileset;
 
 	for (i = 0; i < TSA.max; i++)
@@ -286,18 +273,7 @@ void TilesetManager::DrawTileset(Image** imgTileset) {
 
 	}
 //	tileset->glInstance->rawImage = (unsigned long*)tileset->pixels;
-
-
-	/*tileset->glInstance->rawPalette = (unsigned long*)GBAGraphics::VRAM->PcPalMem;
-	FILE* fp = fopen("fuck.bin", "w+b");
-	if (fp)
-	{
-		fwrite(tileset->glInstance->rawImage, 4, 512 * 1024, fp);
-		fclose(fp);
-	}*/
-	//    GlobalVars::gblVars->imgTileset->Blit(BBTileset.DC(),0,0,512,512,0,0);
-	//nVScroll[sTileset] = 0;
-//	InvalidateRect(UiState::stateManager->GetTilesetWindow(), 0, 1);
+	
 }
 
 int TilesetManager::LoadSpecialEffects(long EffectNum) {

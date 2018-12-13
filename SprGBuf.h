@@ -17,7 +17,7 @@ public:
 	clsPreviewSprite PreviewSprite;
 	long*  PreviewPal;// [512];
 	unsigned char*  PreRAM;// [0x8000];//Funny name XD
-	unsigned short PartNo;              //Currently Stoned during writing of preview stuff
+	unsigned short PartNo;            
 	std::vector<OverAllOAM>  OAM;
 	TileBuffer* Tiles;
 	int maxparts;

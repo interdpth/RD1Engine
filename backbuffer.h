@@ -16,7 +16,7 @@ class           BackBuffer
    void            Create(int width, int height);
    void            Destroy();
    
-   void            Clear(COLORREF clr = RGBA(0, 0, 0,0));
+   void            Clear(COLORREF clr = (COLORREF)0);
    int currentDCID = -1 ;
    HDC             DC()
    {

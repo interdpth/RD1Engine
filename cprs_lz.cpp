@@ -153,7 +153,7 @@ unsigned short cprs_gba_lz77(RECORD *dst, const RECORD *src)
 	InBuf= (unsigned char*)src->data;
 
 	CompressLZ77();
-	OutSize= ( ((OutSize)+3)&~3 );
+	OutSize= ( ((OutSize)+3)&~3 ) + 1;
 
 	free(dst->data);
 	dst->data= (unsigned char*)malloc(OutSize);

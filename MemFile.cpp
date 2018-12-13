@@ -68,7 +68,7 @@ void MemFile::fwrite(void* src, int count, int size, FILE* fp)
 	if (readSize > 0x800000)
 	{
 		char buffer[1000] = { 0 };
-		sprintf(buffer, "attempted to read %d size %d many times, write size: %d");
+		sprintf(buffer, "attempted to read %d size %d many times, write size: %d", src, count, size );
 		throw buffer;
 	}
 	if (readSize + fileIndex > this->size)

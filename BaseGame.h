@@ -64,7 +64,7 @@ public:
 	OamFrameTable* frameTables;
 	int DisplayDoors(unsigned char Room);
 	drawstate DrawStatus;
-	int DrawBackGround(Image* img, TileBuffer* bimage);
+
 	int LoadAreaTable();
 	void LoadModifiers(char* fn);
 	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);

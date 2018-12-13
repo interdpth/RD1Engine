@@ -200,6 +200,10 @@ HWND COpenGL::CreateOpenGLWindow(HWND hWnd, int x, int y, int width, int height,
 
 		lpPal = (LOGPALETTE*)malloc(sizeof(LOGPALETTE) +
 			sizeof(PALETTEENTRY) * n);
+		if (lpPal == NULL)
+		{
+			throw "ogl error";
+		}
 		memset(lpPal, 0, sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * n);
 		lpPal->palVersion = 0x300;
 		lpPal->palNumEntries = n;

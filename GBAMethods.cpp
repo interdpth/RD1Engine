@@ -531,7 +531,7 @@ void            GBAMethods::Reopen()
 //							this.data[this.pos++] = 0;
 //						}
 //						this.WriteASCII("mage");
-//						this.Write16((ushort)num4);
+//						this.Write16((unsigned short)num4);
 //					}
 //					offset = i;
 //					return false;
@@ -818,11 +818,11 @@ int             GBAMethods::ReturnEOF(FILE * fp)
 }
 
 
-void GBAMethods::DecodeSNESPal(long offset, COLOR* dstPal, int numPals, char palpos, int size, vector<unsigned char>* buffer) {
+void GBAMethods::DecodeSNESPal(long offset, COLOR2* dstPal, int numPals, char palpos, int size, vector<unsigned char>* buffer) {
 
-	int             R, g, b, i, ii, s = 0;
+	int             i, ii, s = 0;
 	long            index = 0;
-	unsigned short             palGBA[512];
+	unsigned short             palGBA[512] = { 0 };
 
 	//populate above array very shittly
 	unsigned long red = 0x1F;
@@ -833,7 +833,7 @@ void GBAMethods::DecodeSNESPal(long offset, COLOR* dstPal, int numPals, char pal
 	numPals = size / 32;
 	numPals -= palpos;
 	//memcpy(&palGBA[palpos*0x10], buffer, size);
-	int count;
+	
 	for (i = 0; i<buffer->size() / 2; i++) {
 		memcpy(&palGBA[i], &buffer->front() + (i * 2), 2);
 	}
@@ -842,7 +842,7 @@ void GBAMethods::DecodeSNESPal(long offset, COLOR* dstPal, int numPals, char pal
 	for (ii = palpos; ii < numPals; ii++)
 	{
 		index = 0x10 * ii;
-
+		
 		for (i = 0; i < 16; i++)
 		{
 

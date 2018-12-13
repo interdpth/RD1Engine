@@ -6,6 +6,7 @@ SprGBuf::SprGBuf()
 	this->PreRAM = 0;// [0x8000];//Funny name XD
 	this->PartNo=0;
 	Tiles = NULL;
+	memset(&Borders, 0, sizeof(Borders));
 	this->Create(NULL, NULL);
 	
 //	PreviewSprite->_fullCache = NULL;
@@ -18,6 +19,7 @@ SprGBuf::SprGBuf(unsigned char* gfxRam, long* pal)
 	this->PreRAM = gfxRam;// [0x8000];//Funny name XD
 	this->PartNo = 0;
 	Tiles = NULL;
+	memset(&Borders, 0, sizeof(Borders));
 	this->Create(gfxRam, pal);
 }
 ///Constru

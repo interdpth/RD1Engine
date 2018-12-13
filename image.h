@@ -4,6 +4,8 @@
 #include "OpenGL2.h"
 #include <gl/gl.h>
 #include <gl/glu.h>
+
+#include "FreeImage.h"
 typedef	unsigned int		pal_t;
 
 typedef int			DRAWFLAGS;
@@ -25,7 +27,8 @@ public:
 	Image(HWND targetWindow,int width, int height);
 	Image(int width, int height);
 	COpenGL* glInstance;
-
+	
+	static  Image* Import(char* apppath, char* filename);
 				Image();
 				~Image();
     int			Height;
@@ -43,7 +46,9 @@ public:
 	// Draw -- draws tiles to this image
 	void		Draw(tile_t tile,long dstx,long dsty,int palette = 0,DRAWFLAGS flgs = 0,int forceclr=-1);
 	void		Draw(TileBuffer& tilebuf,long dstx,long dsty,int pftt,int forceclr=-1);
- 
+	static  int ClosestColor(unsigned short* colors, unsigned short rgb);
+	static unsigned char*  GetGfx(unsigned short* pal, unsigned short* imgData, bool trimBlankTiles, int width, int height);
+	static 	unsigned short* GetImageData(RGBQUAD* baseImage, int width, int height);
 	void DrawGL();
 	// Blit -- Blits this image to an HDC (actually display on screen)
 	void        StretchBlit(HDC dc, int dstx, int dsty, int width, int height, int srcx, int srcy, int srcw, int srch);

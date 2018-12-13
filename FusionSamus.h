@@ -78,7 +78,7 @@ struct SamusAnim
 {
 	unsigned long* Tophalf;
 	unsigned long* BottomHalf;
-	unsigned long* OAMPointer;
+	unsigned long OAMPointer;
 	int FrameTimerMaybe;
 };
 /* 75 */

@@ -173,7 +173,7 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 	int sy = 0;
 	int xFlip = 0;
 	int yFlip = 0;
-	RECT PartSize[512];
+	RECT PartSize[512] = { 0,0,0,0 };
 	const unsigned char objSizes[3][4][2] =
 	{
 		{ { 8, 8 },{ 16,16 },{ 32,32 },{ 64,64 } },
@@ -192,18 +192,13 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 	delete SpriteDetails->Tiles;
 	SpriteDetails->Tiles = new TileBuffer();
 
-	SpriteDetails->PreviewSprite.Create(256, 256);
+	SpriteDetails->PreviewSprite.Create(512, 512);
 
 
 	SpriteDetails->PreviewSprite.SetPalette(SpriteDetails->PreviewPal);
 
 	SpriteDetails->Tiles->Load(SpriteDetails->PreRAM, 1023);
-	/*FILE* fp = fopen("C:\\FusionLessonInEvolution\\SpriteGFXPAL\\fuckmepal.bin", "w+b");
-	fwrite(SpriteDetails->PreviewPal, sizeof(long), 512, fp);
-	fclose(fp);
-	fp = fopen("C:\\FusionLessonInEvolution\\SpriteGFXPAL\\fuckmegfx.bin", "w+b");
-	fwrite(SpriteDetails->PreRAM, 1, 0x8000, fp);
-	fclose(fp);*/
+	
 
 	vector<OverAllOAM> partCopies;
 	partCopies.insert(partCopies.end(), SpriteDetails->OAM.begin(), SpriteDetails->OAM.end());
@@ -221,14 +216,14 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 	}
 	for (partCounter = SpriteDetails->maxparts-1; partCounter >= 0; partCounter--)
 	{
-		for (int BGindex = 0; BGindex < 4; BGindex++)
-		{
+		/*for (int BGindex = 0; BGindex < 4; BGindex++)
+		{*/
 
 			OverAllOAM* thisPart = &partCopies.front() + partCounter;
-			if (thisPart->deOAM.priority != BGindex)
-			{
-				continue;
-			}
+			///*if (thisPart->deOAM.priority != BGindex)
+			//{
+			//	continue;
+			//}*/
 			if (thisPart->deOAM.ObjShape == 3)
 			{
 				continue;
@@ -292,7 +287,7 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 						adjustedYorigin + sy + ((ty) ^ yFlip) * 8, Tile + tx + (ty * 32) + fh + fw);
 				}
 			}
-		}
+		
 	}
 
 	partCopies.clear();
@@ -327,190 +322,6 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 
 
 
-
-//
-//int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
-//	
-//	if (SpriteDetails->id <= 0xF)
-//	{
-//		return 0;
-//	}
-//	int width = 0;
-//	int height = 0;
-//	int partCounter = 0;
-//	int Tile = 0;
-//	int bTile = 0;
-//	int Pal = 0;
-//	int fw = 0;
-//	int fh = 0;
-//	int ty = 0;
-//	int tx = 0;
-//	int sx = 0;
-//	int sy = 0;
-//	int xFlip = 0;
-//	int yFlip = 0;
-//	RECT PartSize[128];
-//	const unsigned char objSizes[3][4][2] =
-//	{
-//		{ { 8, 8 },{ 16,16 },{ 32,32 },{ 64,64 } },
-//		{ { 16, 8 },{ 32, 8 },{ 32,16 },{ 64,32 } },
-//		{ { 8,16 },{ 8,32 },{ 16,32 },{ 32,64 } },
-//	};
-//
-//
-//	sx = 0;
-//	sy = 0;
-//
-//	tx = 0;
-//	ty = 0;
-//
-//	if (SpriteDetails->PreviewSprite)
-//	{
-//		SpriteDetails->Tiles->Destroy();
-//		delete SpriteDetails->PreviewSprite;
-//	}
-//	SpriteDetails->PreviewSprite = new clsPreviewSprite();
-//	SpriteDetails->PreviewSprite.Create(256, 256);
-//
-//	SpriteDetails->PreviewSprite.SetPalette(SpriteDetails->PreviewPal);
-//	
-//	SpriteDetails->Tiles->Load(SpriteDetails->PreRAM, 1023);
-//	/*FILE* fp = fopen("C:\\FusionLessonInEvolution\\SpriteGFXPAL\\fuckmepal.bin", "w+b");
-//	fwrite(SpriteDetails->PreviewPal, sizeof(long), 512, fp);
-//	fclose(fp);
-//	fp = fopen("C:\\FusionLessonInEvolution\\SpriteGFXPAL\\fuckmegfx.bin", "w+b");
-//	fwrite(SpriteDetails->PreRAM, 1, 0x8000, fp);
-//	fclose(fp);*/
-//
-//	vector<OverAllOAM> partCopies;
-//	partCopies.insert(partCopies.end(), SpriteDetails->OAM.begin(), SpriteDetails->OAM.end());
-//	CalcSpriteBounds(SpriteDetails);
-//	int adjustedXorigin = 0;
-//	int adjustedYorigin = 0;
-//	if (SpriteDetails->Borders.left < 0)
-//	{
-//		adjustedXorigin = 0 - SpriteDetails->Borders.left;
-//	}
-//
-//	if (SpriteDetails->Borders.top < 0)
-//	{
-//		adjustedYorigin =0 - SpriteDetails->Borders.top;
-//	}
-//		for (partCounter = 0; partCounter < SpriteDetails->maxparts; partCounter++)
-//		{
-//			OverAllOAM* thisPart = &partCopies.front() + partCounter;
-//
-//			if (thisPart->deOAM.ObjShape == 3)
-//			{
-//				continue;
-//			}
-//
-//			//PosModify* modifer = &BaseGame::theGame->poseModifier[sprite_in->spriteID];
-//			sx = (thisPart->enOAM.OAM1 & 511);
-//			sy = (thisPart->enOAM.OAM0 & 0xFF);
-//			if (sy & 0x80)
-//				sy = sy - 256; //check for the negative
-//			if (sx & 0x100)
-//				sx = sx - 511; //same here
-//
-//			/*sx = sx + 8;
-//			sy = sy + 16;*/
-//			//Set up the basic tile
-//
-//		   /* sx += 24;
-//			sy += 104;*/
-//
-//
-//			int Pal = ((thisPart->enOAM.OAM2 & 0xF000));
-//
-//			//MsgBox "Out of Memory Bounds": Exit Function
-//			Tile = Pal + (thisPart->enOAM.OAM2 & 0x3FF);
-//			//Tile+= SpriteDetails->OAM[i];deOAM.VerticalFlip*0x800;
-//
-//			//Now switch on this and find the sprite width and height.
-//			thisPart->deOAM.ObjShape = thisPart->enOAM.OAM0 >> 14;
-//			thisPart->deOAM.ObjSize = thisPart->enOAM.OAM1 >> 14;
-//			width = objSizes[thisPart->deOAM.ObjShape][thisPart->deOAM.ObjSize][0];
-//			height = objSizes[thisPart->deOAM.ObjShape][thisPart->deOAM.ObjSize][1];
-//			
-//	        PartSize[partCounter].left = sx;
-//			
-//			PartSize[partCounter].left = sx;
-//			PartSize[partCounter].top = sy;
-//			PartSize[partCounter].right = width;
-//			PartSize[partCounter].bottom = height;
-//			xFlip = yFlip = fh = fw = 0;
-//
-//			if (thisPart->enOAM.OAM1 & 0x1000) {
-//				//formula goes here;
-//				xFlip = width / 8 - 1; //if width = 16 y
-//				fw = 0x400;
-//			}
-//			if (thisPart->enOAM.OAM1 & 0x2000) {
-//				yFlip = height / 8 - 1;
-//				fh = 0x800;
-//			}
-//
-//			for (ty = 0; ty < height / 8; ty++)
-//			{
-//
-//				for (tx = 0; tx < width / 8; tx++)
-//				{
-//
-//					SpriteDetails->PreviewSprite.Draw(*SpriteDetails->Tiles, adjustedXorigin+ sx + (tx^xFlip) * 8,
-//						adjustedYorigin + sy + ((ty) ^ yFlip) * 8, Tile + tx + (ty * 32) + fh + fw);
-//
-//				}
-//			}
-//		
-//		/*OamBuffer.Blit(SpriteDetails->PreviewSprite.GetFullImage().DC(), 0, 0,
-//			SpriteDetails->Borders.right - SpriteDetails->Borders.left,
-//			SpriteDetails->Borders.bottom - SpriteDetails->Borders.top, SpriteDetails->Borders.left, SpriteDetails->Borders.top);*/
-//
-//	}
-//	SpriteDetails->PreviewSprite.RefreshImage();
-//	partCopies.clear();
-//	//Determine i
-//	SpriteDetails->Borders.left = PartSize[0].left;
-//	SpriteDetails->Borders.top = PartSize[0].top;
-//	SpriteDetails->Borders.right = PartSize[0].left + PartSize[0].right;
-//	SpriteDetails->Borders.bottom = PartSize[0].top + PartSize[0].bottom;
-//
-//	for (partCounter = 1; partCounter < SpriteDetails->maxparts; partCounter++) {
-//		//Check for top coord 
-//		//0 = Starting X
-//		//1 = Startiny Y
-//		//2 = Width
-//		//3 = Height
-//		if (PartSize[partCounter].left < SpriteDetails->Borders.left)
-//			SpriteDetails->Borders.left = PartSize[partCounter].left;
-//		if (PartSize[partCounter].top < SpriteDetails->Borders.top)
-//			SpriteDetails->Borders.top = PartSize[partCounter].top;
-//
-//		SpriteDetails->Borders.right =
-//			max(SpriteDetails->Borders.right, PartSize[partCounter].left + PartSize[partCounter].right);
-//		SpriteDetails->Borders.bottom =
-//			max(SpriteDetails->Borders.bottom, PartSize[partCounter].top + PartSize[partCounter].bottom);
-//
-//	}
-//
-//	//SpriteDetails->Tiles.Destroy();
-//
-//	//SpriteDetails->PreviewSprite.GetFullImage().Create(SpriteDetails->Borders.right - SpriteDetails->Borders.left, SpriteDetails->Borders.bottom - SpriteDetails->Borders.top);
-//
-////	SpriteDetails->PreviewSprite.GetFullImage().SetPalette(SpriteDetails->PreviewPal);
-//	if (SpriteDetails->id == 0x1a)
-//	{
-//		char fn[1024];
-//		sprintf(fn, "file_%x.bmp", SpriteDetails->id);
-//		DeleteFile(fn);
-//		FILE* fp = fopen(fn, "w+b");
-//
-//		SpriteDetails->PreviewSprite.GetFullImage()->SaveToFile(fp);
-//		fclose(fp);
-//	}
-//	return 0;
-//}
 
 ///Saves Serialized Program Interface Type Effects(SPRITES)
 int cOAMManager::SaveSprite(FILE* ROM, SaveOptions savetype, SprGBuf* tSprite, unsigned long Offset)
@@ -560,20 +371,18 @@ int cOAMManager::DecodeOAM(FILE* ROM, bool OAMED, SprGBuf* tSprite, unsigned lon
 	MemFile::currentFile->fread(&tSprite->maxparts, 2, 1, ROM);
 	tSprite->OAM.clear();
 
-	for (i = 0; i < tSprite->maxparts; i++) {
-
+	for (i = 0; i < tSprite->maxparts; i++) 
+	{
 		OverAllOAM thisOAM;// &tSprite->OAM[i];
 		memset(&thisOAM, 0, sizeof(OverAllOAM));
 		DecodedOAM* decodedOam = &thisOAM.deOAM;
+		
 		MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1, ROM);
 		MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1, ROM);
 		MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1, ROM);
-
-
-
+		
 		FrameManager::UnpackOAM(&thisOAM.enOAM, &thisOAM.deOAM);
-
-
+		
 		tSprite->OAM.push_back(thisOAM);
 	}
 	return 0;

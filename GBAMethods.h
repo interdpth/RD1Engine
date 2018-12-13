@@ -11,7 +11,7 @@
 
 #include "nMapBuffer.h"
 #include "tinyfiledialogs.h"
-struct COLOR
+struct COLOR2
 {
 	unsigned char      a;
 	unsigned char      r;
@@ -25,14 +25,14 @@ public:
 			  GBAMethods();
 			 ~GBAMethods();
 	    void  Reopen();
-		void DecodeSNESPal(long offset, COLOR* dstPal, int numPals, char palpos, int size, vector<unsigned char>* buffer);
+		void DecodeSNESPal(long offset, COLOR2* dstPal, int numPals, char palpos, int size, vector<unsigned char>* buffer);
 		signed long   LZ77UnComp(unsigned char *source, unsigned char *dest);
 	    unsigned long   LZ77Comp(unsigned long decmpsize,  unsigned char *source, int srcBuffSize, unsigned char *dest) ;
 		long  UncompRle(unsigned short arg0, unsigned char *arg1, unsigned char*arg2, long* compsize);
         void* DecodePal(short *palGBA,long* palPC,int numpals, char palpos);
 
 		int   ReturnFileName(char* Filter,char*FilePath,int sofn);
-		void* EncodePal(short *palGBA,long* palPC,int numpals, char palpos);
+		 void* EncodePal(short *palGBA,long* palPC,int numpals, char palpos);
 		
 		long  compress(unsigned char cmp[], unsigned char uncmp[], unsigned long sze);
 		

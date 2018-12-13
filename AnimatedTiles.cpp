@@ -60,8 +60,8 @@ bool AnimatedTiles::Animate()
 void AnimatedTiles::GetGFX()
 {
 
-	long  reference_table, tileset_table, ref_offset = 0;
-	long  ani_source, gfx_destination, effectCounter, pointer = 0;
+	long  ref_offset = 0;
+	long  gfx_destination, effectCounter, pointer = 0;
 
 
 	unsigned char ref_array[0x30];
@@ -105,8 +105,8 @@ void AnimatedTiles::ReadTable(int effectNum)
 	}
 	specialEffects = new SE[16];
 
-	unsigned char ref_array[0x30];
-	unsigned char effectGraphic[128];
+	unsigned char ref_array[0x30] = { 0 };
+
 
 	DataContainer* animReferenceTable = GameConfiguration::mainCFG->GetDataContainer("AnimReference");
 

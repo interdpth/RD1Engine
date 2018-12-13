@@ -70,11 +70,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\GLEW\include\GL;$(IncludePath)</IncludePath>
+    <IncludePath>C:\GLEW\include\GL;C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\libgrit;C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\cldib;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\GLEW\bin\Release\Win32;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>C:\GLEW\lib\Release\Win32;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\libgrit;C:\GLEW\lib\Release\Win32;C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\cldib\;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
+    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -82,12 +84,20 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>opengl32.lib;Msimg32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalDependencies>libgritd.lib;msvcrtd.lib;cldibd.lib</AdditionalDependencies>
+      <AdditionalOptions>FreeImage.lib %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -126,6 +136,7 @@
     <ClCompile Include="backbuffer.cpp" />
     <ClCompile Include="cCopyData.cpp" />
     <ClCompile Include="cEnitityManager.cpp" />
+    <ClCompile Include="cli.cpp" />
     <ClCompile Include="clsPreviewSprite.cpp" />
     <ClCompile Include="clsRoomScrolls.cpp" />
     <ClCompile Include="clsScroll.cpp" />
@@ -133,12 +144,15 @@
     <ClCompile Include="cprs_lz.cpp" />
     <ClCompile Include="cUndoBuffer.cpp" />
     <ClCompile Include="DoorManager.cpp" />
+    <ClCompile Include="fi.cpp" />
     <ClCompile Include="FusionSamus.cpp" />
     <ClCompile Include="GameConfiguration.cpp" />
     <ClCompile Include="GBABase.cpp" />
     <ClCompile Include="GBAGraphics.cpp" />
     <ClCompile Include="GBAMethods.cpp" />
+    <ClCompile Include="GritInterface.cpp" />
     <ClCompile Include="image.cpp" />
+    <ClCompile Include="ImageCache.cpp" />
     <ClCompile Include="LeakFinder.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MapEditingState.cpp" />
@@ -168,6 +182,7 @@
   <ItemGroup>
     <ClInclude Include="BaseGame.h" />
     <ClInclude Include="cCopyData.h" />
+    <ClInclude Include="cli.h" />
     <ClInclude Include="clsPreviewSprite.h" />
     <ClInclude Include="clsRoomScrolls.h" />
     <ClInclude Include="clsScroll.h" />
@@ -176,12 +191,16 @@
     <ClInclude Include="cprs.h" />
     <ClInclude Include="cUndoBuffer.h" />
     <ClInclude Include="doormanager.h" />
+    <ClInclude Include="fi.h" />
+    <ClInclude Include="FreeImage.h" />
     <ClInclude Include="FusionSamus.h" />
     <ClInclude Include="GameConfiguration.h" />
     <ClInclude Include="GBABase.h" />
     <ClInclude Include="GBAGraphics.h" />
     <ClInclude Include="GBAMethods.h" />
+    <ClInclude Include="GritInterface.h" />
     <ClInclude Include="image.h" />
+    <ClInclude Include="ImageCache.h" />
     <ClInclude Include="LeakFinder.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="MemFile.h" />
@@ -196,6 +215,7 @@
     <ClInclude Include="SimpleJSON-master\src\JSON.h" />
     <ClInclude Include="SimpleJSON-master\src\JSONValue.h" />
     <ClInclude Include="SprGBuf.h" />
+    <ClInclude Include="stb.h" />
     <ClInclude Include="tilebuffer.h" />
     <ClInclude Include="TilesetManager.h" />
     <ClInclude Include="WarioLand.h" />

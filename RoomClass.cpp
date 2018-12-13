@@ -149,7 +149,7 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 	}
 	else if (compression == 0x40) {
 		MemFile::currentFile->seek(offset);
-		ELayer[Layer]->size = MemFile::currentFile->fgetc();
+		MemFile::currentFile->fread(&ELayer[Layer]->size, 4, 1, (FILE*)NULL);
 		ELayer[Layer]->Dirty = true;
 		if ((ELayer[Layer]->size == 1) || (ELayer[Layer]->size >= 3)) {
 			ELayer[Layer]->X = 64;
@@ -186,7 +186,6 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 		ELayer[Layer]->BImage = new Image(1024, 1024);
 		ELayer[Layer]->BImage->Create(1024, 1024);
 		ELayer[Layer]->BImage->SetPalette(GBAGraphics::VRAM->PcPalMem);
-		memcpy(ELayer[Layer]->TileBuf2D, compBuffer,ELayer[Layer]->oSize);
 	}
 	delete[] compBuffer;
 	return 0;

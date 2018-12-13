@@ -84,7 +84,7 @@ void FrameManager::Empty()
 }
 ///
 ///Frame maanger constructor
-FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, FILE* ROM, int spriteID, int romType)
+FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, FILE* ROM, int spriteID, int romType, bool NoFrameTable)
 {
 	_gbaMethods = GBA;
 	Empty();
@@ -96,12 +96,12 @@ FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, FILE* ROM, int
 
 ///
 ///Frame maanger constructor
-FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, FILE* ROM, int spriteID, int romType, unsigned char* tileGFX, long* pal)
+FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, FILE* ROM, int spriteID, int romType, unsigned char* tileGFX, long* pal, bool NoFrameTable )
 {
 	_gbaMethods = GBA;
 	Empty();
 	
-	LoadFrames(offset, ROM, spriteID, romType,  tileGFX,  pal);
+	LoadFrames(offset, ROM, spriteID, romType,  tileGFX,  pal, NoFrameTable);
 	originalFrameCount = theFrames.size();
 }
 
@@ -139,25 +139,51 @@ bool FrameManager::Animate()
 	return true;
 }
 
-void FrameManager::LoadFrames(unsigned long offset, FILE* ROM, int spriteID, int romType, unsigned char* tileGFX, long* pal)
+void FrameManager::LoadFrames(unsigned long offset, FILE* ROM, int spriteID, int romType, unsigned char* tileGFX, long* pal, bool NoFrameTable)
 {
-	memset(theTileGFX, 0, 0x8000);
-	memset(&thePalette, 0, 512 * sizeof(long));
+	if (!NoFrameTable)
+	{
+
+		memset(theTileGFX, 0, 0x8000);
+		memset(&thePalette, 0, 512 * sizeof(long));
+	}
+
 	try
 	{
-		for (int frameCounter = 0; frameCounter < 254; frameCounter++)
+
+		if (NoFrameTable)
 		{
-			Frame* currentFrame = new Frame(_gbaMethods, offset + frameCounter * 8, ROM, frameCounter, spriteID, tileGFX, pal);
+			Frame* currentFrame = new Frame(_gbaMethods, offset, ROM, 0, spriteID, tileGFX, pal, NoFrameTable);
 			unsigned long frameOffset = currentFrame->frameOffset;
 			if (frameOffset == 0 || frameOffset < 0x8000000 || frameOffset>0xA000000)
 			{
 				delete currentFrame;
 				currentFrame = NULL;
-				break;
+				
 			}
 			else
-			{				
+			{
 				theFrames.push_back(currentFrame);
+			}
+		}
+		else
+
+		{
+
+			for (int frameCounter = 0; frameCounter < 254; frameCounter++)
+			{
+				Frame* currentFrame = new Frame(_gbaMethods, offset + frameCounter * 8, ROM, frameCounter, spriteID, tileGFX, pal,false);
+				unsigned long frameOffset = currentFrame->frameOffset;
+				if (frameOffset == 0 || frameOffset < 0x8000000 || frameOffset>0xA000000)
+				{
+					delete currentFrame;
+					currentFrame = NULL;
+					break;
+				}
+				else
+				{
+					theFrames.push_back(currentFrame);
+				}
 			}
 		}
 	}
@@ -179,7 +205,7 @@ void FrameManager::LoadFrames(unsigned long offset, FILE* ROM, int spriteID, int
 	{*/
 		for (int frameCounter = 0; frameCounter < 32; frameCounter++)
 		{
-			Frame* currentFrame = new Frame(_gbaMethods, offset + frameCounter * 8, ROM, frameCounter, spriteID, (unsigned char*)&this->theTileGFX, (long*)&this->thePalette);
+			Frame* currentFrame = new Frame(_gbaMethods, offset + frameCounter * 8, ROM, frameCounter, spriteID, (unsigned char*)&this->theTileGFX, (long*)&this->thePalette, false);
 			unsigned long frameOffset = currentFrame->frameOffset;
 			if (frameOffset == 0 || frameOffset < 0x8000000 || frameOffset>0xA000000)
 			{

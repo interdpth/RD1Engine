@@ -59,10 +59,10 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM , GFXData* spritedat
 	for (X = 0; X<15; X++)
 	{
 		sprite_entry* sprite_in = &RD1Engine::theGame->mgrOAM->roomSpriteIds[X];
-		RD1Engine::theGame->mgrOAM->maxsprite++;
+		
 		////if (GlobalVars::gblVars->SSE == true)cSSE::SpriteSet->total++;
 		if ((sprite_in->spriteID == 0) && (X != 0)) break;
-
+		RD1Engine::theGame->mgrOAM->maxsprite++;
 		enemydat[X] = sprite_in->spriteID;
 		destination[X] = sprite_in->sprdetail & 8;	 // ???
 

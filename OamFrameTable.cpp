@@ -20,7 +20,7 @@ void OamFrameTable::Read()
 			char* pch = strtok(buffer, "=");
 
 			int id = -1;
-			sscanf(pch, "%x", &id);
+			int k = sscanf(pch, "%x", &id);
 			if (id > 256)
 			{
 				id = 0;
@@ -39,7 +39,7 @@ void OamFrameTable::Read()
 					{
 						pch[strlen(pch) - 1] = '\0';
 					}
-					sscanf(pch, "%x", &tmp);
+					int k = sscanf(pch, "%x", &tmp);
 					OAMFrameTable[id].push_back(tmp);
 				}			
 				pch = strtok(NULL, ",");

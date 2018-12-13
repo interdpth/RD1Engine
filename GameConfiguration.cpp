@@ -18,24 +18,9 @@ bool GameConfiguration::LiteralCompare(char* a, char* b)
 
 void GameConfiguration::DefaultLoad(int romSwitch)
 {
-	DataContainer* Doors = NULL;
-	DataContainer* Scrolls = NULL;
-	DataContainer* Connections = NULL;
-	DataContainer* MinimapOffsetList = NULL;
-	DataContainer* MinimapTilesetGraphics = NULL;
-	DataContainer* MinimapPal = NULL;
-	DataContainer* Tileset = NULL;
-	DataContainer* Areas = NULL;
-	DataContainer* animReferenceTable = NULL;
-	DataContainer* animTileset = NULL;
-	DataContainer* textGFX = NULL;
-	DataContainer* textPal = NULL;
-	DataContainer* spriteGFX = NULL;
-	DataContainer* spritePal = NULL;
-	DataContainer* spritePalSizes = NULL;
-	DataContainer* roomsPerArea = NULL;
-	DataContainer* samusTest1 = NULL;
 	Containers.clear();
+	float zoomTypes[3] = { 1,1.5,2 };
+	Containers.push_back(new DataContainer(-1, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
 	Containers.push_back(new DataContainer(-1, "Framework", "UIState", 2, false, 0));
 	Containers.push_back(new DataContainer(1, "Framework", "UIState", 2, false, 0));
 	Containers.push_back(new DataContainer(0, "Framework", "UIState", 2, false, 0));
@@ -45,7 +30,7 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 		Containers.push_back(new DataContainer(0, "Framework", "Connections", 0x05EEB8, false, 1));
 		Containers.push_back(new DataContainer(0, "Framework", "Tileset", 0x33DFDC, false, 0x50));
 		Containers.push_back(new DataContainer(0, "Framework", "Areas", 0x75FAC4, false, 0x7));
-
+		Containers.push_back(new DataContainer(0, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
 		Containers.push_back(new DataContainer(0, "Framework", "AnimReference", 0x35FA78, false, 0x30));
 		Containers.push_back(new DataContainer(0, "Framework", "AnimTileset", 0x35F948, false, 0x0));
 
@@ -71,7 +56,7 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 		Containers.push_back(new DataContainer(1, "Framework", "AnimTileset", 0x3C8D58, false, 0x0));
 		Containers.push_back(new DataContainer(1, "Framework", "TextGFX", 0x682FAC, false, 0x8000));
 		Containers.push_back(new DataContainer(1, "Framework", "TextPal", 0x598d0c, false, 0x20));
-
+		Containers.push_back(new DataContainer(1, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
 		Containers.push_back(new DataContainer(1, "Framework", "SpriteGFX", 0x79A5D8, false, 0));
 		Containers.push_back(new DataContainer(1, "Framework", "SpritePal", 0x79A8D4, false, 0x0));
 
@@ -162,7 +147,7 @@ void GameConfiguration::Load()
 					memset(DataArray, 0, data2.size() * 4);
 					for (int dataCounter = 0; dataCounter < data2.size(); dataCounter++)
 					{
-						DataArray[dataCounter] = data2[dataCounter]->AsNumber();
+						DataArray[dataCounter] = (unsigned long)data2[dataCounter]->AsNumber();
 					}
 				}
 				

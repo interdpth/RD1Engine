@@ -32,6 +32,39 @@ unsigned char* GetData(unsigned long addr, unsigned long size)
 }
 FusionSamus::FusionSamus()
 {
+	_8BitFrameCounter = 0;
+
+	BeamStatus = 0;
+	MissilesSelected = 0;
+	SamusSuitStatus = 0;
+	SamusDirection = 0;
+	byte_3001247 = 0;
+	Button_input = 0;
+	ChargeBeamCounter = 0;
+	SamusPose = 0;
+	CurrentAnimation = 0;
+	//SamusPose = 0;
+	Invincibilitytimer = 0;
+	AbsorbXTimer = 0;
+	SpeedBoosting = 0;
+	SpeedBoostingindicator = 0;
+	SpeedBoostingindicatorCurrent = 0;
+	lastPreviousPositionIndex = 0;
+	Previous_64_X_positions = new unsigned long[64];
+	Previous_64_Y_positions = new unsigned long[64];
+	Previous_SamusX_position = 0;
+	startNewPrevPositions = 0;
+	ArmCannonDirection = 0;
+	Previous_SamusY_position = 0;
+	screwAttackAnimationCounter = 0;
+	ScrewAttackState = 0;
+	Direction = 0;
+	isFacingleft = 0;
+	Shinespark_timer = 0;
+	SpeedBoostCounter = 0;
+	GameMode = 8;
+	EventController = 0;
+	byte_3001304 = 0;
 }
 
 
@@ -78,9 +111,7 @@ void FusionSamus::Logic()
 {
 		unsigned char* rawFile=MemFile::currentFile->GetFile();
 		int IsSamusFacingLeft; // r4
-		int backupOfLastpreIndex; // r5
-		int previousPosIndex; // r0
-		int CurrentPose; // r8
+	int CurrentPose; // r8
 		signed int samusDirection; // r7
 		int CopyIndex; // r2
 		int PoseIndex; // r0
@@ -91,13 +122,11 @@ void FusionSamus::Logic()
 		unsigned long GfxSizeTable = NULL; // r4
 		int someIndex; // r5
 		SamusAnim *theCurrentAnim = NULL; // r6
-		PieceSize* tophalf; // r3
-		PieceSize* legspointer = NULL; // r3
+		unsigned  long* tophalf; // r3
+		unsigned long* legspointer = NULL; // r3
 		unsigned long *CannonBottomTemp; // r0
 		signed __int16 bottomgfxsize; // r0
-		__int32 v19; // t1
-		__int32 DMAReturn2; // r0
-		int facingDirections; // r1
+	int facingDirections; // r1
 		unsigned long* CannonBottomHalfFXOffset; // r0
 		unsigned short *NewPalPointer = NULL; // r4
 		unsigned int speedBoostIndex; // r1
@@ -114,8 +143,7 @@ void FusionSamus::Logic()
 		__int32 ChargeBeamStartPalCounter; // r1
 		int chargeCounter; // r1
 		unsigned short *PalPointer = NULL; // r4
-		int returnVal; // [sp+18h] [bp-4h]
-
+		
 		IsSamusFacingLeft = true;// isFacingLeft;
 		if (SamusPose != GettingHurt && Invincibilitytimer)
 			--Invincibilitytimer;
@@ -295,20 +323,32 @@ void FusionSamus::Logic()
 		GfxSizeTable = (currentSizeTable+PoseIndex);
 		someIndex = CopyIndex;
 	SetOAM:
-		theCurrentAnim =(SamusAnim*) &Animtable[CurrentAnimation*16];
+		/*theCurrentAnim =(SamusAnim*) &Animtable[CurrentAnimation];
 		SamusOAMPointer = theCurrentAnim->OAMPointer;
 		tophalf = (PieceSize*)&rawFile[(unsigned long)theCurrentAnim->Tophalf-0x8000000];
 		SamusGFXTophalfTileLen = 32 * tophalf->BotomHalfLen;
-		tophalf = (tophalf + 1);
+		tophalf = (tophalf + 4);
 		SamusGFXBottomHalfLen = 32 * tophalf->BotomHalfLen;
-		SamusGFXTopHalfOffset = (unsigned long*)&tophalf->Top;
+		SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf - 0x8000000;
 		SamusGFXBottomOffset = (unsigned long*)(&tophalf->Top + SamusGFXTophalfTileLen);
 		legspointer = (PieceSize*)&rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
 		SamusGFXLegsTopLen = 32 * legspointer->BotomHalfLen;
 		legspointer = (legspointer + 1);
 		SamusGFXLegsBottomLen = 32 * legspointer->BotomHalfLen;
 		SamusGFXLegsTopOffset = (unsigned long*)&legspointer->Top;
-		SamusGFXLegsBottomOffset = (unsigned long*)(&legspointer->Top + SamusGFXLegsTopLen);
+		SamusGFXLegsBottomOffset = (unsigned long*)(&legspointer->Top + SamusGFXLegsTopLen);*/
+		theCurrentAnim = &Animtable[CurrentAnimation];
+		SamusOAMPointer = theCurrentAnim->OAMPointer;
+		tophalf = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
+		SamusGFXTophalfTileLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
+		SamusGFXBottomHalfLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf+ 1 - 0x8000000];
+		SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf+2 - 0x8000000;
+		SamusGFXBottomOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000  + SamusGFXTophalfTileLen;
+		legspointer =(unsigned long*) &rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
+		SamusGFXLegsTopLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
+		SamusGFXLegsBottomLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf + 1 - 0x8000000];
+		SamusGFXLegsTopOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000;
+		SamusGFXLegsBottomOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000 + SamusGFXLegsTopLen;
 		gfxsize = 0;
 		CannonTopHalfGFXLen = 0;
 		CannonBottomHalfGFXLen = 0;
@@ -323,32 +363,32 @@ void FusionSamus::Logic()
 				if (SamusDirection & DirectionRight)
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F99C + facingDirections)];
+					CannonTopHalfGFXOffset = GetPointer(0x28F99C + facingDirections);
 					CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9B4 + facingDirections)];
 				}
 				else
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9CC + facingDirections)];
+					CannonTopHalfGFXOffset = GetPointer(0x28F9CC + facingDirections);
 					CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9E4+ facingDirections)];
 				}
 			}
 			else if (SamusDirection & DirectionRight)
 			{
 				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F93C + facingDirections)];;
+				CannonTopHalfGFXOffset = GetPointer(0x28F93C + facingDirections);;
 				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F954+ facingDirections)];
 			}
 			else
 			{
 				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = (unsigned long*) &rawFile[GetPointer(0x28F96C + facingDirections)];
+				CannonTopHalfGFXOffset = GetPointer(0x28F96C + facingDirections);
 				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F984+ facingDirections)];
 			}
 		SetCannonBottomHalfFXOffsetTemp:
 		CannonBottomTemp = (facingDirections + CannonBottomHalfFXOffset);
 		SetCannonBottomHalfGFXOffset:
-		CannonBottomHalfGFXOffset = CannonBottomTemp;
+		CannonBottomHalfGFXOffset = (unsigned long)CannonBottomTemp;
 			bottomgfxsize = 192;
 		SetCannonTopHalfLen:
 			CannonTopHalfGFXLen = bottomgfxsize;
@@ -360,97 +400,101 @@ void FusionSamus::Logic()
 			switch (SamusPose)
 			{
 			case Elevator_:
-				GfxTablePnt = &((unsigned long*)rawFile[0x28BF98])[2 * screwAttackAnimationCounter];
+				//GfxTablePnt = &((unsigned long*)rawFile[0x28BF98])[2 * screwAttackAnimationCounter];
 				gfxsize = 0x2000;
-				CannonTopHalfGFXOffset = (unsigned long *)rawFile[0x2DE9B0 + samusDirection*4];
+				CannonTopHalfGFXOffset = 0x2DE9B0 + samusDirection*4;
 				CannonBottomTemp = ((unsigned long *)rawFile[0x2DEA70 + samusDirection * 4]);
 				goto SetCannonBottomHalfGFXOffset;
 			case ScrewAttacking:
-				GfxTablePnt = &((unsigned long **)rawFile[0x28D66C])[someIndex][2 * screwAttackAnimationCounter];
+			//	GfxTablePnt = &((unsigned long **)rawFile[0x28D66C])[someIndex][2 * screwAttackAnimationCounter];
 				gfxsize = 4096;
-				CannonTopHalfGFXOffset = &((unsigned long **)rawFile[0x28FABC])[samusDirection][screwAttackAnimationCounter];
+				CannonTopHalfGFXOffset = 0x28FABC+samusDirection*4+screwAttackAnimationCounter;
 				CannonBottomHalfFXOffset = &((unsigned long **)rawFile[0x28FACC])[samusDirection][ screwAttackAnimationCounter];
 				bottomgfxsize = 256;
 				goto SetCannonTopHalfLen;
 			case CannonLadder:
 			case ShootUpLadder:
-				GfxTablePnt = (unsigned long*)&rawFile[GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1))];
+				//GfxTablePnt = (unsigned long*)&rawFile[GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1))];
 				//gfxsize = *GfxTablePnt;
 				if (MissilesSelected & 1)
 				{
 					if (SamusDirection & DirectionRight)
 					{
 						facingDirections = 4 * samusDirection;
-						CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28F99C + facingDirections]);
+						CannonTopHalfGFXOffset = 0x28F99C + facingDirections;
 						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9B4 + facingDirections]);
 					}
 					else
 					{
 						facingDirections = 4 * samusDirection;
-						CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28F9CC + facingDirections]);
+						CannonTopHalfGFXOffset = 0x28F9CC + facingDirections;
 						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9E4 + facingDirections]);
 					}
 				}
 				else if (SamusDirection & DirectionRight)
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28FA5C + facingDirections]);
+					CannonTopHalfGFXOffset =0x28FA5C + facingDirections;
 					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA74 + facingDirections]);
 				}
 				else
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28FA8C + facingDirections]);
+					CannonTopHalfGFXOffset = 0x28FA8C + facingDirections;
 					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FAA4 + facingDirections]);
 				}
 				goto SetCannonBottomHalfFXOffsetTemp;
 			case HangingHorizLadder:
 			case DelayAfterShootingHOrizladder:
 			case ShootingOnHorizladder:
-				GfxTablePnt = (unsigned long*)&rawFile[GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1))];
-				gfxsize = *(unsigned long*)rawFile[*GfxTablePnt-0x8000000];
+			{
+				unsigned long g = GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1));
+				GfxTablePnt = g;
+				//unsigned long off = *GfxTablePnt;
+				gfxsize = *(unsigned long*)rawFile[g];
 				if (MissilesSelected & 1)
 				{
 					if (SamusDirection & DirectionRight)
 					{
 						facingDirections = 4 * samusDirection;
-						CannonTopHalfGFXOffset =((unsigned long*)&rawFile[0x28F99C + facingDirections]);
+						CannonTopHalfGFXOffset = 0x28F99C + facingDirections;
 						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9B4 + facingDirections]);
 					}
 					else
 					{
 						facingDirections = 4 * samusDirection;
-						CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28F9CC + facingDirections]);
-						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9E4+ facingDirections]);
+						CannonTopHalfGFXOffset = 0x28F9CC + facingDirections;
+						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9E4 + facingDirections]);
 					}
 				}
 				else if (SamusDirection & DirectionRight)
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28F9FC + facingDirections]);
-						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA14 + facingDirections]);
+					CannonTopHalfGFXOffset = 0x28F9FC + facingDirections;
+					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA14 + facingDirections]);
 				}
 				else
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x28FA2C + facingDirections]);
+					CannonTopHalfGFXOffset = 0x28FA2C + facingDirections;
 					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA44 + facingDirections]);
 				}
 				goto SetCannonBottomHalfFXOffsetTemp;
+			}
 			case UnlockSecurity:
-				GfxTablePnt = ((unsigned long **)rawFile[0x28D774 + someIndex])[2 * screwAttackAnimationCounter];
+				//GfxTablePnt = ((unsigned long **)rawFile[0x28D774 + someIndex])[2 * screwAttackAnimationCounter];
 				gfxsize = 0x2000;
-				CannonTopHalfGFXOffset = ((unsigned long *)rawFile[0x2E4250 + facingDirections]);
-				CannonBottomHalfGFXOffset = ((unsigned long *)rawFile[0x2E4450+ facingDirections]);
+				CannonTopHalfGFXOffset = 0x2E4250 + facingDirections;
+				CannonBottomHalfGFXOffset = 0x2E4450+ facingDirections;
 				bottomgfxsize = 512;
 				goto SetCannonTopHalfLen;
 			case LoadSave:
 				if (ScrewAttackState != 1)
 					break;
-				GfxTablePnt = &((unsigned long **)rawFile[0x28CE8C])[samusDirection][2 * screwAttackAnimationCounter];
+				//GfxTablePnt = &((unsigned long rawFile[0x28CE8C])[samusDirection][2 * screwAttackAnimationCounter];
 				gfxsize = 4096;
-				CannonTopHalfGFXOffset = &((unsigned long *)rawFile[0x28FADC])[ screwAttackAnimationCounter];
-				CannonBottomHalfGFXOffset = &((unsigned long *)rawFile[0x28FB9C])[screwAttackAnimationCounter];
+				CannonTopHalfGFXOffset = 0x28FADC + 4*screwAttackAnimationCounter;
+				CannonBottomHalfGFXOffset = 0x28FB9C+4*screwAttackAnimationCounter;
 				CannonTopHalfGFXLen = 384;
 				bottomgfxsize = 256;
 				goto SetCannonBottomHalfFXOffsetLen;
@@ -468,7 +512,7 @@ void FusionSamus::Logic()
 					DMAReturn2 = DMA3CNT_L;*/
 					goto LABEL_82;
 				case 2:
-					GfxTablePnt = &((unsigned long **)rawFile[0x28D77C])[samusDirection][someIndex];// [2 * screwAttackAnimationCounter];
+				//	GfxTablePnt = &((unsigned long **)rawFile[0x28D77C])[samusDirection][someIndex];// [2 * screwAttackAnimationCounter];
 						
 					gfxsize = 0x2000;
 					/*CannonTopHalfGFXOffset = ((SamusAnim*)rawFile[0x28FC5C])[screwAttackAnimationCounter][samusDirection].Tophalf;

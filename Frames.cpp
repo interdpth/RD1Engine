@@ -47,14 +47,20 @@ Frame::Frame(GBAMethods* gbaMethods, int newIndex, int SpriteID)
 
 
 
-Frame::Frame(GBAMethods* gbaMethods, unsigned long sourceOffset, FILE* fp, int frameIndex, int spriteID, unsigned char* tileGFX, long* pal)
+Frame::Frame(GBAMethods* gbaMethods, unsigned long sourceOffset, FILE* fp, int frameIndex, int spriteID, unsigned char* tileGFX, long* pal,bool NoFrameTable)
 {
 	_gbaMethods = gbaMethods;
 	theSprite = NULL;
 	Empty();
-	MemFile::currentFile->seek(sourceOffset);
-	MemFile::currentFile->fread(&frameOffset, 4, 1, fp);
-	MemFile::currentFile->fread(&frameTimer, 4, 1, fp);
+	if (!NoFrameTable)
+	{
+		MemFile::currentFile->seek(sourceOffset);
+		MemFile::currentFile->fread(&frameOffset, 4, 1, fp);
+		MemFile::currentFile->fread(&frameTimer, 4, 1, fp);
+	}
+	else {
+		frameOffset = sourceOffset;
+	}
 	this->theSprite = new SprGBuf(tileGFX, pal);
 	/*this->theSprite->PreviewSprite.Create(1, 1);*/
 	index = frameIndex;

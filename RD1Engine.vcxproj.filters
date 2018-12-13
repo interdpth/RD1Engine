@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Tiles">
       <UniqueIdentifier>{e40b2ce5-d9cf-4dc9-a6e3-aa49f68241b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GritInterface">
+      <UniqueIdentifier>{1b99149d-ac01-428d-95bc-c8a9a22fee04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedTiles.cpp">
@@ -150,6 +153,18 @@
     <ClCompile Include="clsScroll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cli.cpp">
+      <Filter>GritInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="GritInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedTiles.h">
@@ -273,6 +288,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cprs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cli.h">
+      <Filter>GritInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="GritInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

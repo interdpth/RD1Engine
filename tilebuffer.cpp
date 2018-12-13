@@ -38,10 +38,6 @@ void TileBuffer::Load(BYTE* dat,int tiles)
 {
 
 
-	if (tiles > 2048)
-	{
-		throw "WHOA SHIT";
-	}
 	// see if buffer is already big enough
 	
 		Destroy();	// kill existing buffer
