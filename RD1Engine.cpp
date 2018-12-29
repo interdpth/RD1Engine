@@ -395,10 +395,10 @@ int RD1Engine::DisplayDoors(unsigned char Room) {
 	//so Get scrollbar for basics then get add proper constant
 
 
-	//minX =nHScroll[sHMap];
-	//maxX =nHScroll[sHMap] + 23;
-	//minY = nVScroll[sVMap];
-	//maxY = nVScroll[sVMap] + 21;
+	//minX =MapHorizScroll->GetIndex();
+	//maxX =MapHorizScroll->GetIndex() + 23;
+	//minY = MapVertScroll->GetIndex();
+	//maxY = MapVertScroll->GetIndex() + 21;
 
 
 	minX = 0;
@@ -758,7 +758,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	for (int roomCounter = 0; roomCounter < maxRooms; roomCounter++)
 	{
 
-		char infoString[2048];
+		char infoString[12048] = { 0 };
 		LoadRoom(thisArea, roomCounter, Tileset, SpriteImage);
 		DrawStatus.dirty = 1;
 		//DrawRoom();
@@ -772,7 +772,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		if (hey->size() > 0) sprintf(infoString, "%s\nEnemies1: %d", infoString, (hey->at(0)).Max());
 		if (hey->size() > 1) sprintf(infoString, "%s\nEnemies2: %d : Event Trigger - %x", infoString, (hey->at(1)).Max(), header->bEventSwitch);
 		if (hey->size() > 2) sprintf(infoString, "%s\nEnemies3: %d : Event Trigger - %x", infoString, (hey->at(2)).Max(), header->bEventSwitch2);
-		sprintf(infoString, "%s\nHas %d  doors", infoString, theGame->mgrDoors->CurrentRoomDoorIndexes.size());
+		//sprintf(infoString, "%s\nHas %d  doors", infoString, theGame->mgrDoors->CurrentRoomDoorIndexes.size());
 
 		sprintf(infoString, "%s\nRoom X:%d\nRoomY:%d\nRoom Width:%d\nRoom Height:%d\n", infoString, header->bMiniMapRoomX, header->bMiniMapRoomX, bounds->X, bounds->Y);
 

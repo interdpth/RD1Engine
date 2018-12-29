@@ -78,7 +78,7 @@ int FusionSamus::UpdateSAXSamusPal(unsigned short* a1, int palIndex, int palCoun
 	unsigned short *v5; // r3
 	int v6; // r4
 	int v7; // r6
-	unsigned short *saxpal; // r5
+	unsigned short *saxpal=NULL; // r5
 	unsigned short *sampal; // r1
 	int v10; // r4
 	int v12; // [sp-4h] [bp-4h]
@@ -448,10 +448,11 @@ void FusionSamus::Logic()
 			case DelayAfterShootingHOrizladder:
 			case ShootingOnHorizladder:
 			{
+				//THIS IS WRONMG
 				unsigned long g = GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1));
 				GfxTablePnt = g;
 				//unsigned long off = *GfxTablePnt;
-				gfxsize = *(unsigned long*)rawFile[g];
+				gfxsize = *(unsigned long*)g;
 				if (MissilesSelected & 1)
 				{
 					if (SamusDirection & DirectionRight)

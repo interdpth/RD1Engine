@@ -309,7 +309,7 @@ void Image::Fill(int x, int y, int w, int h, BYTE color)
 	if (x < 0)		x = 0;
 	if (y < 0)		y = 0;
 
-	int x2, y2;
+	int y2;
 	for (y2 = y; y2 < h; ++y2)
 	{
 		/*for (x2 = x; x2 < w; ++x2)

@@ -10,14 +10,14 @@
 void MapManager::MoveObject(LPARAM lParam) {
 	editingStates thisState = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetState();//Wait what
 	if (thisState == editingStates::MAP) {
-		/*mpMap.sY = GetY(lParam) / 16;
-		mpMap.sX = GetX(lParam) / 16;*/
+//		mpMap.sY = GetY(lParam) / 16;
+	//	mpMap.sX = GetX(lParam) / 16;
 	}
 	else if (thisState == editingStates::DOOR) {
 
 		//Get shit to our door
 		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
-		if (objID != 0xFF) {
+		if (objID != -1) {
 			MousePointer *myDoor = &RD1Engine::theGame->mgrDoors->Doors[objID].virtualDoor;
 			myDoor->Height -= myDoor->sY;
 			myDoor->Width -= myDoor->sX;

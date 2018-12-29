@@ -50,6 +50,8 @@ struct SE {
 	int _curFrame;
 	int animCounter;
 };
+
+
 struct RHeader {
 	unsigned char bTileset;
 	unsigned char bBg0;
