@@ -310,16 +310,6 @@ void RD1Engine::DrawSprites(Image* pic) {
 		}
 		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).front() && badFrame==0)
 		{
-			//If sprite doesn't exist draw nothing but the S
-			if (true) {
-				curbrush = CreateSolidBrush(RGB(255, 0, 0));
-				myrect.left = SpriteX;
-				myrect.top = SpriteY;
-				myrect.right = (SpriteWidth)+myrect.left;
-				myrect.bottom = myrect.top + SpriteHeight;
-				FrameRect(pic->DC(), &myrect, curbrush);
-				DeleteObject(curbrush);
-			}
 
 			int adjustedXorigin = 0;
 			int adjustedYorigin = 0;
@@ -333,6 +323,19 @@ void RD1Engine::DrawSprites(Image* pic) {
 				adjustedYorigin = 0 - tmpFrame->theSprite->Borders.top;
 
 			}
+			//If sprite doesn't exist draw nothing but the S
+			if (true) {
+				curbrush = CreateSolidBrush(RGB(255, 0, 0));
+				myrect.left = SpriteX - adjustedXorigin - 4;
+
+					myrect.top = SpriteY - adjustedYorigin + 4;
+
+				myrect.right = (SpriteWidth)+myrect.left;
+				myrect.bottom = myrect.top + SpriteHeight;
+				FrameRect(pic->DC(), &myrect, curbrush);
+				DeleteObject(curbrush);
+			}
+
 			clsPreviewSprite* curSprite = &tmpFrame->theSprite->PreviewSprite;
 			if (curSprite == NULL)
 			{
