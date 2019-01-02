@@ -39,6 +39,9 @@ struct drawstate
 	bool BG3;
 	bool Doors;
 	bool Sprites;
+	bool Clipdata;
+	bool Scrolls;
+	bool SpriteRect;
 };
 class RoomClass;
 class DoorManager;
@@ -64,15 +67,15 @@ public:
 	OamFrameTable* frameTables;
 	int DisplayDoors(unsigned char Room);
 	drawstate DrawStatus;
-
+	int             DrawClipIdent();
+	int DrawScrolls(int ScrollToDraw, Scroller *scroll);
 	int LoadAreaTable();
 	void LoadModifiers(char* fn);
 	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);
 	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset, FILE* fp);
 	void DrawSprites(Image* pic);
 	int DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype);
-	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBackLayer, bool DrawLevelLayer, 
-		bool DrawForeground, bool HideSprites, bool ShowScrolls, bool ShowClip, int ScrollIndex);
+	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex);
 	void DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage);
 	void DrawDoorIndicators(HDC g);
 	vector<long> RoomOffsets;

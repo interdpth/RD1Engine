@@ -34,7 +34,6 @@ public:
 	void AddSpriteObject(int ObjectSet);
 	void DeleteSpriteObject(int ObjectSet, int ObjID);
 	int LoadEnemies(RHeader* roomHeader);
-	int PopulateSpriteArray(char * appPath, int crf);
 	int ShowSprites(bool show, unsigned char Number, BackBuffer* drawBuffer);
 	int SaveSprites(RHeader* roomHeader);
 	int ExportPal();

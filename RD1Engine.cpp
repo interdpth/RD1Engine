@@ -20,6 +20,7 @@ int  DrawRect(HDC hdc, long theColor, RECT* mpointer, int mul)
 void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, int spriteindex)
 {
 	mgrDoors->SetupDoors(area);
+	memset(&DrawStatus, 0, sizeof(drawstate));
 	DrawStatus.dirty = true;
 	DrawStatus.BG0 = true;
 	DrawStatus.BG1 = true;
@@ -307,7 +308,7 @@ void RD1Engine::DrawSprites(Image* pic) {
 		{
 			continue;
 		}
-		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).front() && !badFrame)
+		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).front() && badFrame==0)
 		{
 			//If sprite doesn't exist draw nothing but the S
 			if (true) {
@@ -358,21 +359,20 @@ void RD1Engine::DrawSprites(Image* pic) {
 
 
 		}
-		else {
+		/*else {*/
 			if (true) {
 				myrect.left = SpriteX;
 				myrect.top = SpriteY;
 				myrect.right = myrect.left + 16;
 				myrect.bottom = myrect.top + 16;
-				curbrush = CreateSolidBrush(RGB(255, 255, 255));
+				curbrush = CreateSolidBrush(RGB(255,0, 0));
 				FrameRect(pic->DC(), &myrect, curbrush);
 				DeleteObject(curbrush);
 				TextOut(pic->DC(), SpriteX + 4,
 					SpriteY, "S", 1);
 			}
-		}
+		//}
 	}
-	return;
 }
 
 
@@ -442,12 +442,11 @@ int RD1Engine::DisplayDoors(unsigned char Room) {
 }
 
 
-int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBackLayer, bool DrawLevelLayer, bool DrawForeground, bool HideSprites, bool ShowScrolls, bool ShowClip, int ScrollIndex) {
+int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex) {
 
 	unsigned char cSize = 0;
 	unsigned char fd = 0;
 	unsigned long fWidth = 0, fHeight = 0;
-	//int Width=GlobalVars::gblVars->imgMap->Width,Height=GlobalVars::gblVars->imgMap->Height;
 	int k = 0;
 	MapManager* mgr = mainRoom->mapMgr;
 	if (!mgr->created)
@@ -455,6 +454,17 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 		//Logger::log->LogIt(Logger::LOGTYPE::ERRORZ, "ROOM NOT LOADED");
 		return -1;
 	}
+
+
+
+	bool DrawBackLayer = DrawStatus.BG2;
+	bool DrawLevelLayer = DrawStatus.BG1;
+	bool DrawForeground = DrawStatus.BG0;
+	bool HideSprites = DrawStatus.SpriteRect;
+	bool ShowScrolls = DrawStatus.Scrolls;
+	bool ShowClip = DrawStatus.Clipdata;
+    
+
 	nMapBuffer* buffForeground = mgr->GetLayer(MapManager::ForeGround);
 	nMapBuffer* buffLevelData = mgr->GetLayer(MapManager::LevelData);
 	nMapBuffer* buffBackLayer = mgr->GetLayer(MapManager::Backlayer);
@@ -546,7 +556,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 			bfn.SourceConstantAlpha = 150;;//Need to unhard code
 			bfn.AlphaFormat = 0;// AC_SRC_ALPHA;
 			AlphaBlend(ThisBackBuffer.DC(), 0, 0, Width, Height, imgMap->DC(), 0, 0, Width, Height, bfn); // Display bitmap
-			//	imgMap.AlphaBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0, alphaLow, alphaHigh);
+
 		}
 		else {
 			imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader.bSceneryYPos, Width, Height, 0, 0);
@@ -564,15 +574,13 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, bool DrawBac
 
 	if (ShowClip)//GlobalVars::gblVars->ViewClip.value() == 1)
 	{
-		//ViewClip.value(0);     
-		//move to ui?
-		//DrawClipIdent();
+
+		DrawClipIdent();
 	}
 
 	if (ShowScrolls && !ShowClip) {//(GlobalVars::gblVars->ScrollCheck.value() && GlobalVars::gblVars->ViewClip.value() == 0) {
-//		DrawScrolls(cboScroll.GetListIndex(), mgrScrolls->GetScrollInfo());
-//move to ui?
-		//DrawScrolls(ScrollIndex, mgrScrolls->GetScrollInfo());
+
+		DrawScrolls(ScrollIndex, mgrScrolls->GetScrollInfo());
 	}
 
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
@@ -816,3 +824,100 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	fclose(fp);
 	delete theBigPicture;
 }
+
+
+
+
+
+
+int             RD1Engine::DrawClipIdent()
+{
+	int             currclip = 0;// Combos[cClip].GetListIndex();
+	RECT            blah;
+	int             thisX = 0;
+	int             thisY = 0;
+	int             x = 0;
+	int             y = 0;
+
+	HBRUSH          curbrush = CreateSolidBrush(RGB(255, 255, 255));
+
+	for (thisY = 0; thisY < RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y; thisY++)
+	{
+		for (thisX = 0; thisX < RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; thisX++)
+		{
+
+			if (RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->TileBuf2D[thisX + (thisY * (RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->X))] == currclip)
+			{
+
+				blah.left = thisX * 16;
+				blah.right = thisX * 16 + 16;
+				blah.top = thisY * 16;
+				blah.bottom = thisY * 16 + 16;
+
+				FrameRect(RD1Engine::theGame->ThisBackBuffer.DC(), &blah, curbrush);
+
+
+			}
+		}
+	}
+	DeleteObject(curbrush);
+	return 0;
+}
+
+int RD1Engine::DrawScrolls(int ScrollToDraw, Scroller *scroll) {
+	
+	RECT blah;
+
+	MousePointer thisscroll;
+
+	if (scroll->Room != 0xFF) {
+
+
+		thisscroll = scroll->Scrolls[ScrollToDraw].rect;
+
+
+
+		if ((thisscroll.sX != 0xFF) && (thisscroll.Height != 0xFF)) {
+
+
+
+
+
+
+
+
+			HBRUSH curbrush = CreateSolidBrush(
+				RGB(
+					255 -
+					((ScrollToDraw + 3) << 2) | 128,
+					255 - ((ScrollToDraw + 2) << 4) | 128,
+					255 - ((ScrollToDraw + 1) << 8) | 128
+				)
+			);
+
+
+			for (int d = 0; d<2; d++) {
+				blah.left = (thisscroll.sX) * 16 + d;
+				blah.top = (thisscroll.sY) * 16 + d;
+				blah.right = (thisscroll.Width) * 16 + d;
+				blah.bottom = (thisscroll.Height) * 16 + d;
+				FrameRect(RD1Engine::theGame->ThisBackBuffer.DC(), &blah, curbrush);
+
+			}
+
+
+
+
+			DeleteObject(curbrush);
+
+			TextOut(RD1Engine::theGame->ThisBackBuffer.DC(),
+				((thisscroll.sX) + (((thisscroll.Width - thisscroll.sX) / 2)))*(16),
+				((thisscroll.sY) + (((thisscroll.Height - thisscroll.sY) / 2)))*(16), "Sc", 1);
+
+		}
+
+
+
+	}
+	return 0;
+}//End Function

@@ -70,9 +70,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\GLEW\include\GL;C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\libgrit;C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\cldib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\GLEW\include\GL;..\grit\libgrit;..\grit\cldib;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\GLEW\bin\Release\Win32;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\libgrit;C:\GLEW\lib\Release\Win32;C:\Users\Endeavor\Downloads\grit-src-0.8.6\grit_src\cldib\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\grit\libgrit;C:\GLEW\lib\Release\Win32;..\grit\cldib\;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
     <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>

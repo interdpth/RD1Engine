@@ -238,7 +238,7 @@ void SpriteObjectManager::AddSpriteObject(int ObjectSet)
 
 void SpriteObjectManager::DeleteSpriteObject(int ObjectSet, int ObjID)
 {
-	if (SpriteObjects[ObjectSet].Max() < ObjID) {//Can't delete object, doesn't exist
+	if (ObjID==-1 || SpriteObjects[ObjectSet].Max() < ObjID) {//Can't delete object, doesn't exist
 		return;
 	}
 
@@ -459,7 +459,8 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 	Frame* tmpFrame = NULL;
 	
 	DumpLayers();
-	for (i = 0; i < Sprites->Max(); i++) {
+	int m = Sprites->Max();
+	for (i = 0; i < m; i++) {
 
 		//Draw a rect around the sprite for distiction
 		bool badFrame = 0;
@@ -523,16 +524,7 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 		}
 		if (thisGuy->size() && !badFrame)
 		{
-			//If sprite doesn't exist draw nothing but the S
-			if (show) {
-				curbrush = CreateSolidBrush(RGB(255, 0, 0));
-				myrect.left = SpriteX;
-				myrect.top = SpriteY;
-				myrect.right = (SpriteWidth)+myrect.left;
-				myrect.bottom = myrect.top + SpriteHeight;
-				FrameRect(drawBuffer->DC(), &myrect, curbrush);
-				DeleteObject(curbrush);
-			}
+			
 
 			int adjustedXorigin = 0;
 			int adjustedYorigin = 0;
@@ -547,8 +539,20 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 
 			}
 
+			//If sprite doesn't exist draw nothing but the S
+			if (show) {
+				curbrush = CreateSolidBrush(RGB(255, 0, 0));
+				myrect.left = SpriteX - adjustedXorigin + 8;
+				myrect.top = SpriteY - adjustedYorigin + 16;
+				myrect.right = (SpriteWidth)+myrect.left;
+				myrect.bottom = myrect.top + SpriteHeight;
+				FrameRect(drawBuffer->DC(), &myrect, curbrush);
+				DeleteObject(curbrush);
+			}
+
 			try
 			{
+				
 				tmpFrame->theSprite->PreviewSprite.GetFullImage()->TransBlit(
 
 					drawBuffer->DC(),
@@ -559,6 +563,8 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 					256,
 					0,
 					0);
+				
+
 			}
 			catch(...)
 			{
