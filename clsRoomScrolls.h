@@ -42,9 +42,9 @@ public:
 	clsRoomScrolls();
 	~clsRoomScrolls();
 	DataContainer* scrollInfoContainer;
-	int GetScroll(FILE* fp);
+	int GetScroll();
 	int SaveScroll(GBAMethods* mGBA);
-	int initScroll(FILE* fp, int area, int room);
+	int initScroll( int area, int room);
 	int EditScrollData(GBAMethods* mGBA);
 	Scroller* GetScrollInfo();
 	long RoomScrollOffset;

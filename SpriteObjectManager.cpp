@@ -36,7 +36,7 @@ int SpriteObjectManager::ExportPal() {
 	if (fp) {
 
 		for (i = 0; i <_currentFrames->GetStaticFrame()->theSprite->palsize; i++)
-			fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128 + i], 4, 1, fp);
+//			fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128 + i], 4, 1);
 		fclose(fp);
 	}
 	//size then palettes
@@ -89,7 +89,7 @@ int SpriteObjectManager::ExportGFX() {
 	FILE* fp = fopen(FileName, "w+b");
 	if (fp) {
 
-		fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000],_currentFrames->GetStaticFrame()->theSprite->graphicsize, 1, fp);
+//		fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000],_currentFrames->GetStaticFrame()->theSprite->graphicsize, 1);
 		fclose(fp);
 	}
 	return 0;
@@ -111,24 +111,24 @@ int SpriteObjectManager::SavePal(int RomSwitch) {
 
 
 	//MemFile::currentFile->seek(PalPnt );
-	//MemFile::currentFile->fread(&addybuf, 4, 1, _gbaMethods->ROM);
+	//MemFile::currentFile->fread(&addybuf, 4, 1);
 	//MemFile::currentFile->seek(addybuf-0x8000000);
-	//MemFile::currentFile->fread(&transferpal, 1, (paltransfer[x].Size)*2, _gbaMethods->ROM);
+	//MemFile::currentFile->fread(&transferpal, 1, (paltransfer[x].Size)*2);
 	//memset( GBAGraphics::VRAM->GBASprPal,0,0x200);
-	// MemFile::currentFile->fread(&transferpal, 1, SGBSpr.palsize*2, _gbaMethods->ROM);
+	// MemFile::currentFile->fread(&transferpal, 1, SGBSpr.palsize*2);
 	//	if(paltransfer[x][1] == 0) continue;
 	//memcpy(& GBAGraphics::VRAM->GBASprPal[128], &transferpal, SGBSpr.palsize*2);
 
 	_gbaMethods->EncodePal(GBAGraphics::VRAM->GBASprPal,_currentFrames->GetStaticFrame()->theSprite->PreviewPal, 16, 0);
 	offset = _gbaMethods->FindFreeSpace(_currentFrames->GetStaticFrame()->theSprite->palsize * 2, 0xFF);
 	MemFile::currentFile->seek(offset);
-	MemFile::currentFile->fwrite(&GBAGraphics::VRAM->GBASprPal[128], 1,_currentFrames->GetStaticFrame()->theSprite->palsize * 2, _gbaMethods->ROM);
+	MemFile::currentFile->fwrite(&GBAGraphics::VRAM->GBASprPal[128], 1,_currentFrames->GetStaticFrame()->theSprite->palsize * 2);
 	offset += 0x8000000;
 	
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (_currentFrames->GetStaticFrame()->theSprite->id - 0x10) * 4);
 	
 	
-		MemFile::currentFile->fwrite(&offset, 4, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&offset, 4, 1);
 	//SGBSpr.palsize=  ((BaseGame::theGame->mgrOAM->MFSprSize[SGBSpr.id-0x10]/2048)*16);
 	//BaseGame::theGame->mgrOAM->MFSprSize[(_currentFrames->GetStaticFrame()->theSprite->id-0x10)<<1]=(_currentFrames->GetStaticFrame()->theSprite->palsize*177);
 
@@ -149,28 +149,28 @@ int SpriteObjectManager::SaveGFX(int RomSwitch) {
 		//Just find new space 
 		GFXPointer = _gbaMethods->FindFreeSpace(size, 0xFF);
 		MemFile::currentFile->seek(GFXPointer);
-		MemFile::currentFile->fwrite(&GFXbuf, 1, size, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&GFXbuf, 1, size);
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteID * 4));
 		GFXPointer += 0x8000000;
-		MemFile::currentFile->fwrite(&GFXPointer, 1, 4, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&GFXPointer, 1, 4);
 	}
 	else if (RomSwitch == 1) {
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteID * 4));
-		MemFile::currentFile->fread(&GFXPointer, 1, 4, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&GFXPointer, 1, 4);
 		GFXPointer -= 0x8000000;
 		if (RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]<currSprite->graphicsize || RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]>currSprite->graphicsize) {
 			RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1] = currSprite->graphicsize;
 			MemFile::currentFile->seek(0x2E4A50);
-			MemFile::currentFile->fwrite(&RD1Engine::theGame->mgrOAM->MFSprSize, 4, 0xC0, _gbaMethods->ROM);
+			MemFile::currentFile->fwrite(&RD1Engine::theGame->mgrOAM->MFSprSize, 4, 0xC0);
 			GFXPointer = _gbaMethods->FindFreeSpace(currSprite->graphicsize, 0xFF);
 
 		}
 		MemFile::currentFile->seek(GFXPointer);
 
-		MemFile::currentFile->fwrite(&currSprite->PreRAM[0x4000], currSprite->graphicsize, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&currSprite->PreRAM[0x4000], currSprite->graphicsize, 1);
 		GFXPointer += 0x8000000;
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (currSprite->id - 0x10) * 4);
-		MemFile::currentFile->fwrite(&GFXPointer, 1, 4, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&GFXPointer, 1, 4);
 		_gbaMethods->Reopen();
 	}
 
@@ -201,9 +201,9 @@ int SpriteObjectManager::SavePal(PalData* palinfo, sprite_entry* spriteset, long
 			continue;
 
 		MemFile::currentFile->seek(palinfo[x].RomPointer);
-		MemFile::currentFile->fread(&addybuf, 4, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&addybuf, 4, 1);
 		MemFile::currentFile->seek(addybuf - 0x8000000);
-		fwrite(&GBAGraphics::VRAM->GBASprPal[128 + (palinfo[x].MemDst)], 1, (palinfo[x].Size) * 2, _gbaMethods->ROM);
+	//	fwrite(&GBAGraphics::VRAM->GBASprPal[128 + (palinfo[x].MemDst)], 1, (palinfo[x].Size) * 2);
 
 		//	if(paltransfer[x][1] == 0) continue;
 
@@ -279,12 +279,12 @@ int SpriteObjectManager::GetZMSetSZ(long* GFXSizes, long*PalSizes, sprite_entry*
 
 
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4);
-		MemFile::currentFile->fread(&off, 4, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&off, 4, 1);
 		MemFile::currentFile->seek(off - 0x8000000);
-		MemFile::currentFile->fread(&PalSizes[X], 4, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&PalSizes[X], 4, 1);
 		PalSizes[X] = ((PalSizes[X] >> 16) & 0xF8) * 2;
 		MemFile::currentFile->seek(off - 0x8000000);
-		MemFile::currentFile->fread(&comp1, 1, 32191, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&comp1, 1, 32191);
 
 		GFXSizes[X] = _gbaMethods->LZ77UnComp(comp1, comp2);
 		//GFXSizes[X]+=SpriteInfo[X].sprdetail*0x800;
@@ -349,7 +349,7 @@ int SpriteObjectManager::ImportPal(int TitleChoice) {
 			maxpals = (RD1Engine::theGame->mgrOAM->MFSprSize[(_currentFrames->GetStaticFrame()->theSprite->id) << 1] / 2048) * 16;
 		}
 
-		MemFile::currentFile->fread(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128], 4 * maxpals, 1, fp);
+		MemFile::currentFile->fread(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128], 4 * maxpals, 1);
 		fclose(fp);
 		RD1Engine::theGame->mgrOAM->DrawPSprite(_currentFrames->GetStaticFrame()->theSprite);
 		for (i = 512; i < 1024; i++)
@@ -604,9 +604,9 @@ int SpriteObjectManager::SaveSprites(RHeader* roomHeader) {
 		int j = 0;
 		for (j = 0; j < SpriteObjects[i].Enemies.size(); j++)
 		{
-			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].Y, 1, 1, _gbaMethods->ROM);
-			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].X, 1, 1, _gbaMethods->ROM);
-			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].Creature, 1, 1, _gbaMethods->ROM);
+			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].Y, 1, 1);
+			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].X, 1, 1);
+			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].Creature, 1, 1);
 
 		}
 		MemFile::currentFile->fputc(0xFF);

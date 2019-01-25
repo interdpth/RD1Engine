@@ -42,12 +42,12 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM , GFXData* spritedat
 		}
 		if (_gbaMethods->ROM) {
 			MemFile::currentFile->seek(SpriteSetNo * 4 + 0x79ADD8);
-			MemFile::currentFile->fread(&off, sizeof(long), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&off, sizeof(long), 1);
 			MemFile::currentFile->seek(off - 0x8000000);
 			for (i = 0; i< 15; i++) {
 
-				MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1, _gbaMethods->ROM);
-				MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1, _gbaMethods->ROM); 
+				MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1);
+				MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1); 
 			}
 		}
 
@@ -115,12 +115,12 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 	}
 	if (ReadObjectDetailsFromROM == false) {
 		MemFile::currentFile->seek((SpriteSetNo * 4) + 0x75F31C);
-		MemFile::currentFile->fread(&off, sizeof(long), 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&off, sizeof(long), 1);
 		MemFile::currentFile->seek(off - 0x8000000);
 
 		for (i = 0; i< 15; i++) {
-			MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1);
+			MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1);
 		}
 	}
 	compare = 0xFF;
@@ -153,12 +153,12 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 		spritedata[X].RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
 		spritedata[X].MemDst = (SpriteInfo[X].sprdetail * 0x800);
 		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4);
-		MemFile::currentFile->fread(&off, 4, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&off, 4, 1);
 		MemFile::currentFile->seek(off - 0x8000000);
-		MemFile::currentFile->fread(&thiscompheader.check_ten, 1, 1, _gbaMethods->ROM);       //Check byte should be 0x10 for lz
-		MemFile::currentFile->fread(&thiscompheader.l3, 1, 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&thiscompheader.l2, 1, 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&thiscompheader.l1, 1, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&thiscompheader.check_ten, 1, 1);       //Check byte should be 0x10 for lz
+		MemFile::currentFile->fread(&thiscompheader.l3, 1, 1);
+		MemFile::currentFile->fread(&thiscompheader.l2, 1, 1);
+		MemFile::currentFile->fread(&thiscompheader.l1, 1, 1);
 
 		Palettedata[X].RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
 		Palettedata[X].MemDst = (SpriteInfo[X].sprdetail * 16);
@@ -197,9 +197,9 @@ int cEntityManager::LoadPal(PalData* palinfo, sprite_entry* spriteset, long *Pal
 			if (x != 0 && palinfo[x].RomPointer == 0) break;
 
 			MemFile::currentFile->seek(palinfo[x].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 4, 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&addybuf, 4, 1);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
-			MemFile::currentFile->fread(&transferpal, 1, (palinfo[x].Size) * 2, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&transferpal, 1, (palinfo[x].Size) * 2);
 			/*sprintf(blah, "C:\\FusionLessonInEvolution\\SpriteGFXPAL\\Sprite_PAL_%X.bin", thisSprite);
 			fp = fopen(blah, "w+");
 			if (fp) {

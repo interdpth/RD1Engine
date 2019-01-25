@@ -159,9 +159,6 @@
     <ClCompile Include="GritInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ImageCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -301,9 +298,6 @@
     </ClInclude>
     <ClInclude Include="GritInterface.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="fi.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageCache.h">
       <Filter>Header Files</Filter>

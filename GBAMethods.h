@@ -21,7 +21,7 @@ struct COLOR2
 class GBAMethods
 {
 public: 
-	
+	static FILE* ROM;
 			  GBAMethods();
 			 ~GBAMethods();
 	    void  Reopen();
@@ -39,7 +39,7 @@ public:
 		long  FindFreeSpace(long bNo, unsigned char bConst);
 		static int ReturnFileName(HINSTANCE inst, HWND wnd,char* Filter,char*FilePath,int sofn,unsigned char Existance);
 		static int ReturnEOF(FILE* fp);
-		static FILE* ROM;
+
 		static FILE* REDIT;
 		
 		static short GBAPal[1024];

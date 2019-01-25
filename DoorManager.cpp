@@ -96,7 +96,7 @@ int DoorManager::SaveDoorOffsets()
 		doorInfoContainer = GameConfiguration::mainCFG->GetDataContainer("Doors");
 	}
 	MemFile::currentFile->seek(doorInfoContainer->Value);
-	MemFile::currentFile->fwrite(doorInfoContainer->DataArray, 4, doorInfoContainer->MemberCount, (FILE*)NULL);
+	MemFile::currentFile->fwrite(doorInfoContainer->DataArray, 4, doorInfoContainer->MemberCount);
 	return 0;
 }
 
@@ -108,7 +108,7 @@ int DoorManager::GetDoorArray(FILE* fp)
 		doorInfoContainer = GameConfiguration::mainCFG->GetDataContainer("Doors");
 	}
 	MemFile::currentFile->seek(doorInfoContainer->Value);
-MemFile::currentFile->fread(doorInfoContainer->DataArray, 4, doorInfoContainer->MemberCount, fp);
+MemFile::currentFile->fread(doorInfoContainer->DataArray, 4, doorInfoContainer->MemberCount);
 	return 0;
 
 
@@ -167,31 +167,31 @@ int DoorManager::SaveDoors(int area) {
 		sDoor tmpDoor;
 		memcpy(&tmpDoor, 			&Doors[i].rawDoor, sizeof(sDoor));
 		MousePointer* actualMP = &Doors[i].virtualDoor;
-		thisFile->fwrite(&tmpDoor.DoorType, sizeof(unsigned char), 1, (FILE*)NULL);
-		thisFile->fwrite(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1, (FILE*)NULL);
+		thisFile->fwrite(&tmpDoor.DoorType, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1);
 		
-		thisFile->fwrite(&actualMP->sX, sizeof(unsigned char), 1, (FILE*)NULL);
+		thisFile->fwrite(&actualMP->sX, sizeof(unsigned char), 1);
 		
-		thisFile->fwrite(&actualMP->Width, sizeof(unsigned char), 1, (FILE*)NULL);
+		thisFile->fwrite(&actualMP->Width, sizeof(unsigned char), 1);
 
-		thisFile->fwrite(&actualMP->sY, sizeof(unsigned char), 1, (FILE*)NULL);
+		thisFile->fwrite(&actualMP->sY, sizeof(unsigned char), 1);
 		
-		thisFile->fwrite(&actualMP->Height, sizeof(unsigned char), 1, (FILE*)NULL);
+		thisFile->fwrite(&actualMP->Height, sizeof(unsigned char), 1);
 
-		thisFile->fwrite(&tmpDoor.DestDoor, sizeof(unsigned char), 1, (FILE*)NULL);
-		thisFile->fwrite(&tmpDoor.xExitDistance, sizeof(unsigned char), 1, (FILE*)NULL);
-		thisFile->fwrite(&tmpDoor.yExitDistance, sizeof(unsigned char), 1, (FILE*)NULL);
-		thisFile->fwrite(&tmpDoor.doorNum, sizeof(unsigned char), 1, (FILE*)NULL);
-		thisFile->fwrite(&tmpDoor.u3, sizeof(unsigned char), 1, (FILE*) NULL);
-		thisFile->fwrite(&tmpDoor.u4, sizeof(unsigned char), 1, (FILE*)NULL);
+		thisFile->fwrite(&tmpDoor.DestDoor, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.xExitDistance, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.yExitDistance, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.doorNum, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.u3, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.u4, sizeof(unsigned char), 1);
 		
 	}
 
 	unsigned long endPoint = 0;
 	//Marks end of Door Reading. 
-	thisFile->fwrite(&endPoint, 4, 1, (FILE*) NULL);
-	thisFile->fwrite(&endPoint, 4, 1, (FILE*)NULL);
-	thisFile->fwrite(&endPoint, 4, 1, (FILE*)NULL);
+	thisFile->fwrite(&endPoint, 4, 1);
+	thisFile->fwrite(&endPoint, 4, 1);
+	thisFile->fwrite(&endPoint, 4, 1);
 	//fclose(_gbaMethods->ROM);
 	//_gbaMethods->ROM = fopen(_gbaMethods->FileLoc,"r+bw+b");
 
@@ -223,20 +223,20 @@ int DoorManager::SetupDoors(long area) {
 
 		for (i = 0; i < 255; i++) {
 			sDoor tmpDoor;
-			MemFile::currentFile->fread(&tmpDoor.DoorType, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.XEntrance, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.DWidth, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.DoorType, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.XEntrance, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.DWidth, sizeof(unsigned char), 1);
 
-			MemFile::currentFile->fread(&tmpDoor.YEntrance, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.DHeight, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.YEntrance, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.DHeight, sizeof(unsigned char), 1);
 
-			MemFile::currentFile->fread(&tmpDoor.DestDoor, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.xExitDistance, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.yExitDistance, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.doorNum, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.u3, sizeof(unsigned char), 1, _gbaMethods->ROM);
-			MemFile::currentFile->fread(&tmpDoor.u4, sizeof(unsigned char), 1, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&tmpDoor.DestDoor, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.xExitDistance, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.yExitDistance, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.doorNum, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.u3, sizeof(unsigned char), 1);
+			MemFile::currentFile->fread(&tmpDoor.u4, sizeof(unsigned char), 1);
 
 			bool stopReading = true;
 			if (i == 98) {

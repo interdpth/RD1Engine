@@ -32,10 +32,10 @@ void MemFile::Save()
 }
 void MemFile::Save(char* file)
 {
-	FILE* FP = fopen(file, "w+b");
-	fseek(FP, 0, SEEK_SET);
-	fwrite(theFile, size, 1, FP);
-	fclose(FP);
+	FILE* FP = ::fopen(file, "w+b");
+	::fseek(FP, 0, SEEK_SET);
+	::fwrite(theFile, size, 1,FP);
+	::fclose(FP);
 }
 unsigned char MemFile::fgetc()
 {
@@ -51,7 +51,7 @@ void MemFile::seek(unsigned long offset)
 	}
 	fileIndex = offset; 
 }
-void MemFile::fread(void* dst, int count, int size,FILE* fp)
+void MemFile::fread(void* dst, int count, int size)
 {
 	int readSize = count*size;
 	if (readSize + fileIndex > this->size)
@@ -62,7 +62,7 @@ void MemFile::fread(void* dst, int count, int size,FILE* fp)
 	fileIndex += readSize;
 }
 
-void MemFile::fwrite(void* src, int count, int size, FILE* fp)
+void MemFile::fwrite(void* src, int count, int size)
 {
 	int readSize = count*size;
 	if (readSize > 0x800000)

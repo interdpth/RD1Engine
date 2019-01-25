@@ -18,14 +18,14 @@ private:
 	GBAMethods* _gbaMethods; 
 public:
 	
-	Frame(GBAMethods* _gbaMethods, unsigned long sourceOffset, FILE* fp, int frameIndex, int spriteIndex, unsigned char* tileGFX, long* pal, bool NoFrameTable);
+	Frame(GBAMethods* _gbaMethods, unsigned long sourceOffset,  int frameIndex, int spriteIndex, unsigned char* tileGFX, long* pal, bool NoFrameTable);
 	Frame(GBAMethods* _gbaMethods, int frameIndex, int spriteID);
 	Frame(GBAMethods* _gbaMethods, Frame* src);
 	Frame(GBAMethods* _gbaMethod);
 	~Frame();
 	int gfxrow;
 	void ReadSprite();
-	void SaveInfo(unsigned long sourceOffset, FILE* fp, int itemSize);
+	void SaveInfo(unsigned long sourceOffset,  int itemSize);
 	int DeletePart(int partIndex);
 	void Update(); 
 	void AddPart( EncodedOAM* rawOAM);

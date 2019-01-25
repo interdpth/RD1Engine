@@ -7,7 +7,7 @@ void MetroidFusion::LoadGameData(FILE* fp)
 {
 	DataContainer* sprSize = GameConfiguration::mainCFG->GetDataContainer("SpriteSizes");
 	MemFile::currentFile->seek(sprSize->Value);
-	MemFile::currentFile->fread(&MFSprSize, 2, 0x180, fp);
+	MemFile::currentFile->fread(&MFSprSize, 2, 0x180);
 }
 
 int MetroidFusion::GetPalSize(int sprID)

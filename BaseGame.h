@@ -71,8 +71,8 @@ public:
 	int DrawScrolls(int ScrollToDraw, Scroller *scroll);
 	int LoadAreaTable();
 	void LoadModifiers(char* fn);
-	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);
-	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset, FILE* fp);
+	void LoadRoomSpriteSet(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);
+	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset);
 	void DrawSprites(Image* pic);
 	int DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype);
 	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex);

@@ -25,11 +25,11 @@ void TilesetManager::ReadTable()
 	MemFile::currentFile->seek(tileset->Value);//Tileset
 	for (int i = 0; i < tileset->MemberCount; i++) {
 		gTileData tileset;
-		MemFile::currentFile->fread(&tileset.gTiles, sizeof(long), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&tileset.pTiles, sizeof(long), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&tileset.gBackground, sizeof(long), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&tileset.TSAMap, sizeof(long), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&tileset.EffectSet, sizeof(long), 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&tileset.gTiles, sizeof(long), 1);
+		MemFile::currentFile->fread(&tileset.pTiles, sizeof(long), 1);
+		MemFile::currentFile->fread(&tileset.gBackground, sizeof(long), 1);
+		MemFile::currentFile->fread(&tileset.TSAMap, sizeof(long), 1);
+		MemFile::currentFile->fread(&tileset.EffectSet, sizeof(long), 1);
 		RoomTilesets.push_back(tileset);
 	}
 }
@@ -51,11 +51,11 @@ int TilesetManager::SaveTileset(unsigned char TilesetVal) {
 
 
 	for (int i = 0; i < GameConfiguration::mainCFG->GetDataContainer("Tileset")->MemberCount; i++) {
-		MemFile::currentFile->fwrite(&RoomTilesets[i].gTiles, 4, 1, _gbaMethods->ROM);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].pTiles, 4, 1, _gbaMethods->ROM);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].gBackground, 4, 1, _gbaMethods->ROM);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].TSAMap, 4, 1, _gbaMethods->ROM);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].EffectSet, 4, 1, _gbaMethods->ROM);
+		MemFile::currentFile->fwrite(&RoomTilesets[i].gTiles, 4, 1);
+		MemFile::currentFile->fwrite(&RoomTilesets[i].pTiles, 4, 1);
+		MemFile::currentFile->fwrite(&RoomTilesets[i].gBackground, 4, 1);
+		MemFile::currentFile->fwrite(&RoomTilesets[i].TSAMap, 4, 1);
+		MemFile::currentFile->fwrite(&RoomTilesets[i].EffectSet, 4, 1);
 	}
 
 
@@ -68,7 +68,7 @@ int TilesetManager::SaveTileset(unsigned char TilesetVal) {
 int TilesetManager::SaveTilesetPal(int romSwitch, unsigned char TilesetVal) {
 	//gTileData* RoomTilesets = GetTileset(romSwitch, TilesetVal);
 	//MemFile::currentFile->seek(RoomTilesets->pTiles - 0x8000000);//Seek the endcoded pal
-	//fwrite(&_gbaMethods->GBAPal[32], sizeof(short), 0x1E0, _gbaMethods->ROM);//write
+	//fwrite(&_gbaMethods->GBAPal[32], sizeof(short), 0x1E0);//write
 
 
 	return 0;
@@ -80,11 +80,11 @@ void TilesetManager::ReadTSA(gTileData* tileData)
 	unsigned short TileCheck = 0;
 	MemFile::currentFile->seek(tileData->TSAMap - 0x8000000);
 	memset(&TSA.nTSA, 0, sizeof(TSA.nTSA));
-	MemFile::currentFile->fread(&TSA.ID, sizeof(short), 1, (FILE*)NULL);
+	MemFile::currentFile->fread(&TSA.ID, sizeof(short), 1);
 	TSA.max = 0;
 	//MemFile::currentFile->fread(&TSA.nTSA,sizeof(short),0x1080,_gbaMethods->ROM);
 	for (int byteCounter = 0; byteCounter < 0x1080; byteCounter++) {
-		MemFile::currentFile->fread(&TileCheck, 2, 1, (FILE*)NULL);
+		MemFile::currentFile->fread(&TileCheck, 2, 1);
 		TSA.nTSA[byteCounter] = TileCheck;
 		if (TileCheck == 0x2) {
 			break;
@@ -98,16 +98,16 @@ void TilesetManager::ReadTSA(gTileData* tileData)
 void TilesetManager::GetPal(gTileData* tileset)
 {
 	MemFile::currentFile->seek(tileset->pTiles - 0x8000000);//Seek the endcoded pal
-	MemFile::currentFile->fread(&_gbaMethods->GBAPal[32], sizeof(short), 0x1E0, _gbaMethods->ROM);//Read pal
+	MemFile::currentFile->fread(&_gbaMethods->GBAPal[32], sizeof(short), 0x1E0);//Read pal
 	_gbaMethods->GBAPal[0] = 0;
 	_gbaMethods->GBAPal[16] = 0;
 
 
 	if (currentRomType == 0) {
 		MemFile::currentFile->seek(0x31C72E);
-		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], sizeof(short), 15, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], sizeof(short), 15);
 		MemFile::currentFile->seek(0x3ED51C);
-		MemFile::currentFile->fread(&_gbaMethods->GBAPal[16], sizeof(short), 16, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&_gbaMethods->GBAPal[16], sizeof(short), 16);
 	}
 	if (currentRomType == 0) {
 	
@@ -115,7 +115,7 @@ void TilesetManager::GetPal(gTileData* tileset)
 	else if (currentRomType == 1) {
 		_gbaMethods->GBAPal[0] = 0;
 		MemFile::currentFile->seek(0x40805E);
-		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], 2, 47, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], 2, 47);
 		
 	}
 
@@ -129,23 +129,23 @@ void TilesetManager::GetBaseGFX(gTileData* tileset, int area)
 	{
 		if ( area== 6) {
 			MemFile::currentFile->seek(0x5DA40C);
-			MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[2048], 1, 4098, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[2048], 1, 4098);
 		}
 		else {
 			MemFile::currentFile->seek(0x5D940C);
-			MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098, _gbaMethods->ROM);
+			MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
 		}
 	}
 	else if (currentRomType == 1) 
 	{
 		MemFile::currentFile->seek(0x3F28C8);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
 	}
 
 
 
 	MemFile::currentFile->seek(tileset->gTiles - 0x8000000);//Seek the compreGlobalVars::gblVars->SSEd Tileset
-	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691, _gbaMethods->ROM);//Read compression
+	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691);//Read compression
 	unsigned char* decompbuf = new unsigned char[84100];
 	memset(decompbuf, 0, 84100);
 	long size = _gbaMethods->LZ77UnComp(compBuffer, decompbuf);
@@ -211,7 +211,7 @@ int TilesetManager::GetBackground(gTileData* thisTileset)
 	memset(decompbuf, 0, 84100);
 	memset(compBuffer, 0, 64691);
 	MemFile::currentFile->seek(thisTileset->gBackground - 0x8000000);
-	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691, _gbaMethods->ROM);//Read compression
+	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691);//Read compression
 	int size = _gbaMethods->LZ77UnComp(compBuffer, decompbuf);
 	memcpy(&GBAGraphics::VRAM->BGBuf[0x7dE0- size], decompbuf, size);
 	delete[] decompbuf;
@@ -298,7 +298,7 @@ int TilesetManager::LoadSpecialEffects(long EffectNum) {
 	///if(!PreLoad){
 
 	MemFile::currentFile->seek(reference_table + ((EffectNum & 0xFF) * 0x30));
-	MemFile::currentFile->fread(&ref_array, sizeof(unsigned char), 0x30, _gbaMethods->ROM);
+	MemFile::currentFile->fread(&ref_array, sizeof(unsigned char), 0x30);
 
 	for (effectCounter = 0; effectCounter < 16; effectCounter++) {
 
@@ -306,10 +306,10 @@ int TilesetManager::LoadSpecialEffects(long EffectNum) {
 		//if not last animation, but no animation there, exit)
 		ani_source = (tileset_table + (8 * ref_array[effectCounter * 3]));
 		MemFile::currentFile->seek(ani_source);
-		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].Animated, sizeof(unsigned char), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].Timer, sizeof(unsigned char), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].NumFrames, sizeof(unsigned short), 1, _gbaMethods->ROM);
-		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].GraphicPnt, sizeof(unsigned long), 1, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].Animated, sizeof(unsigned char), 1);
+		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].Timer, sizeof(unsigned char), 1);
+		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].NumFrames, sizeof(unsigned short), 1);
+		MemFile::currentFile->fread(&animTiles->specialEffects[effectCounter].GraphicPnt, sizeof(unsigned long), 1);
 		gfx_destination = effectCounter * 0x80; //if 0 is bufferstart...
 		if (animTiles->specialEffects[effectCounter].GraphicPnt < 0x7FFFFFF) {
 			continue;
@@ -320,7 +320,7 @@ int TilesetManager::LoadSpecialEffects(long EffectNum) {
 		MemFile::currentFile->seek(animTiles->specialEffects[effectCounter].GraphicPnt - 0x8000000 + 128);
 
 
-		MemFile::currentFile->fread(&effectGraphic[0], sizeof(unsigned char), 128, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&effectGraphic[0], sizeof(unsigned char), 128);
 		for (int graphicSize = 0; graphicSize < 128; graphicSize++)
 		{
 			GBAGraphics::VRAM->fGbuf[gfx_destination + graphicSize] = effectGraphic[graphicSize];
@@ -343,14 +343,14 @@ int TilesetManager::ZMGlobalGFX(unsigned char Area) {
 	if (Area == 6) {
 
 		MemFile::currentFile->seek(0x5DA40C);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[2048], 1, 4098, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[2048], 1, 4098);
 		//If (header = "PBMXP01") Then Get _gbaMethods->ROM, &H5ED460 + 1, g2Buf
 
 	}
 	else {
 
 		MemFile::currentFile->seek(0x5D940C);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098, _gbaMethods->ROM);
+		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
 		//    If (header = "PBMXP01") Then Get _gbaMethods->ROM, &H5EC460 + 1, g2Buf
 	}
 
@@ -380,10 +380,10 @@ int TilesetManager::MFGlobalGFX() {
 
 	_gbaMethods->GBAPal[0] = 0;
 	MemFile::currentFile->seek(0x40805E);
-	MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], 2, 47, _gbaMethods->ROM);
+	MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], 2, 47);
 
 	MemFile::currentFile->seek(0x3F28C8);
-	MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098, _gbaMethods->ROM);
+	MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
 
 	return 0;
 
@@ -408,7 +408,7 @@ int TilesetManager::GetCBG(unsigned long backgroundPointer) {
 	int decmpsize = 0;
 	rom->seek(backgroundPointer - 0x8000000);
 	nMapBuffer * thisbuf = NULL;// RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer);
-	rom->fread(&thisbuf->size, 1, 1, _gbaMethods->ROM);
+	rom->fread(&thisbuf->size, 1, 1);
 	if (thisbuf->size == 0) {
 		thisbuf->X = 32;
 		thisbuf->Y = 32;
@@ -421,12 +421,12 @@ int TilesetManager::GetCBG(unsigned long backgroundPointer) {
 		thisbuf->X = 32;
 		thisbuf->Y = 64;
 	}
-	rom->fread(&palpos, 1, 1, _gbaMethods->ROM);
+	rom->fread(&palpos, 1, 1);
 	rom->seek(backgroundPointer - 0x8000000);
-	rom->fread(points, 1, 12, _gbaMethods->ROM);
+	rom->fread(points, 1, 12);
 
 	//MemFile::currentFile->seek(points[0] - 0x8000000);
-	//MemFile::currentFile->fread(buffer, 1, 32192, _gbaMethods->ROM);
+	//MemFile::currentFile->fread(buffer, 1, 32192);
 	//size = _gbaMethods->LZ77UnComp(buffer, (unsigned char*)(_gbaMethods->GBAPal));
 
 
@@ -434,7 +434,7 @@ int TilesetManager::GetCBG(unsigned long backgroundPointer) {
 	memset(compBuffer, 0, 64691);
 
 	rom->seek(points[1] - 0x8000000);
-	rom->fread(compBuffer, 1, 64691, _gbaMethods->ROM);
+	rom->fread(compBuffer, 1, 64691);
 
 
 	decmpsize = _gbaMethods->LZ77UnComp(compBuffer, buffer);
@@ -445,7 +445,7 @@ int TilesetManager::GetCBG(unsigned long backgroundPointer) {
 
 	rom->seek(points[2] - 0x8000000);
 	//Seek the compreGlobalVars::gblVars->SSEd Tileset
-	rom->fread(compBuffer, sizeof(char), 32691, _gbaMethods->ROM);//Read compression
+	rom->fread(compBuffer, sizeof(char), 32691);//Read compression
 	size = _gbaMethods->LZ77UnComp(compBuffer, buffer);
 	memcpy(&GBAGraphics::VRAM->BGBuf[0x7DE0 - size], buffer, size);
 

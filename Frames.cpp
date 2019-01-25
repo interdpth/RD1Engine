@@ -47,7 +47,7 @@ Frame::Frame(GBAMethods* gbaMethods, int newIndex, int SpriteID)
 
 
 
-Frame::Frame(GBAMethods* gbaMethods, unsigned long sourceOffset, FILE* fp, int frameIndex, int spriteID, unsigned char* tileGFX, long* pal,bool NoFrameTable)
+Frame::Frame(GBAMethods* gbaMethods, unsigned long sourceOffset,  int frameIndex, int spriteID, unsigned char* tileGFX, long* pal,bool NoFrameTable)
 {
 	_gbaMethods = gbaMethods;
 	theSprite = NULL;
@@ -55,8 +55,8 @@ Frame::Frame(GBAMethods* gbaMethods, unsigned long sourceOffset, FILE* fp, int f
 	if (!NoFrameTable)
 	{
 		MemFile::currentFile->seek(sourceOffset);
-		MemFile::currentFile->fread(&frameOffset, 4, 1, fp);
-		MemFile::currentFile->fread(&frameTimer, 4, 1, fp);
+		MemFile::currentFile->fread(&frameOffset, 4, 1);
+		MemFile::currentFile->fread(&frameTimer, 4, 1);
 	}
 	else {
 		frameOffset = sourceOffset;
@@ -111,15 +111,15 @@ int Frame::DeletePart(int partIndex)
 }
 
 
-void Frame::SaveInfo(unsigned long sourceOffset, FILE* fp, int itemSize)
+void Frame::SaveInfo(unsigned long sourceOffset,  int itemSize)
 {
 	MemFile::currentFile->seek(sourceOffset);
 	if (frameOffset == 0x8BADBEEF)
 	{
 		frameOffset = _gbaMethods->FindFreeSpace(itemSize + 16, 0xFF);
 	}
-	MemFile::currentFile->fread(&frameOffset, 4, 1, fp);
-	MemFile::currentFile->fread(&frameTimer, 4, 1, fp);
+	MemFile::currentFile->fread(&frameOffset, 4, 1);
+	MemFile::currentFile->fread(&frameTimer, 4, 1);
 }
 
 

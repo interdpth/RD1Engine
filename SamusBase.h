@@ -179,7 +179,7 @@ unsigned short v3 = 0;
 
 			MemFile::currentFile->seek(SamusOAMPointer-0x8000000);
 
-			MemFile::currentFile->fread(&startOAMIndex, 1, 1, (FILE*)NULL);
+			MemFile::currentFile->fread(&startOAMIndex, 1, 1);
 
 			theSprite->maxparts = startOAMIndex;
 			nextDrawSlot = (startOAMIndex) & 0xFF;
@@ -191,9 +191,9 @@ unsigned short v3 = 0;
 				memset(&thisOAM, 0, sizeof(OverAllOAM));
 				DecodedOAM* decodedOam = &thisOAM.deOAM;
 
-				MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1, (FILE*)NULL);
-				MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1, (FILE*)NULL);
-				MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1, (FILE*)NULL);
+				MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1);
+				MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1);
+				MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1);
 
 				//LOBYTE(OAMMemoryPointer->OAM0) = currOAM0 + BottomOfSamus; --v
 				thisOAM.enOAM.OAM0 += 2;

@@ -17,7 +17,7 @@ int  DrawRect(HDC hdc, long theColor, RECT* mpointer, int mul)
 	return 0;
 }
 #include "FusionSamus.h"
-void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, int spriteindex)
+void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer* SpriteImage, int spriteindex)
 {
 	mgrDoors->SetupDoors(area);
 	memset(&DrawStatus, 0, sizeof(drawstate));
@@ -47,13 +47,13 @@ void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteI
 	sprintf(buffer, "Loading Area: %d Room: %x, Offset %x", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
 	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
-	LoadRoom(area, room, Tileset, SpriteImage, offset, (FILE*)NULL);
+	LoadRoom(area, room, Tileset, SpriteImage, offset);
 	////Change to room header 
 	mainRoom->LoadUpSprites(spriteindex, SpriteImage);
 
 }
 
-void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset, FILE* fp)
+void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset)
 {
 	char buffer[256];
 	sprintf(buffer, "Loading Area: %d Room: %x, Offset %x", area, room, offset);
@@ -64,7 +64,7 @@ void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteI
 		mainRoom = NULL;
 	}
 
-	mainRoom = new RoomClass(currentRomType, Tileset, (SpritesetData*)NULL, _gbaMethods, (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*)NULL, area, room, offset, fp);
+	mainRoom = new RoomClass(currentRomType, Tileset, (SpritesetData*)NULL, _gbaMethods, (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*)NULL, area, room, offset);
 }
 
 int RD1Engine::GetPalSize(int sprID)
@@ -114,11 +114,11 @@ void RD1Engine::GetArrays()
 	{
 		RD1Engine::theGame->fusionInstance->LoadGameData(_gbaMethods->ROM);
 		MemFile::currentFile->seek(0x3e419c);
-		MemFile::currentFile->fread(&idkVRAM.RAM[0x900], 1, 0x36E0, (FILE*)NULL);
+		MemFile::currentFile->fread(&idkVRAM.RAM[0x900], 1, 0x36E0);
 		MemFile::currentFile->seek(0x58b466);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x40], 1, 0x14, (FILE*)NULL);
+		MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x40], 1, 0x14);
 		MemFile::currentFile->seek(0x3E40F2);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x56], 1, 0x3E, (FILE*)NULL);
+		MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x56], 1, 0x3E);
 	}
 
 }
@@ -130,7 +130,7 @@ int RD1Engine::LoadAreaTable()
 	for (int i = 0; i < areas->MemberCount; i++)
 	{
 		unsigned long gamePointer = 0;
-		MemFile::currentFile->fread(&gamePointer, sizeof(long), 1, (FILE*)NULL);
+		MemFile::currentFile->fread(&gamePointer, sizeof(long), 1);
 		RoomOffsets.push_back(gamePointer);
 	}
 	return areas->MemberCount;
@@ -153,7 +153,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	mgrTileset = new TilesetManager(_gbaMethods, currentRomType, bg, TileImage);
 	mgrScrolls = new clsRoomScrolls();
 	frameTables = _oAMFrameTable;
-	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods, (int)theTitle);
+	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods,(int)theTitle);
 	_bgBuffer = bg;
 	_tileset = ImageTileset;
 	fusionInstance = NULL;
@@ -749,7 +749,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	int maxMapHeight = 0;
 	for (int roomCounter = 0; roomCounter < maxRooms / 8; roomCounter++)
 	{
-		LoadRoom(thisArea, roomCounter, Tileset, SpriteImage);
+		LoadRoomSpriteSet(thisArea, roomCounter, Tileset, SpriteImage);
 
 		RHeader* header = &theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
@@ -770,7 +770,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	{
 
 		char infoString[12048] = { 0 };
-		LoadRoom(thisArea, roomCounter, Tileset, SpriteImage);
+		LoadRoomSpriteSet(thisArea, roomCounter, Tileset, SpriteImage);
 		DrawStatus.dirty = 1;
 		//DrawRoom();
 		vector<nEnemyList>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;

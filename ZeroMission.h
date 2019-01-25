@@ -2,7 +2,8 @@
 #include "GameConfiguration.h"
 #include "MemFile.h"
 #include "Structures.h"
-class ZeroMission 
+#include "RD1Title.h"
+class ZeroMission
 {
 public:
 	ZeroMission();

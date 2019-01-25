@@ -33,7 +33,7 @@ public:
 	void MoveObject(LPARAM lParam);
 	void Destroy();
 	void Blank();
-	static int SaveLayer(GBAMethods* GBA, MemFile * fp, unsigned char layerbyte, unsigned long* LayerPointer, nMapBuffer * layer);
+	static int SaveLayer(GBAMethods* GBA, unsigned char layerbyte, unsigned long* LayerPointer, nMapBuffer * layer);
 	nMapBuffer* GetLayer(int thelayer)
 	{
 

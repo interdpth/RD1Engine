@@ -23,35 +23,35 @@ void clsRoomScrolls::GetScrollArray(FILE* fp)
 		scrollInfoContainer = GameConfiguration::mainCFG->GetDataContainer("Scrolls");
 	}
 	MemFile::currentFile->seek(scrollInfoContainer->Value);
-	MemFile::currentFile->fread(scrollInfoContainer->DataArray, 4, scrollInfoContainer->MemberCount, fp);
+	MemFile::currentFile->fread(scrollInfoContainer->DataArray, 4, scrollInfoContainer->MemberCount);
 }
 
 
 
-int clsRoomScrolls::GetScroll(FILE* fp) {
+int clsRoomScrolls::GetScroll() {
 	mScrollInfo.Scrolls.clear();
 	mScrollInfo.Number = 0;
 	MemFile::currentFile->seek(scrollpnt);
-	MemFile::currentFile->fread(&mScrollInfo.Room, 1, 1, fp);
+	MemFile::currentFile->fread(&mScrollInfo.Room, 1, 1);
 	if (mScrollInfo.Room == 0xFF) {
 		return 0;
 	}
-	MemFile::currentFile->fread(&mScrollInfo.Number, 1, 1, fp);
+	MemFile::currentFile->fread(&mScrollInfo.Number, 1, 1);
 
 	for (int i = 0; i < mScrollInfo.Number; i++) {
 		scrollData sD;
 		sctype tmp;
-		MemFile::currentFile->fread(&tmp.xStart, 1, 1, fp);
-		MemFile::currentFile->fread(&tmp.xEnd, 1, 1, fp);
-		MemFile::currentFile->fread(&tmp.yStart, 1, 1, fp);
-		MemFile::currentFile->fread(&tmp.yEnd, 1, 1, fp);
+		MemFile::currentFile->fread(&tmp.xStart, 1, 1);
+		MemFile::currentFile->fread(&tmp.xEnd, 1, 1);
+		MemFile::currentFile->fread(&tmp.yStart, 1, 1);
+		MemFile::currentFile->fread(&tmp.yEnd, 1, 1);
 		memset(&sD.rect, 0, sizeof(MousePointer));
 		sD.rect.sX = tmp.xStart;
 		sD.rect.sY = tmp.yStart;
 		sD.rect.Height = tmp.yEnd;
 		sD.rect.Width = tmp.xEnd;
 
-		MemFile::currentFile->fread(&sD.unkData, 4, 1, fp);
+		MemFile::currentFile->fread(&sD.unkData, 4, 1);
 		if (sD.unkData != -1) {
 			sD.unkData = sD.unkData;
 		}
@@ -82,14 +82,14 @@ int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) {
 
 		thisFile->fputc(writebyte);
 		thisFile->fputc(writebyte);
-		thisFile->fwrite(&writebyte, mScrollInfo.oldScrollCount, 8, (FILE*)NULL);
+		thisFile->fwrite(&writebyte, mScrollInfo.oldScrollCount, 8);
 
 
 
 		//write data at new address
 		scrollpnt = mGBA->FindFreeSpace(1 + 1 + (mScrollInfo.Number * 4 * 2) + 32, 0xFF) + 0x8000000;
 		thisFile->seek(pnt2ScrollPointer);
-		thisFile->fwrite(&scrollpnt, 4, 1, (FILE*)NULL);
+		thisFile->fwrite(&scrollpnt, 4, 1);
 		scrollpnt -= 0x8000000;
 
 
@@ -100,19 +100,19 @@ int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) {
 	if (mScrollInfo.Room == 0xFF) {
 		return 0;
 	}
-	thisFile->fwrite(&mScrollInfo.Room, 1, 1, (FILE*) NULL);
+	thisFile->fwrite(&mScrollInfo.Room, 1, 1);
 	mScrollInfo.Number = mScrollInfo.Scrolls.size();
-	thisFile->fwrite(&mScrollInfo.Number, 1, 1, (FILE*) NULL);
+	thisFile->fwrite(&mScrollInfo.Number, 1, 1);
 
 	for (int i = 0; i < mScrollInfo.Number; i++) {
 		scrollData sD = mScrollInfo.Scrolls[i];
 
 
-		thisFile->fwrite(&sD.rect.sX, 1, 1, (FILE*)NULL);
-		thisFile->fwrite(&sD.rect.Width, 1, 1, (FILE*)NULL);
-		thisFile->fwrite(&sD.rect.sY, 1, 1, (FILE*)NULL);
-		thisFile->fwrite(&sD.rect.Height, 1, 1, (FILE*)NULL);
-		thisFile->fwrite(&sD.unkData, 4, 1, (FILE*)NULL);
+		thisFile->fwrite(&sD.rect.sX, 1, 1);
+		thisFile->fwrite(&sD.rect.Width, 1, 1);
+		thisFile->fwrite(&sD.rect.sY, 1, 1);
+		thisFile->fwrite(&sD.rect.Height, 1, 1);
+		thisFile->fwrite(&sD.unkData, 4, 1);
 
 	}
 
@@ -122,7 +122,7 @@ int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) {
 }//End Function
 
 
-int clsRoomScrolls::initScroll(FILE* fp, int area, int room) {//returns the address
+int clsRoomScrolls::initScroll(int area, int room) {//returns the address
 	unsigned char tRoom;
 	unsigned long ScrollOffset;
 	unsigned long counter;
@@ -135,7 +135,7 @@ int clsRoomScrolls::initScroll(FILE* fp, int area, int room) {//returns the addr
 
 
 		MemFile::currentFile->seek(Scroll - 0x8000000 );
-		MemFile::currentFile->fread(&ScrollOffset, sizeof(long), 1, fp);
+		MemFile::currentFile->fread(&ScrollOffset, sizeof(long), 1);
 
 		//ScrollOffset = ScrollOffset
 
@@ -143,7 +143,7 @@ int clsRoomScrolls::initScroll(FILE* fp, int area, int room) {//returns the addr
 	{
 		/*this too*/
 		MemFile::currentFile->seek(ScrollOffset - 0x8000000 + counter * 4);
-		tRoom = fgetc(fp);
+		tRoom = MemFile::currentFile->fgetc();
 		//start_Check:
 		if (tRoom != room) {
 

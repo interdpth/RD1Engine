@@ -81,7 +81,7 @@ void AnimatedTiles::GetGFX()
 		MemFile::currentFile->seek(specialEffects[effectCounter].GraphicPnt - 0x8000000 + (128 * specialEffects[effectCounter]._curFrame));
 
 
-		MemFile::currentFile->fread(&effectGraphic[0], sizeof(unsigned char), 128, (FILE*)NULL);
+		MemFile::currentFile->fread(&effectGraphic[0], sizeof(unsigned char), 128);
 		for (int graphicSize = 0; graphicSize < 128; graphicSize++)
 		{
 			GBAGraphics::VRAM->fGbuf[gfx_destination + graphicSize] = effectGraphic[graphicSize];
@@ -119,7 +119,7 @@ void AnimatedTiles::ReadTable(int effectNum)
 	///if(!PreLoad){
 
 	currentFile->seek(reference_table + ((effectNum & 0xFF) * 0x30));
-	currentFile->fread(&ref_array, sizeof(unsigned char), 0x30, (FILE*)NULL);
+	currentFile->fread(&ref_array, sizeof(unsigned char), 0x30);
 
 	for (effectCounter = 0; effectCounter < 16; effectCounter++) {
 
@@ -128,10 +128,10 @@ void AnimatedTiles::ReadTable(int effectNum)
 		ani_source = (tileset_table + (8 * ref_array[effectCounter * 3]));
 		memset(&specialEffects[effectCounter], 0, sizeof(SE));
 		currentFile->seek(ani_source);
-		currentFile->fread(&specialEffects[effectCounter].Animated, sizeof(unsigned char), 1, (FILE*)NULL);
-		currentFile->fread(&specialEffects[effectCounter].Timer, sizeof(unsigned char), 1, (FILE*)NULL);
-		currentFile->fread(&specialEffects[effectCounter].NumFrames, sizeof(unsigned short), 1, (FILE*)NULL);
-		currentFile->fread(&specialEffects[effectCounter].GraphicPnt, sizeof(unsigned long), 1, (FILE*)NULL);
+		currentFile->fread(&specialEffects[effectCounter].Animated, sizeof(unsigned char), 1);
+		currentFile->fread(&specialEffects[effectCounter].Timer, sizeof(unsigned char), 1);
+		currentFile->fread(&specialEffects[effectCounter].NumFrames, sizeof(unsigned short), 1);
+		currentFile->fread(&specialEffects[effectCounter].GraphicPnt, sizeof(unsigned long), 1);
 	}
 	//Copy from Tilemem to BGMem
 }
@@ -160,7 +160,7 @@ int AnimatedTiles::LoadSpecialEffects(long EffectNum) {
 	///if(!PreLoad){
 
 	MemFile::currentFile->seek(reference_table + ((EffectNum & 0xFF) * 0x30));
-	MemFile::currentFile->fread(&ref_array, sizeof(unsigned char), 0x30, (FILE*)NULL);
+	MemFile::currentFile->fread(&ref_array, sizeof(unsigned char), 0x30);
 
 	for (effectCounter = 0; effectCounter < 16; effectCounter++) {
 
@@ -168,10 +168,10 @@ int AnimatedTiles::LoadSpecialEffects(long EffectNum) {
 		//if not last animation, but no animation there, exit)
 		ani_source = (tileset_table + (8 * ref_array[effectCounter * 3]));
 		MemFile::currentFile->seek(ani_source);
-		MemFile::currentFile->fread(&SpecialEffects[effectCounter].Animated, sizeof(unsigned char), 1, GBA.ROM);
-		MemFile::currentFile->fread(&SpecialEffects[effectCounter].Timer, sizeof(unsigned char), 1, GBA.ROM);
-		MemFile::currentFile->fread(&SpecialEffects[effectCounter].NumFrames, sizeof(unsigned short), 1, GBA.ROM);
-		MemFile::currentFile->fread(&SpecialEffects[effectCounter].GraphicPnt, sizeof(unsigned long), 1, GBA.ROM);
+		MemFile::currentFile->fread(&SpecialEffects[effectCounter].Animated, sizeof(unsigned char), 1);
+		MemFile::currentFile->fread(&SpecialEffects[effectCounter].Timer, sizeof(unsigned char), 1);
+		MemFile::currentFile->fread(&SpecialEffects[effectCounter].NumFrames, sizeof(unsigned short), 1);
+		MemFile::currentFile->fread(&SpecialEffects[effectCounter].GraphicPnt, sizeof(unsigned long), 1);
 		gfx_destination = effectCounter * 0x80; //if 0 is bufferstart...
 		if (SpecialEffects[effectCounter].GraphicPnt < 0x7FFFFFF) {
 			continue;
@@ -183,7 +183,7 @@ int AnimatedTiles::LoadSpecialEffects(long EffectNum) {
 			MemFile::currentFile->seek(SpecialEffects[effectCounter].GraphicPnt - 0x8000000 + 128);
 
 
-			MemFile::currentFile->fread(&effectGraphic[0], sizeof(unsigned char), 128, GBA.ROM);
+			MemFile::currentFile->fread(&effectGraphic[0], sizeof(unsigned char), 128);
 			for (int graphicSize = 0; graphicSize < 128; graphicSize++)
 			{
 				GBAGraphics::VRAM->fGbuf[gfx_destination + graphicSize] = effectGraphic[graphicSize];

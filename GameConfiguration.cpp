@@ -83,7 +83,7 @@ void GameConfiguration::Load()
 		char* buffer = new char[size];
 		memset(buffer, 0, size);
 		fseek(fp, 0, SEEK_SET);
-		fread(buffer, 1, size - 1, fp);
+		fread(buffer, 1, size - 1,fp);
 
 
 		JSONValue* jsonObj = JSON::Parse((const char*)buffer);

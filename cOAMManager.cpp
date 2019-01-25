@@ -324,7 +324,7 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 
 
 ///Saves Serialized Program Interface Type Effects(SPRITES)
-int cOAMManager::SaveSprite(FILE* ROM, SaveOptions savetype, SprGBuf* tSprite, unsigned long Offset)
+int cOAMManager::SaveSprite(SaveOptions savetype, SprGBuf* tSprite, unsigned long Offset)
 {
 	unsigned long theOffset = Offset;
 	if (theOffset > 0x8000000)
@@ -334,21 +334,21 @@ int cOAMManager::SaveSprite(FILE* ROM, SaveOptions savetype, SprGBuf* tSprite, u
 
 
 	MemFile::currentFile->seek(theOffset);
-	MemFile::currentFile->fwrite(&tSprite->maxparts, 2, 1, ROM);
+	MemFile::currentFile->fwrite(&tSprite->maxparts, 2, 1);
 	OverAllOAM* thisOAM;
 	for (int partCounter = 0; partCounter < tSprite->maxparts; partCounter++)
 	{
 		thisOAM = &tSprite->OAM[partCounter];
-		MemFile::currentFile->fwrite(&thisOAM->enOAM.OAM0, 2, 1, ROM);
-		MemFile::currentFile->fwrite(&thisOAM->enOAM.OAM1, 2, 1, ROM);
-		MemFile::currentFile->fwrite(&thisOAM->enOAM.OAM2, 2, 1, ROM);
+		MemFile::currentFile->fwrite(&thisOAM->enOAM.OAM0, 2, 1);
+		MemFile::currentFile->fwrite(&thisOAM->enOAM.OAM1, 2, 1);
+		MemFile::currentFile->fwrite(&thisOAM->enOAM.OAM2, 2, 1);
 	}
 
 	return tSprite->maxparts;
 }
 
 
-int cOAMManager::DecodeOAM(FILE* ROM, bool OAMED, SprGBuf* tSprite, unsigned long Offset) {
+int cOAMManager::DecodeOAM(bool OAMED, SprGBuf* tSprite, unsigned long Offset) {
 
 	unsigned short spritecount = 0;
 
@@ -365,10 +365,10 @@ int cOAMManager::DecodeOAM(FILE* ROM, bool OAMED, SprGBuf* tSprite, unsigned lon
 
 	MemFile::currentFile->seek(Offset);
 	if (OAMED == false) {
-		MemFile::currentFile->fread(&so, 4, 1, ROM);
+		MemFile::currentFile->fread(&so, 4, 1);
 		MemFile::currentFile->seek(so - 0x8000000);
 	}
-	MemFile::currentFile->fread(&tSprite->maxparts, 2, 1, ROM);
+	MemFile::currentFile->fread(&tSprite->maxparts, 2, 1);
 	tSprite->OAM.clear();
 
 	for (i = 0; i < tSprite->maxparts; i++) 
@@ -377,9 +377,9 @@ int cOAMManager::DecodeOAM(FILE* ROM, bool OAMED, SprGBuf* tSprite, unsigned lon
 		memset(&thisOAM, 0, sizeof(OverAllOAM));
 		DecodedOAM* decodedOam = &thisOAM.deOAM;
 		
-		MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1, ROM);
-		MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1, ROM);
-		MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1, ROM);
+		MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1);
+		MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1);
+		MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1);
 		
 		FrameManager::UnpackOAM(&thisOAM.enOAM, &thisOAM.deOAM);
 		
@@ -426,7 +426,7 @@ int cOAMManager::LoadRoomOAM() {
 		sprintf(windowText, "Processing %d\n", spriteID);
 		Logger::log->LogIt(Logger::DEBUG, windowText);
 		std::vector<unsigned long>& frameTable = (OAMFrameTable->at(spriteID));
-		FrameManager* newFrameSet = new FrameManager(_gbaMethods,frameTable[0], _gbaMethods->ROM, spriteID, currentRomType, RD1Engine::theGame->idkVRAM.RAM, GBAGraphics::VRAM->SprPal);
+		FrameManager* newFrameSet = new FrameManager(_gbaMethods,frameTable[0],spriteID, currentRomType, RD1Engine::theGame->idkVRAM.RAM, GBAGraphics::VRAM->SprPal);
 		if (newFrameSet != NULL)
 		{
 			for each(Frame* f in newFrameSet->theFrames)
@@ -472,19 +472,19 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 		switch (romSwitch) {
 		case 0:
 			MemFile::currentFile->seek(ginfo[i].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 4, 1, gba->ROM);
+			MemFile::currentFile->fread(&addybuf, 4, 1);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
-			MemFile::currentFile->fread(compBuffer, 1, 64691,gba->ROM);
+			MemFile::currentFile->fread(compBuffer, 1, 64691);
 			size = gba->LZ77UnComp(compBuffer, decompbuf);
 			memcpy(&GraphicsBuffer[dst], decompbuf, size);
 			break;
 		case 1:
 			MemFile::currentFile->seek(ginfo[i].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 1, 4, gba->ROM);
+			MemFile::currentFile->fread(&addybuf, 1, 4);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
 			//MemFile::currentFile->fread(&GraphicsBuffer[dst],size, 1,  _gbaMethods->ROM);
 			size = RD1Engine::theGame->fusionInstance->MFSprSize[(thisSprite - 0x10) << 1];
-			MemFile::currentFile->fread(&decompbuf[dst], size, 1, gba->ROM);
+			MemFile::currentFile->fread(&decompbuf[dst], size, 1);
 			for (szCounter = 0; szCounter < size; szCounter++)
 			{
 				if (dst + szCounter > 0x8000)
@@ -546,7 +546,7 @@ int cOAMManager::DrawOAM()
 				/*	curFrame->theSprite->selfInitGFX = true;
 					curFrame->theSprite->selfInitPal = true;*/
 					//cOAMEdit::SetupPreview(_gbaMethods->ROM, currentRomType, curFrame);
-								DecodeOAM(_gbaMethods->ROM, true, curFrame->theSprite, curFrame->frameOffset - 0x8000000);
+								DecodeOAM(true, curFrame->theSprite, curFrame->frameOffset - 0x8000000);
 
 				//GlobalVars::gblVars->OAMED = false;
 				DrawPSprite(curFrame->theSprite);

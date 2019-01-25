@@ -79,37 +79,37 @@ int RoomClass::LoadHeader(long Offset) {//Needs to be seperate
 	long blah = 0;
 	int BGi = 0;
 	MemFile::currentFile->seek(Offset);
-	MemFile::currentFile->fread(&roomHeader.bTileset, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bBg0, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bBg1, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bBg2, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lBg3, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lForeground, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lLevelData, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lBackLayer, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lClipData, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lBackgroundTSA, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bUnknown1, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.TransForeground, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.iSep1, sizeof(unsigned short), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lSpritePointer, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bSpriteIndex1, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bEventSwitch, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.iSep2, sizeof(unsigned short), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lSpritePointer2, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bSpriteIndex2, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bEventSwitch2, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.iSeperator, sizeof(unsigned short), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.lSpritePointer3, sizeof(unsigned long), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bSpriteIndex3, sizeof(unsigned char), 1, (FILE*)NULL);
+	MemFile::currentFile->fread(&roomHeader.bTileset, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bBg0, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bBg1, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bBg2, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.lBg3, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.lForeground, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.lLevelData, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.lBackLayer, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.lClipData, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.lBackgroundTSA, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.bUnknown1, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.TransForeground, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.iSep1, sizeof(unsigned short), 1);
+	MemFile::currentFile->fread(&roomHeader.lSpritePointer, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.bSpriteIndex1, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bEventSwitch, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.iSep2, sizeof(unsigned short), 1);
+	MemFile::currentFile->fread(&roomHeader.lSpritePointer2, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.bSpriteIndex2, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bEventSwitch2, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.iSeperator, sizeof(unsigned short), 1);
+	MemFile::currentFile->fread(&roomHeader.lSpritePointer3, sizeof(unsigned long), 1);
+	MemFile::currentFile->fread(&roomHeader.bSpriteIndex3, sizeof(unsigned char), 1);
 	//blah = ftell((FILE*)NULL) - Offset;
-	MemFile::currentFile->fread(&roomHeader.bMiniMapRoomX, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bMiniMapRoomY, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bEffect, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bSceneryYPos, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bNothing, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.bMusic, sizeof(unsigned char), 1, (FILE*)NULL);
-	MemFile::currentFile->fread(&roomHeader.blank, sizeof(unsigned char), 1, (FILE*)NULL);
+	MemFile::currentFile->fread(&roomHeader.bMiniMapRoomX, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bMiniMapRoomY, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bEffect, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bSceneryYPos, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bNothing, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.bMusic, sizeof(unsigned char), 1);
+	MemFile::currentFile->fread(&roomHeader.blank, sizeof(unsigned char), 1);
 
 
 	//	SetSceneControls();
@@ -123,11 +123,11 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 	nMapBuffer* ELayer[5] = { mapMgr->GetLayer(MapManager::ForeGround),mapMgr->GetLayer(MapManager::LevelData),mapMgr->GetLayer(MapManager::Backlayer),mapMgr->GetLayer(MapManager::BackgroundLayer),mapMgr->GetLayer(MapManager::Clipdata) };//Edit Layer
 	MemFile::currentFile->seek(offset);
 	if (compression == 0x10) {
-		MemFile::currentFile->fread(&ELayer[Layer]->X, sizeof(unsigned char), 1,(FILE*) NULL);		//BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X++;		// DISCH -- added inc
-		MemFile::currentFile->fread(&ELayer[Layer]->Y, sizeof(unsigned char), 1, (FILE*)NULL);		//BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y++;		// DISCH -- added inc
+		MemFile::currentFile->fread(&ELayer[Layer]->X, sizeof(unsigned char), 1);		//BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X++;		// DISCH -- added inc
+		MemFile::currentFile->fread(&ELayer[Layer]->Y, sizeof(unsigned char), 1);		//BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y++;		// DISCH -- added inc
 																			// sprintf(buffer,"X is %x Y is %x",BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X,BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y);
 																			// sMessage(buffer);
-		MemFile::currentFile->fread(compBuffer, sizeof(unsigned char), 64691, (FILE*)NULL);
+		MemFile::currentFile->fread(compBuffer, sizeof(unsigned char), 64691);
 		ELayer[Layer]->Dirty = true;
 		//_gbaMethods->ZMUncompRle(compBuffer, (unsigned char*)BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->TileBuf2D ,BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X*BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y, 1);
 
@@ -149,7 +149,7 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 	}
 	else if (compression == 0x40) {
 		MemFile::currentFile->seek(offset);
-		MemFile::currentFile->fread(&ELayer[Layer]->size, 4, 1, (FILE*)NULL);
+		MemFile::currentFile->fread(&ELayer[Layer]->size, 4, 1);
 		ELayer[Layer]->Dirty = true;
 		if ((ELayer[Layer]->size == 1) || (ELayer[Layer]->size >= 3)) {
 			ELayer[Layer]->X = 64;
@@ -167,7 +167,7 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 
 
 		MemFile::currentFile->seek(offset + 4);
-		MemFile::currentFile->fread(compBuffer, sizeof(unsigned char), 32691, _gbaMethods->ROM);
+		MemFile::currentFile->fread(compBuffer, sizeof(unsigned char), 32691);
 
 		if (ELayer[Layer]->TileBuf2D)
 		{
@@ -192,7 +192,7 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 }
 
 
-void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset, FILE* ROM)
+void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset )
 {
 	//int area = Combos[cArea].GetListIndex();
 	//int room = Combos[cRoom].GetListIndex();
@@ -206,13 +206,13 @@ void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset
 
 	mgrSpriteObjects->LoadEnemies(&roomHeader);
 
-	RD1Engine::theGame->mgrScrolls->initScroll(_gbaMethods->ROM, area, room);
-	RD1Engine::theGame->mgrScrolls->GetScroll(_gbaMethods->ROM);
+	RD1Engine::theGame->mgrScrolls->initScroll( area, room);
+	RD1Engine::theGame->mgrScrolls->GetScroll();
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
 }
 
 
-RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset, FILE* fp)
+RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset)
 {
 	currentRomType = romType;
 	_gbaMethods = gba;
@@ -222,7 +222,7 @@ RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GB
 	memset(&roomHeader, 0, sizeof(RHeader));
 	Area = area;
 	Room = room;
-	Load(tilsetsrc, area, room, offset, fp);
+	Load(tilsetsrc, area, room, offset);
 }
 
 

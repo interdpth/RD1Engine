@@ -125,7 +125,7 @@ void MapManager::Clear()
 
 
 }
-int MapManager::SaveLayer(GBAMethods* GBA, MemFile* fp, unsigned char layerbyte, unsigned long* LayerPointer, nMapBuffer * layer) {
+int MapManager::SaveLayer(GBAMethods* GBA, unsigned char layerbyte, unsigned long* LayerPointer, nMapBuffer * layer) {
 	long tlength = 0;
 	unsigned long offset = 0;
 
@@ -152,7 +152,7 @@ int MapManager::SaveLayer(GBAMethods* GBA, MemFile* fp, unsigned char layerbyte,
 			MemFile::currentFile->seek(offset);
 			MemFile::currentFile->fputc(layer->X);
 			MemFile::currentFile->fputc(layer->Y);
-			MemFile::currentFile->fwrite(compBuffer, sizeof(char), tlength, (FILE*) NULL);
+			MemFile::currentFile->fwrite(compBuffer, sizeof(char), tlength);
 		//	GBA->Reopen();
 		}
 		else
