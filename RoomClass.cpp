@@ -125,7 +125,7 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 	if (compression == 0x10) {
 		MemFile::currentFile->fread(&ELayer[Layer]->X, sizeof(unsigned char), 1);		//BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X++;		// DISCH -- added inc
 		MemFile::currentFile->fread(&ELayer[Layer]->Y, sizeof(unsigned char), 1);		//BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y++;		// DISCH -- added inc
-																			// sprintf(buffer,"X is %x Y is %x",BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X,BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y);
+																			// sprintf(buffer,"X is %X Y is %X",BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X,BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y);
 																			// sMessage(buffer);
 		MemFile::currentFile->fread(compBuffer, sizeof(unsigned char), 64691);
 		ELayer[Layer]->Dirty = true;

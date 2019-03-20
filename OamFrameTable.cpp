@@ -20,7 +20,7 @@ void OamFrameTable::Read()
 			char* pch = strtok(buffer, "=");
 
 			int id = -1;
-			int k = sscanf(pch, "%x", &id);
+			int k = sscanf(pch, "%X", &id);
 			if (id > 256)
 			{
 				id = 0;
@@ -39,7 +39,7 @@ void OamFrameTable::Read()
 					{
 						pch[strlen(pch) - 1] = '\0';
 					}
-					int k = sscanf(pch, "%x", &tmp);
+					int k = sscanf(pch, "%X", &tmp);
 					OAMFrameTable[id].push_back(tmp);
 				}			
 				pch = strtok(NULL, ",");
@@ -71,7 +71,7 @@ OamFrameTable::OamFrameTable(int theTitle, char* fn)
 		if (OAMFrameTable[i].size()==0)
 		{
 			char buffer[256] = { 0 };
-			sprintf(buffer, "No OAM offsets for %x", i);
+			sprintf(buffer, "No OAM offsets for %X", i);
 			Logger::log->LogIt(Logger::ERRORZ, buffer);
 		}
 	}

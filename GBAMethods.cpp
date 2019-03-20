@@ -154,7 +154,7 @@ void           *GBAMethods::EncodePal(short *palGBA, long *palPC, int numpals, c
  * 
  * 
  * for( j = 0; j <  2;j++){
- * // sprintf(buf,"compreGlobalVars::gblVars->SSEd offset is: %x",src);
+ * // sprintf(buf,"compreGlobalVars::gblVars->SSEd offset is: %X",src);
  * // sMessage(buf);
  * Mode = cmp[src++];
  * 

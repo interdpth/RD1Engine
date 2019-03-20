@@ -83,7 +83,7 @@ void LeakFinder::LogActiveLeaks(Logger* instance)
 	//instance->LogIt(Logger::LOGTYPE::DEBUG, data);
 	//for each(Leak* l in Leaks)
 	//{
-	//	sprintf(data, "\tLeak Name: %s, Address: %x\n",l->LeakName, l->Address);
+	//	sprintf(data, "\tLeak Name: %s, Address: %X\n",l->LeakName, l->Address);
 	//	instance->LogIt(Logger::LOGTYPE::DEBUG, data);
 	//}
 	//sprintf(data, "End active leaks\n", data); 

@@ -539,7 +539,7 @@ int cOAMManager::DrawOAM()
 				{
 					//GlobalVars::gblVars->OAMED = true;
 				}
-				sprintf(buffer, "Loading %x\n ", curFrame->frameOffset);
+				sprintf(buffer, "Loading %X\n ", curFrame->frameOffset);
 				Logger::log->LogIt(Logger::DEBUG, buffer);
 			//	throw "OamEditor destroyed";
 				//GlobalVars::gblVars->OAMED = true;

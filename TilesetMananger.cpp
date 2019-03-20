@@ -199,8 +199,6 @@ void TilesetManager::Render(Image* srcImage)
 	}
 
 	BGImage->Load(GBAGraphics::VRAM->BGBuf, 1024);
-
-
 }
 
 int TilesetManager::GetBackground(gTileData* thisTileset)

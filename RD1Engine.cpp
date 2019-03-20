@@ -44,7 +44,7 @@ void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer
 	//	LoadingLevel = 1;
 	unsigned long offset = 0;
 	char buffer[256];
-	sprintf(buffer, "Loading Area: %d Room: %x, Offset %x", area, room, offset);
+	sprintf(buffer, "Loading Area: %d Room: %X, Offset %X", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
 	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
 	LoadRoom(area, room, Tileset, SpriteImage, offset);
@@ -56,7 +56,7 @@ void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer
 void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset)
 {
 	char buffer[256];
-	sprintf(buffer, "Loading Area: %d Room: %x, Offset %x", area, room, offset);
+	sprintf(buffer, "Loading Area: %d Room: %X, Offset %X", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
 	if (mainRoom)
 	{
@@ -144,7 +144,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	long pal[512] = { 0 };
 	tmp->SetPalette(pal);
 	tmp->Fill(0, 0, 1024, 1024, 0);
-	tmp->Blit(ThisBackBuffer.DC() , 0, 0, 1024, 1024, 0, 0);
+	tmp->Blit(ThisBackBuffer.DC(), 0, 0, 1024, 1024, 0, 0);
 	delete tmp;
 	_theLog = Logger::log;
 	currentRomType = (int)theTitle;
@@ -153,7 +153,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	mgrTileset = new TilesetManager(_gbaMethods, currentRomType, bg, TileImage);
 	mgrScrolls = new clsRoomScrolls();
 	frameTables = _oAMFrameTable;
-	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods,(int)theTitle);
+	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods, (int)theTitle);
 	_bgBuffer = bg;
 	_tileset = ImageTileset;
 	fusionInstance = NULL;
@@ -308,7 +308,7 @@ void RD1Engine::DrawSprites(Image* pic) {
 		{
 			continue;
 		}
-		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).front() && badFrame==0)
+		if (frameTables->OAMFrameTable.at(sprite_in->spriteID).front() && badFrame == 0)
 		{
 
 			int adjustedXorigin = 0;
@@ -328,7 +328,7 @@ void RD1Engine::DrawSprites(Image* pic) {
 				curbrush = CreateSolidBrush(RGB(255, 0, 0));
 				myrect.left = SpriteX - adjustedXorigin - 4;
 
-					myrect.top = SpriteY - adjustedYorigin + 4;
+				myrect.top = SpriteY - adjustedYorigin + 4;
 
 				myrect.right = (SpriteWidth)+myrect.left;
 				myrect.bottom = myrect.top + SpriteHeight;
@@ -363,17 +363,17 @@ void RD1Engine::DrawSprites(Image* pic) {
 
 		}
 		/*else {*/
-			if (true) {
-				myrect.left = SpriteX;
-				myrect.top = SpriteY;
-				myrect.right = myrect.left + 16;
-				myrect.bottom = myrect.top + 16;
-				curbrush = CreateSolidBrush(RGB(255,0, 0));
-				FrameRect(pic->DC(), &myrect, curbrush);
-				DeleteObject(curbrush);
-				TextOut(pic->DC(), SpriteX + 4,
-					SpriteY, "S", 1);
-			}
+		if (true) {
+			myrect.left = SpriteX;
+			myrect.top = SpriteY;
+			myrect.right = myrect.left + 16;
+			myrect.bottom = myrect.top + 16;
+			curbrush = CreateSolidBrush(RGB(255, 0, 0));
+			FrameRect(pic->DC(), &myrect, curbrush);
+			DeleteObject(curbrush);
+			TextOut(pic->DC(), SpriteX + 4,
+				SpriteY, "S", 1);
+		}
 		//}
 	}
 }
@@ -466,13 +466,13 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 	bool HideSprites = DrawStatus.SpriteRect;
 	bool ShowScrolls = DrawStatus.Scrolls;
 	bool ShowClip = DrawStatus.Clipdata;
-    
+
 
 	nMapBuffer* buffForeground = mgr->GetLayer(MapManager::ForeGround);
 	nMapBuffer* buffLevelData = mgr->GetLayer(MapManager::LevelData);
 	nMapBuffer* buffBackLayer = mgr->GetLayer(MapManager::Backlayer);
 	nMapBuffer* buffBackground = mgr->GetLayer(MapManager::BackgroundLayer);
-	unsigned short Width = buffLevelData->X << 4, Height = buffLevelData->Y << 4;
+	unsigned short Width = buffLevelData->X * 16 , Height = buffLevelData->Y * 16;
 
 
 	if (!((currentRomType == 0) || (currentRomType == 1))) return 0;
@@ -485,7 +485,8 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 	//Some setup
 	TileImage->Load(GBAGraphics::VRAM->fGbuf, 1024);
 	BGImage->Load(GBAGraphics::VRAM->BGBuf, 1024);
-	ThisBackBuffer.Clear();
+	ThisBackBuffer.Destroy();
+	ThisBackBuffer.Create(Width, Height);
 	SetBkMode(ThisBackBuffer.DC(), TRANSPARENT);
 	SetTextColor(ThisBackBuffer.DC(), RGB(255, 255, 255));
 
@@ -493,11 +494,11 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 
 	if (mainRoom->roomHeader.lBg3 & 0x40) {
-		
-		int mX = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->X*8;
-		int mY = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->Y*8;
+
+		int mX = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->X * 8;
+		int mY = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->Y * 8;
 		Image* bg3Img = new Image();
-			bg3Img->Create(mX*8, mY*8);
+		bg3Img->Create(mX * 8, mY * 8);
 
 		float newX = (float)mX * (float)Width;
 		newX /= 100;
@@ -506,8 +507,8 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 		bg3Img->SetPalette(GBAGraphics::VRAM->PcPalMem);
 
 		DrawLayer(buffBackground, bg3Img, 0x40);// BGImage);
-		//imgMap->Blit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
-		StretchBlt(ThisBackBuffer.DC(), 0, 0, (int)Width, Height, bg3Img->DC(), 0, 0, mX, mY, SRCCOPY);
+		bg3Img->Blit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
+		//StretchBlt(ThisBackBuffer.DC(), 0, 0, (int)Width, Height, bg3Img->DC(), 0, 0, mX, mY, SRCCOPY);
 		delete bg3Img;
 	}
 	Image* imgMap = new Image();
@@ -515,7 +516,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 	imgMap = new Image(Width, Height);
 
 	imgMap->SetPalette(GBAGraphics::VRAM->PcPalMem);
-	
+
 	if (DrawStatus.BG2) {
 
 		DrawLayer(buffBackLayer, imgMap, mainRoom->roomHeader.bBg2);//Backlayer
@@ -617,14 +618,15 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 		pic->SetPalette(GBAGraphics::VRAM->PcPalMem);
 		//this type uses the background set for tiles.
 
-//	for (int ScenRep = 0; ScenRep < mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; ScenRep++) {
-		for (thisX = 0; thisX < X; thisX++) {
-			for (thisY = 0; thisY < Y; thisY++) {
+		for (int ScenRep = 0; ScenRep < mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; ScenRep++) 
+		{
+			for (thisX = 0; thisX < X; thisX++) {
+				for (thisY = 0; thisY < Y; thisY++) {
 
-				pic->Draw(*_bgBuffer, (thisX) * 8, (thisY) * 8, TileBuf2D[(thisX)+(thisY * X)]);
+					pic->Draw(*_bgBuffer, (thisX) * 8, (thisY) * 8, TileBuf2D[(thisX)+(thisY * X)]);
+				}
 			}
 		}
-		//}
 
 	}
 	else
@@ -776,13 +778,13 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		vector<nEnemyList>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;
 		RHeader* header = &theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
-		sprintf(infoString, "%sArea %x: Room %x", infoString, thisArea, roomCounter);
+		sprintf(infoString, "%sArea %X: Room %X", infoString, thisArea, roomCounter);
 		int enemyCounter = 0;
 
 
 		if (hey->size() > 0) sprintf(infoString, "%s\nEnemies1: %d", infoString, (hey->at(0)).Max());
-		if (hey->size() > 1) sprintf(infoString, "%s\nEnemies2: %d : Event Trigger - %x", infoString, (hey->at(1)).Max(), header->bEventSwitch);
-		if (hey->size() > 2) sprintf(infoString, "%s\nEnemies3: %d : Event Trigger - %x", infoString, (hey->at(2)).Max(), header->bEventSwitch2);
+		if (hey->size() > 1) sprintf(infoString, "%s\nEnemies2: %d : Event Trigger - %X", infoString, (hey->at(1)).Max(), header->bEventSwitch);
+		if (hey->size() > 2) sprintf(infoString, "%s\nEnemies3: %d : Event Trigger - %X", infoString, (hey->at(2)).Max(), header->bEventSwitch2);
 		//sprintf(infoString, "%s\nHas %d  doors", infoString, theGame->mgrDoors->CurrentRoomDoorIndexes.size());
 
 		sprintf(infoString, "%s\nRoom X:%d\nRoomY:%d\nRoom Width:%d\nRoom Height:%d\n", infoString, header->bMiniMapRoomX, header->bMiniMapRoomX, bounds->X, bounds->Y);
@@ -868,7 +870,7 @@ int             RD1Engine::DrawClipIdent()
 }
 
 int RD1Engine::DrawScrolls(int ScrollToDraw, Scroller *scroll) {
-	
+
 	RECT blah;
 
 	MousePointer thisscroll;
@@ -899,7 +901,7 @@ int RD1Engine::DrawScrolls(int ScrollToDraw, Scroller *scroll) {
 			);
 
 
-			for (int d = 0; d<2; d++) {
+			for (int d = 0; d < 2; d++) {
 				blah.left = (thisscroll.sX) * 16 + d;
 				blah.top = (thisscroll.sY) * 16 + d;
 				blah.right = (thisscroll.Width) * 16 + d;

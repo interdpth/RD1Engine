@@ -116,8 +116,8 @@ void GameConfiguration::Load()
 			strValue.assign(data.begin(), data.end());
 			Section = strValue;
 
-			swscanf(o->Child(L"Value")->AsString().c_str(),L"%x", &Value);
-				//swprintf(buffer, L"0x%x", o->Child(L"Section")->);
+			swscanf(o->Child(L"Value")->AsString().c_str(),L"%X", &Value);
+				//swprintf(buffer, L"0x%X", o->Child(L"Section")->);
 
 			isPointer2Pointer = o->Child(L"isPointer2Pointer")->AsNumber();
 			MemberCount  = o->Child(L"MemberCount")->AsNumber();
@@ -192,7 +192,7 @@ void GameConfiguration::Save()
 		thisEntry[L"Name"] = new JSONValue(wstring(&entry->Name[0], &entry->Name[strlen(entry->Name)]));
 		thisEntry[L"Section"] = new JSONValue(wstring(&entry->Section[0], &entry->Section[strlen(entry->Section)]));
 		wchar_t buffer[64];
-		swprintf(buffer, 64,L"0x%x", entry->Value);
+		swprintf(buffer, 64,L"0x%X", entry->Value);
 		thisEntry[L"Value"] = new JSONValue(buffer);
 		thisEntry[L"isPointer2Pointer"] = new JSONValue((int)entry->isPointer2Pointer);
 		thisEntry[L"MemberCount"] = new JSONValue((int)entry->MemberCount);

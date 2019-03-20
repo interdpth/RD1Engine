@@ -158,7 +158,7 @@ int clsRoomScrolls::initScroll(int area, int room) {//returns the address
 
 				unsigned long offset = 0;
 				char buffer[256];
-				sprintf(buffer, "Loading Area: %d Room: %x, %x,%x,%x", area, room, scrollpnt, RoomScrollOffset, pnt2ScrollPointer);
+				sprintf(buffer, "Loading Area: %d Room: %X, %X,%X,%X", area, room, scrollpnt, RoomScrollOffset, pnt2ScrollPointer);
 
 				Logger::log->LogIt(Logger::DEBUG, buffer);
 
@@ -178,7 +178,7 @@ int clsRoomScrolls::initScroll(int area, int room) {//returns the address
 
 			unsigned long offset = 0;
 			char buffer[256];
-			sprintf(buffer, "Loading Area: %d Room: %x, %x,%x,%x", area, room, scrollpnt, RoomScrollOffset, pnt2ScrollPointer);
+			sprintf(buffer, "Loading Area: %d Room: %X, %X,%X,%X", area, room, scrollpnt, RoomScrollOffset, pnt2ScrollPointer);
 
 			Logger::log->LogIt(Logger::DEBUG, buffer);
 
@@ -191,7 +191,7 @@ int clsRoomScrolls::initScroll(int area, int room) {//returns the address
 
 	unsigned long offset = 0;
 	char buffer[256];
-	sprintf(buffer, "Loading Area: %d Room: %x, %x,%x,%x", area, room, scrollpnt, RoomScrollOffset, pnt2ScrollPointer);
+	sprintf(buffer, "Loading Area: %d Room: %X, %X,%X,%X", area, room, scrollpnt, RoomScrollOffset, pnt2ScrollPointer);
 
 	Logger::log->LogIt(Logger::DEBUG, buffer);
 
