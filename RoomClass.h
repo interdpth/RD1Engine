@@ -25,6 +25,8 @@ public:
 	int Area;
 	int Room;
 	int currentRomType;
+	int currentHorizScroll;
+	int currentVertScroll;
 	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset);
 	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames);
 	

@@ -51,7 +51,7 @@ int GetBitField(long reg, long bitStart, long bitLength);
 class RD1Engine
 {
 public:
-	TileBuffer *_bgBuffer; 
+	TileBuffer *_bgBuffer;
 	Image* _tileset;
 	Logger* _theLog;
 	std::map<int, PosModify> poseModifier;
@@ -81,12 +81,18 @@ public:
 	vector<long> RoomOffsets;
 	DoorManager * mgrDoors;
 	clsRoomScrolls * mgrScrolls;
-	RD1Engine(SupportedTitles theTitle, OamFrameTable* frametables,TileBuffer * bg, TileBuffer* TileImage, Image* Tileset);
+	RD1Engine(SupportedTitles theTitle, OamFrameTable* frametables, TileBuffer * bg, TileBuffer* TileImage, Image* Tileset);
 	int GetPalSize(int sprID);
 	BackBuffer ThisBackBuffer;
 	int currentRomType;
 	sSpritev idkVRAM;
-	void GetArrays();
+	int             Save(MemFile * fp);
+	int SaveLevel(unsigned long HeaderOffset);
+	bool CheckHeader(RHeader* tstHeader);
+	bool IsValidPointer(unsigned long pnt);
+	bool IsValidCompression(unsigned char tstByte);
+		int GetRoomCount(long RoomTableOffset);
+    void GetArrays();
 	~RD1Engine();
 };
 
