@@ -52,31 +52,7 @@ int SpriteObjectManager::ImportGFX() {
 	memset(Buffer, 0, 32192);
 	unsigned short i = 0;
 	int sz = 0;
-//	_gbaMethods->ReturnFileName(NULL,NULL,"Please select a GFX file to export too\0*.GFX", FileName, 512, 0);
-//	FILE* fp = fopen(FileName, "r+b");
-//	if (fp) {
-//		sz = _gbaMethods->ReturnEOF(fp);
-//
-//		if ((sz > 0x4000) && !(sz >= 0x4000))_currentFrames->GetStaticFrame()->theSprite->graphicsize = 0x4000;
-//		//MemFile::currentFile->fread(&_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000],1,_currentFrames->GetStaticFrame()->theSprite->graphicsize,fp);
-//		MemFile::currentFile->seek( 0);
-//		for (i = 0; i < sz; i++)_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000 + i] = fgetc(fp);
-//		_currentFrames->GetStaticFrame()->theSprite->Tiles->Load(_currentFrames->GetStaticFrame()->theSprite->PreRAM, 1024);
-//
-///*
-//		cOAMEdit::OamEditor->Tiles->SetPalette(_currentFrames->GetStaticFrame()->theSprite->PreviewPal);
-//		cOAMEdit::OamEditor->Tiles->Clear();
-//		for (i = 512; i < 1024; i++) {
-//			cOAMEdit::OamEditor->Tiles->Draw(*_currentFrames->GetStaticFrame()->theSprite->Tiles, ((i - 512) % 32) * 8, ((i - 512) / 32) * 8, 0x8000 + i);
-//		}*/
-//		InvalidateRect(cOAMEdit::OamEditor->hwndTiles, 0, 1);
-//		RD1Engine::theGame->mgrOAM->DrawPSprite(_currentFrames->GetStaticFrame()->theSprite);
-//		InvalidateRect(cOAMEdit::OamEditor->hwndSpritePreview, 0, 1);
-//		//InvalidateRect(cOAMEdit::OamEditor->hwndTiles,0,1);
-//		InvalidateRect(cOAMEdit::OamEditor->_oamWindow, 0, 1);
-//		fclose(fp);
-//	}
-	delete[]  Buffer;
+delete[]  Buffer;
 	return 0;
 }
 

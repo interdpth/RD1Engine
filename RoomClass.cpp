@@ -194,8 +194,8 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 
 void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset )
 {
-	//int area = Combos[cArea].GetListIndex();
-	//int room = Combos[cRoom].GetListIndex();
+	//int area = comboArea.GetListIndex;
+	//int room = comboRoom.GetListIndex();
 
 	LoadHeader(offset);
 	

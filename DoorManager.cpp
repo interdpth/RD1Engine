@@ -54,7 +54,7 @@ int   DoorManager::DeleteDoor(int Room, int doorNum)
 	return CurrentRoomDoorIndexes.size();
 }
 
-//Combos[cRoom].GetListIndex()
+//comboRoom.GetListIndex()
 int   DoorManager::GetDoor(int Room, int X, int Y)
 {
 	int             i = 0;
@@ -134,7 +134,7 @@ unsigned long DoorManager::GetAreaOffset(int Area) {
 	}
 	return doorInfoContainer->DataArray[Area];
 }
-//Combos[cArea].GetListIndex() 
+//comboArea.GetListIndex 
 int DoorManager::SaveDoors(int area) {
 
 	unsigned char h = 0;
@@ -201,8 +201,8 @@ int DoorManager::SaveDoors(int area) {
 }
 
 //please call 	
-/*Combos[cD1].Clear();
-Combos[cD2].Clear();
+/*cboDoorArea1.Clear();
+cboDoorDoor1.Clear();
 */
 int DoorManager::SetupDoors(long area) {
 

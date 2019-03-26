@@ -32,7 +32,7 @@ void MapManager::MoveObject(LPARAM lParam) {
 		//Get shit to our door
 		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
 		if (objID != -1) {
-			//switch ((unsigned char)Combos[cSpriteSet].GetListIndex()) {
+			//switch ((unsigned char)comboSpriteSet.GetListIndex()) {
 			//case 0:
 			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].X = (GetX(lParam) / 16);//;
 			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].Y = (GetY(lParam) / 16);//;

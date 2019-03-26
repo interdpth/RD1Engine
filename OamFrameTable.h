@@ -5,16 +5,17 @@
 #include <string.h>
 #include <map> 
 #include "Logger.h"
+#include "BaseTypes.h"
 class OamFrameTable
 {
 public:
-	char* fileName;
-	int TitleType; 
+	char fileName[2048];
+	SupportedTitles TitleType;
 	void Read();
 	void Save();
 	HWND comboCotainer;
 	std::map<int,std::vector<unsigned long>> OAMFrameTable;
-	OamFrameTable(int theTitle, char* fn);
+	OamFrameTable(SupportedTitles theTitle, char* appPath);
 	~OamFrameTable();
 };
 

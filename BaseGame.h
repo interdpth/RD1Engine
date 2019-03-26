@@ -13,36 +13,9 @@
 #include "LeakFinder.h"
 #include "backbuffer.h"
 #include "OamFrameTable.h"
-
+#include "BaseTypes.h"
 using namespace std;
 int  DrawTileRect(HDC hdc, long theColor, MousePointer mpointer, int mul);
-struct PosModify
-{
-	int x;
-	int y;
-};
-
-enum SupportedTitles
-{
-	titleZM = 0,
-	titleMF,
-	titleWL,
-	titleUnsupport
-};
-
-struct drawstate
-{
-	bool dirty;
-	bool BG0;
-	bool BG1;
-	bool BG2;
-	bool BG3;
-	bool Doors;
-	bool Sprites;
-	bool Clipdata;
-	bool Scrolls;
-	bool SpriteRect;
-};
 class RoomClass;
 class DoorManager;
 class TilesetManager;

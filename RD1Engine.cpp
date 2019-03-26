@@ -837,7 +837,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 
 int             RD1Engine::DrawClipIdent()
 {
-	int             currclip = 0;// Combos[cClip].GetListIndex();
+	int             currclip = 0;// cboClipData.GetListIndex();
 	RECT            blah;
 	int             thisX = 0;
 	int             thisY = 0;

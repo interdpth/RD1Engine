@@ -562,7 +562,8 @@ void            GBAMethods::Reopen()
 long            GBAMethods::FindFreeSpace(long searchSize,  unsigned char bConst) {
 
 	
-	long sz = MemFile::currentFile->size;
+	long sz = MemFile::currentFile->FileSize();
+
 	unsigned char* rawRom = MemFile::currentFile->GetFile();
 	searchSize += 0x100;//Attempts to make sure we're not over writing stuff. 
 	byte free = bConst;

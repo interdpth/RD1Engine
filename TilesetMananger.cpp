@@ -120,7 +120,7 @@ void TilesetManager::GetPal(gTileData* tileset)
 	}
 
 }
-//(unsigned char)Combos[cArea].GetListIndex()
+//(unsigned char)comboArea.GetListIndex
 void TilesetManager::GetBaseGFX(gTileData* tileset, int area)
 {
 	unsigned char*  compBuffer = new unsigned char[64691];

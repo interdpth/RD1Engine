@@ -162,6 +162,12 @@
     <ClCompile Include="ImageCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AreasManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedTiles.h">
@@ -300,6 +306,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AreasManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

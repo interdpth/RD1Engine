@@ -55,11 +55,16 @@ void OamFrameTable::Read()
 	
 }
 
-OamFrameTable::OamFrameTable(int theTitle, char* fn)
+OamFrameTable::OamFrameTable(SupportedTitles theTitle, char* appPath)
 {
 	TitleType = theTitle;
-	fileName = fn;
+	
+	char * zmString = "\\SpriteList.txt";
+	char* mfString = "\\MF_oam.txt";
+	char* titlePointer = theTitle == SupportedTitles::titleMF ? mfString : zmString;
+	std::string filePath = appPath + std::string(titlePointer);
 
+	sprintf(fileName, "%s", filePath.c_str());
 	for (int i = 0; i < 0xFF; i++)
 	{
 		OAMFrameTable[i].clear();

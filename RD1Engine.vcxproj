@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AreasManager.cpp" />
     <ClCompile Include="backbuffer.cpp" />
     <ClCompile Include="cCopyData.cpp" />
     <ClCompile Include="cEnitityManager.cpp" />
@@ -189,7 +190,9 @@
     <ClCompile Include="SpriteObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AreasManager.h" />
     <ClInclude Include="BaseGame.h" />
+    <ClInclude Include="BaseTypes.h" />
     <ClInclude Include="cCopyData.h" />
     <ClInclude Include="cli.h" />
     <ClInclude Include="clsPreviewSprite.h" />

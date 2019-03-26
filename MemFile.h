@@ -6,10 +6,11 @@ class MemFile
 public:
 
 	static MemFile* currentFile;
-	
+ 
 	MemFile(FILE* fp);
 	MemFile(int size);
-	MemFile(char* file);
+	MemFile(char* file, int expectedMinSize);
+	int FileSize();
 	void Save();
 	void Save(char* file);
 	void seek(unsigned long offset);
@@ -17,13 +18,15 @@ public:
 	unsigned char fgetc();
 	unsigned char fputc(char val);
 	void fwrite(void* dst, int count, int size);
-	int size;
+	bool ValidFileSize();
 	unsigned char* GetFile();
 	~MemFile();
 private: 
-	unsigned char* theFile; 
+	unsigned char* _theFile; 
 	long fileIndex; 
 	char* fileName;
 	FILE* inuseFile;
+	int _expectedFileSize;
+	int _fileSize;
 };
 
