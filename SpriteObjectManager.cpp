@@ -35,10 +35,13 @@ int SpriteObjectManager::ExportPal() {
 	FILE* fp = fopen(FileName, "w+b");
 	if (fp) {
 
-		for (i = 0; i <_currentFrames->GetStaticFrame()->theSprite->palsize; i++)
-//			fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128 + i], 4, 1);
-		fclose(fp);
+		for (i = 0; i < _currentFrames->GetStaticFrame()->theSprite->palsize; i++)
+		{
+			//			fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128 + i], 4, 1);
+		}
 	}
+		fclose(fp);
+	
 	//size then palettes
 	//FILE* fp  = fopen(
 	//_currentFrames->GetStaticFrame()->theSprite->palsize

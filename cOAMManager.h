@@ -7,7 +7,6 @@
 #include "FrameManager.h"
 #include "Frames.h"
 #include "GBAMethods.h"
-
 #include <vector>
 class cOAMManager
 {
@@ -47,5 +46,6 @@ public:
 	static int DecodeOAM(bool OAMED, SprGBuf* tSprite, unsigned long Offset);
 	static int LoadSpriteToMem(bool romSwitch,GBAMethods* gba, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb);
 	int currentRomType;
+	static int SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targetFrame);
 };
 

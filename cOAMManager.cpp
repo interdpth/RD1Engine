@@ -510,6 +510,102 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 }
 
 
+
+//if (GlobalVars::gblVars->frameTables->OAMFrameTable[currentSprite->id].front() == 0) return 0;
+int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targetFrame) {
+
+	long GFXPnt = 0;
+	long PalPnt = 0;
+	unsigned char*  compBuffer = new unsigned char[32688];
+	long addybuf = 0;
+	long size = 0;
+	SprGBuf*currentSprite = targetFrame->theSprite;
+	int i = 0;
+	int ii = 0;
+	char blah[256] = { 0 };
+	unsigned char *decompbuf = new unsigned char[64692];
+	memset(decompbuf, 0, 64691);
+	memset(compBuffer, 0, 32687);
+	//	currentSprite->PreviewSprite.ClearLayers();
+
+	
+	
+	CompHeader thiscompheader;
+	GFXPnt = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value;
+	GFXPnt += (currentSprite->id - 0x10) * 4;
+	PalPnt = GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (currentSprite->id - 0x10) * 4;
+	currentSprite->palsize = RD1Engine::theGame->GetPalSize(currentSprite->id);
+
+	if (!targetFrame->theSprite->selfInitPal)
+	{
+		targetFrame->theSprite->selfInitPal = true;
+
+		unsigned short transferpal[256] = { 0 };
+
+		int  X = 0;
+		long off = 0;
+		int x = 0;
+		memset(GBAGraphics::VRAM->SprPal, 0, sizeof(GBAGraphics::VRAM->SprPal));
+
+
+		MemFile::currentFile->seek(PalPnt);
+		MemFile::currentFile->fread(&addybuf, 4, 1);
+		MemFile::currentFile->seek(addybuf - 0x8000000);
+	
+		memset(GBAGraphics::VRAM->GBASprPal, 0, 0x200);
+		MemFile::currentFile->fread(&transferpal, 1, currentSprite->palsize * 2);
+		//	if(paltransfer[x][1] == 0) continue;
+		memcpy(&GBAGraphics::VRAM->GBASprPal[128], &transferpal, currentSprite->palsize * 2);
+
+		methods->DecodePal(GBAGraphics::VRAM->GBASprPal, currentSprite->PreviewPal, 16, 0);
+
+	}
+
+	if (!targetFrame->theSprite->selfInitGFX) {
+
+		MemFile::currentFile->seek(GFXPnt);
+		MemFile::currentFile->fread(&addybuf, 4, 1);
+		MemFile::currentFile->seek(addybuf - 0x8000000);
+		switch (TitleChoice) {
+		case 0:
+
+
+			MemFile::currentFile->fread(compBuffer, 1, 32687);
+			currentSprite->graphicsize = methods->LZ77UnComp(compBuffer, decompbuf);
+			//memcpy(&currentSprite->PreRAM[0x4000], &decompbuf, currentSprite->graphicsize);
+
+
+			for (int byteCounter = 0; byteCounter < currentSprite->graphicsize; byteCounter++)
+			{
+				currentSprite->PreRAM[0x4000 + byteCounter] = decompbuf[byteCounter];
+			}
+			break;
+		case 1:
+			currentSprite->graphicsize = RD1Engine::theGame->mgrOAM->MFSprSize[(currentSprite->id - 0x10) << 1];
+
+			MemFile::currentFile->fread(&currentSprite->PreRAM[0x4000], 1, currentSprite->graphicsize);
+			break;
+		}
+
+
+
+	}
+	bool OAMED = true;
+	if (targetFrame->frameOffset < 0x8000000) return -1;
+	//if (targetFrame->frameOffset != 0x8BADBEEF)
+	//{
+	//	RD1Engine::theGame->mgrOAM->DecodeOAM(ROM, OAMED, currentSprite, targetFrame->frameOffset - 0x8000000);
+	//}
+	//RD1Engine::theGame->mgrOAM->DrawPSprite(currentSprite);
+	//
+	OAMED = false;
+	delete[] decompbuf;
+	delete[] compBuffer;
+	return 0;
+}
+
+
+
 int cOAMManager::DrawOAM()
 {
 	char buffer[1024] = { 0 };

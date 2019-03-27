@@ -710,10 +710,7 @@ void Image::AlphaBlit(HDC dc, int dstx, int dsty, int width, int height, int src
 			{
 
 
-				/*dst[0] = ((dst[0] * (alow >> 8)) + (pal[src[0]].rgbBlue * (ahigh >> 8)));
-				dst[1] = ((dst[1] * (alow) >> 8 +(pal[src[0]].rgbGreen * (ahigh >> 8))));
-				dst[2] = ((dst[2] * (alow >> 8)) + (pal[src[0]].rgbRed * (ahigh >> 8)));
-				dst[3] = 0;*/
+				
 				unsigned long val;
 				memcpy(&val, src, 4);
 				unsigned long val2;

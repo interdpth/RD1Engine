@@ -66,7 +66,7 @@ void MemFile::seek(unsigned long offset)
 	{
 		char buffer[1000] = { 0 };
 		sprintf(buffer, "attempted to seek out of bounds, %d (0x%X)", offset, offset);
-		throw buffer;
+		throw new std::exception(buffer);
 	}
 	fileIndex = offset; 
 }
@@ -88,7 +88,7 @@ void MemFile::fwrite(void* src, int count, int size)
 	{
 		char buffer[1000] = { 0 };
 		sprintf(buffer, "attempted to read %d size %d many times, write size: %d", src, count, size );
-		throw buffer;
+		throw new std::exception(buffer);
 	}
 	if (readSize + fileIndex > this->_fileSize)
 	{

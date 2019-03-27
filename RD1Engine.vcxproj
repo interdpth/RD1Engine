@@ -156,6 +156,7 @@
     <ClCompile Include="DoorManager.cpp" />
     <ClCompile Include="fi.cpp" />
     <ClCompile Include="FusionSamus.cpp" />
+    <ClCompile Include="GameArea.cpp" />
     <ClCompile Include="GameConfiguration.cpp" />
     <ClCompile Include="GBABase.cpp" />
     <ClCompile Include="GBAGraphics.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="fi.h" />
     <ClInclude Include="FreeImage.h" />
     <ClInclude Include="FusionSamus.h" />
+    <ClInclude Include="GameArea.h" />
     <ClInclude Include="GameConfiguration.h" />
     <ClInclude Include="GBABase.h" />
     <ClInclude Include="GBAGraphics.h" />

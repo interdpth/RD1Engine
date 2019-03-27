@@ -14,8 +14,10 @@ TilesetManager::TilesetManager(GBAMethods* gba, int crf, TileBuffer * bg, TileBu
 
 TilesetManager::~TilesetManager()
 {
-	if(BGImage)
-	BGImage->Destroy();
+	if (BGImage) 
+	{
+		BGImage->Destroy();
+	}
 }
 
 
@@ -392,7 +394,7 @@ int TilesetManager::MFGlobalGFX() {
 
 //BaseGame::theGame->mainRoom->roomHeader.lBackgroundTSA
 int TilesetManager::GetCBG(unsigned long backgroundPointer) {
-	throw "GetCBG needs a recode entirely.";
+	new std::exception("GetCBG needs a recode entirely.");
 	MemFile* rom = MemFile::currentFile;
 	unsigned long palpos = 0;
 	unsigned char* buffer = new unsigned char[32192];

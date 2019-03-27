@@ -106,10 +106,7 @@ void RD1Engine::GetArrays()
 	RD1Engine::theGame->mgrTileset->ReadTable();
 
 
-	//MemFile::currentFile->seek(0x79BB08);
-	//for(i = 0; i < 0xB;i++) MemFile::currentFile->fread(&MFScrolls[i],4,1,_gbaMethods->ROM);
-
-	//MemFile::currentFile->fread(BaseGame::theGame->RoomOffsets, 4, 10,(FILE*)NULL);
+	
 	if (RD1Engine::theGame->thisTitle == SupportedTitles::titleMF)
 	{
 		RD1Engine::theGame->fusionInstance->LoadGameData(_gbaMethods->ROM);
@@ -1089,7 +1086,7 @@ int             RD1Engine::Save(MemFile * fp)
 			}
 			else
 			{
-				throw("Could not save Clip Data.");
+				new std::exception("Could not save Clip Data.");
 			}
 		}
 	}

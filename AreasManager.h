@@ -1,5 +1,8 @@
 #pragma once
 #include "BaseGame.h"
+#include "GameArea.h"
+#include <vector>
+using namespace std;
 class AreasManager
 {
 public:
@@ -10,4 +13,5 @@ private:
 	int  _areaCount;
 	int _currentArea;
 	SupportedTitles _myTitle;
+	vector<GameArea> areas;
 };
