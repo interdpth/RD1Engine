@@ -31,8 +31,8 @@ public:
 	static RD1Engine* theGame;
 	GBAMethods* _gbaMethods;
 	TilesetManager* mgrTileset;
-	MetroidFusion* fusionInstance;
-	ZeroMission* zmInstance;
+	BaseTitle* titleInstance;
+	//ZeroMission* titleInstance;
 	WarioLand* wlInstance;
 	RoomClass* mainRoom;
 	SupportedTitles thisTitle;

@@ -3,13 +3,16 @@
 #include "MemFile.h"
 #include "Structures.h"
 #include "RD1Title.h"
-class ZeroMission
+#include "BaseTitle.h"
+class ZeroMission:public BaseTitle
 {
 public:
-	ZeroMission();
+	ZeroMission(GBAMethods* g, MemFile* theGame);
 	~ZeroMission();
-	int GetPalSize(int sprID);
+	int GetPalSize(int sprID) override;
+	void GetGFX(int sprID, unsigned char* buffer) override;
 	const char* PoseFile = "ZeroMissionSpritePositions.txt";
+	const char* GetPoseFile() override;
 	static const char* CodeName;
 };
 

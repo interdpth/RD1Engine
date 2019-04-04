@@ -483,7 +483,7 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 			MemFile::currentFile->fread(&addybuf, 1, 4);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
 			//MemFile::currentFile->fread(&GraphicsBuffer[dst],size, 1,  _gbaMethods->ROM);
-			size = RD1Engine::theGame->fusionInstance->MFSprSize[(thisSprite - 0x10) << 1];
+			size = ((MetroidFusion*)(RD1Engine::theGame->titleInstance))->MFSprSize[(thisSprite - 0x10) << 1];
 			MemFile::currentFile->fread(&decompbuf[dst], size, 1);
 			for (szCounter = 0; szCounter < size; szCounter++)
 			{
@@ -563,41 +563,15 @@ int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targe
 
 	if (!targetFrame->theSprite->selfInitGFX) {
 
-		MemFile::currentFile->seek(GFXPnt);
-		MemFile::currentFile->fread(&addybuf, 4, 1);
-		MemFile::currentFile->seek(addybuf - 0x8000000);
-		switch (TitleChoice) {
-		case 0:
+		
 
 
-			MemFile::currentFile->fread(compBuffer, 1, 32687);
-			currentSprite->graphicsize = methods->LZ77UnComp(compBuffer, decompbuf);
-			//memcpy(&currentSprite->PreRAM[0x4000], &decompbuf, currentSprite->graphicsize);
-
-
-			for (int byteCounter = 0; byteCounter < currentSprite->graphicsize; byteCounter++)
-			{
-				currentSprite->PreRAM[0x4000 + byteCounter] = decompbuf[byteCounter];
-			}
-			break;
-		case 1:
-			currentSprite->graphicsize = RD1Engine::theGame->mgrOAM->MFSprSize[(currentSprite->id - 0x10) << 1];
-
-			MemFile::currentFile->fread(&currentSprite->PreRAM[0x4000], 1, currentSprite->graphicsize);
-			break;
-		}
-
-
+		RD1Engine::theGame->titleInstance->GetGFX(currentSprite->id, &currentSprite->PreRAM[0x4000]);
 
 	}
 	bool OAMED = true;
 	if (targetFrame->frameOffset < 0x8000000) return -1;
-	//if (targetFrame->frameOffset != 0x8BADBEEF)
-	//{
-	//	RD1Engine::theGame->mgrOAM->DecodeOAM(ROM, OAMED, currentSprite, targetFrame->frameOffset - 0x8000000);
-	//}
-	//RD1Engine::theGame->mgrOAM->DrawPSprite(currentSprite);
-	//
+
 	OAMED = false;
 	delete[] decompbuf;
 	delete[] compBuffer;

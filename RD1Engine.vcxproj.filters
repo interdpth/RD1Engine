@@ -28,6 +28,9 @@
     <Filter Include="GritInterface">
       <UniqueIdentifier>{1b99149d-ac01-428d-95bc-c8a9a22fee04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Title">
+      <UniqueIdentifier>{d24db448-3352-4325-8da9-98644ec391e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedTiles.cpp">
@@ -78,9 +81,6 @@
     <ClCompile Include="MemFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MetroidFusion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OamFrameTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,12 +106,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tilebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WarioLand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ZeroMission.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TilesetMananger.cpp">
@@ -169,6 +163,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZeroMission.cpp">
+      <Filter>Title</Filter>
+    </ClCompile>
+    <ClCompile Include="WarioLand.cpp">
+      <Filter>Title</Filter>
+    </ClCompile>
+    <ClCompile Include="MetroidFusion.cpp">
+      <Filter>Title</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseTitle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -321,6 +327,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameArea.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTitle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

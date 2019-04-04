@@ -34,20 +34,21 @@ void TileBuffer::Zero()
 	pBuf = 0;
 }
 
-void TileBuffer::Load(BYTE* dat,int tiles)
+void TileBuffer::Load(BYTE* dat, int tiles)
 {
 
 
 	// see if buffer is already big enough
+	if (nFullSize * 8 * 8 < tiles * 8 * 8)
+	{
 	
-		Destroy();	// kill existing buffer
-		pBuf = new BYTE[tiles * 8 * 8];
-		bytesused += tiles * 8 * 8;
-		nFullSize = tiles;
-	
+	Destroy();	// kill existing buffer
+	pBuf = new BYTE[tiles * 8 * 8];
+	bytesused += tiles * 8 * 8;
+	nFullSize = tiles;
 
 	nBufSize = tiles;
-
+	}
 	// actually load the tiles
 	BYTE* ptr = pBuf;
 	int i, j;

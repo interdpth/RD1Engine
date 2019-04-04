@@ -70,18 +70,9 @@ void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteI
 int RD1Engine::GetPalSize(int sprID)
 {
 	int palSize = 0;
-	switch (thisTitle)
-	{
-	case titleMF:
-		palSize = fusionInstance->GetPalSize(sprID);
-		break;
-	case titleZM:
-		palSize = zmInstance->GetPalSize(sprID);
-		break;
-	default:
 
-		break;
-	}
+		palSize = titleInstance->GetPalSize(sprID);
+
 	return palSize;
 }
 
@@ -103,13 +94,13 @@ void RD1Engine::GetArrays()
 	MFScrollListBase = &H79BB08
 	Enableit*/
 
-	RD1Engine::theGame->mgrTileset->ReadTable();
+	theGame->mgrTileset->ReadTable();
 
 
 	
 	if (RD1Engine::theGame->thisTitle == SupportedTitles::titleMF)
 	{
-		RD1Engine::theGame->fusionInstance->LoadGameData(_gbaMethods->ROM);
+		((MetroidFusion*)(RD1Engine::theGame->titleInstance))->LoadGameData();
 		MemFile::currentFile->seek(0x3e419c);
 		MemFile::currentFile->fread(&idkVRAM.RAM[0x900], 1, 0x36E0);
 		MemFile::currentFile->seek(0x58b466);
@@ -153,21 +144,21 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods, (int)theTitle);
 	_bgBuffer = bg;
 	_tileset = ImageTileset;
-	fusionInstance = NULL;
-	zmInstance = NULL;
+	titleInstance = NULL;
+	titleInstance = NULL;
 	this->thisTitle = theTitle;
 	switch (theTitle)
 	{
 	case SupportedTitles::titleMF:
-		fusionInstance = new MetroidFusion();
+		titleInstance = new MetroidFusion(_gbaMethods, MemFile::currentFile);
 
-		mgrOAM->MFSprSize = fusionInstance->MFSprSize;
-		LoadModifiers((char*)fusionInstance->PoseFile);
-		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED MF");
+		mgrOAM->MFSprSize = ((MetroidFusion*)(titleInstance))->MFSprSize;
+	
+		
 		break;
 	case SupportedTitles::titleZM:
-		zmInstance = new ZeroMission();
-		LoadModifiers((char*)zmInstance->PoseFile);
+		titleInstance = new ZeroMission(_gbaMethods, MemFile::currentFile);
+	
 		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED ZM");
 		break;
 	case SupportedTitles::titleWL:
@@ -182,6 +173,11 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 
 	}
 
+	if(titleInstance!=NULL)
+	{
+		LoadModifiers((char*)titleInstance->GetPoseFile());
+	}
+	
 	mainRoom = new RoomClass((int)theTitle, ImageTileset, NULL, _gbaMethods, &frameTables->OAMFrameTable, NULL);
 }
 void RD1Engine::LoadModifiers(char* fn)
@@ -225,14 +221,14 @@ RD1Engine::~RD1Engine()
 	delete mgrTileset;
 	delete mgrOAM;
 	delete mgrScrolls;
-	if (fusionInstance)
+	if (titleInstance)
 	{
-		delete fusionInstance;
+		delete titleInstance;
 	}
 
-	if (zmInstance)
+	if (titleInstance)
 	{
-		delete zmInstance;
+		delete titleInstance;
 	}
 }
 
@@ -508,46 +504,46 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 		//StretchBlt(ThisBackBuffer.DC(), 0, 0, (int)Width, Height, bg3Img->DC(), 0, 0, mX, mY, SRCCOPY);
 		delete bg3Img;
 	}
-	Image* imgMap = new Image();
+	Image imgMap;
 
-	imgMap = new Image(Width, Height);
+	imgMap.Create(Width, Height);
 
-	imgMap->SetPalette(GBAGraphics::VRAM->PcPalMem);
+	imgMap.SetPalette(GBAGraphics::VRAM->PcPalMem);
 
 	if (DrawStatus.BG2) {
 
-		DrawLayer(buffBackLayer, imgMap, mainRoom->roomHeader.bBg2);//Backlayer
-		imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
+		DrawLayer(buffBackLayer, &imgMap, mainRoom->roomHeader.bBg2);//Backlayer
+		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 		buffBackLayer->Dirty = 0;
 
 	}
 
-	imgMap->Clear();
+	imgMap.Clear();
 	if (DrawStatus.BG1) {
 
 		int
 			alphaHigh = 16;
 		int alphaLow = 0;
-		DrawLayer(buffLevelData, imgMap, mainRoom->roomHeader.bBg1);
+		DrawLayer(buffLevelData, &imgMap, mainRoom->roomHeader.bBg1);
 
-		imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
+		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 
 
 		buffLevelData->Dirty = 0;
 
 	}
-	imgMap->Clear();
+	imgMap.Clear();
 	bool val = HideSprites;; //SendMessage(GetDlgItem(GlobalVars::gblVars->frameControls, chkHS), BM_GETCHECK, 0, 0) == 0;
 
-	DrawSprites(imgMap);//Foreground
+	DrawSprites(&imgMap);//Foreground
 	mainRoom->mgrSpriteObjects->ShowSprites(val, 0, &ThisBackBuffer);
 
 
-	imgMap->Clear();
+	imgMap.Clear();
 
 	if (DrawStatus.BG0) {
 
-		DrawLayer(buffForeground, imgMap, mainRoom->roomHeader.bBg0);//Foreground
+		DrawLayer(buffForeground, &imgMap, mainRoom->roomHeader.bBg0);//Foreground
 
 		if ((signed)mainRoom->roomHeader.TransForeground > 16)
 		{
@@ -556,11 +552,11 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 			bfn.BlendFlags = 0;
 			bfn.SourceConstantAlpha = 150;;//Need to unhard code
 			bfn.AlphaFormat = 0;// AC_SRC_ALPHA;
-			AlphaBlend(ThisBackBuffer.DC(), 0, 0, Width, Height, imgMap->DC(), 0, 0, Width, Height, bfn); // Display bitmap
+			AlphaBlend(ThisBackBuffer.DC(), 0, 0, Width, Height, imgMap.DC(), 0, 0, Width, Height, bfn); // Display bitmap
 
 		}
 		else {
-			imgMap->TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader.bSceneryYPos, Width, Height, 0, 0);
+			imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader.bSceneryYPos, Width, Height, 0, 0);
 		}
 
 		buffForeground->Dirty = 0;
@@ -586,8 +582,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
 
-	delete imgMap;
-
+	
 	DrawStatus.dirty = false;
 	return 0;
 }

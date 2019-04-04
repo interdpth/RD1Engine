@@ -1,6 +1,13 @@
 #include "ZeroMission.h"
 
 const char* ZeroMission::CodeName = "BMXE";
+
+ZeroMission::ZeroMission(GBAMethods* g, MemFile* theGame) :BaseTitle(g, theGame, (char*)ZeroMission::CodeName) 
+{
+
+}
+
+
 int ZeroMission::GetPalSize(int sprID)
 {
 	MemFile* rom = MemFile::currentFile;
@@ -17,12 +24,23 @@ int ZeroMission::GetPalSize(int sprID)
 	return  (thiscompheader.l2 & 0xF8) * 2;
 
 }
-ZeroMission::ZeroMission()
+//&SprG->PreRAM[0x4000]
+void ZeroMission::GetGFX(int sprID,unsigned char* buffer)
 {
+	unsigned char* compBuffer = new unsigned char[32687];
+	unsigned char* decompbuf = new unsigned char[64691];
+	SeekSpriteGFX(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value, sprID);
 
+	MemFile::currentFile->fread(compBuffer, 1, 32687);
+	int size = GBA->LZ77UnComp(compBuffer, decompbuf);
+	memcpy(buffer, &decompbuf, size);
+	delete[] compBuffer;
+	delete[] decompbuf;
 }
-
-
+const char* ZeroMission::GetPoseFile()
+{
+	return this->PoseFile;
+}
 ZeroMission::~ZeroMission()
 {
 
