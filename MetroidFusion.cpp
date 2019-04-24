@@ -33,6 +33,8 @@ const char* MetroidFusion::GetPoseFile()
 	return this->PoseFile;
 }
 
+
+
 MetroidFusion::~MetroidFusion()
 {
 

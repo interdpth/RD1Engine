@@ -7,6 +7,7 @@
 //#include "BaseGame.h"
 #include "image.h"
 #include "GBAMethods.h"
+#include "BaseGame.h"
 class TilesetManager
 {
 public:
@@ -21,19 +22,19 @@ public:
 	//}
 	AnimatedTiles* animTiles;
 	GBAMethods* _gbaMethods;
-	void GetBaseTileset(unsigned char TilesetVal, int area);
+	void GetBaseTileset(unsigned char TilesetVal);
 	void ReadTable();
 	void UpdateEffects();
 	void RefreshTileset();
 	void ReadTSA(gTileData* tileData);
 	void GetPal(gTileData* tileset);
-	void GetBaseGFX(gTileData* tileset, int area);
+	void GetBaseGFX(gTileData* tileset);
 	TileBuffer* BGImage;
 	int currentRomType;
 	//SE SpecialEffects[16];
 	TilesetManager(GBAMethods* gba, int crf, TileBuffer * bg, TileBuffer* TileImage);
 	~TilesetManager();
-	int GetTileset(Image* dst, int area, unsigned char TilesetVal, int bg3);
+	int GetTileset(Image* dst, unsigned char TilesetVal, int bg3);
 	int DrawBlock(Image* src, short Map16n, int destX, int destY);
 	void DrawTileset(Image** imgTileset);
 	int ZMGlobalGFX(unsigned char Area);

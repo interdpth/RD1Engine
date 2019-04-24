@@ -14,7 +14,7 @@ TilesetManager::TilesetManager(GBAMethods* gba, int crf, TileBuffer * bg, TileBu
 
 TilesetManager::~TilesetManager()
 {
-	if (BGImage) 
+	if (BGImage)
 	{
 		BGImage->Destroy();
 	}
@@ -104,47 +104,39 @@ void TilesetManager::GetPal(gTileData* tileset)
 	_gbaMethods->GBAPal[0] = 0;
 	_gbaMethods->GBAPal[16] = 0;
 
-
+	//Leave for now.
 	if (currentRomType == 0) {
 		MemFile::currentFile->seek(0x31C72E);
 		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], sizeof(short), 15);
 		MemFile::currentFile->seek(0x3ED51C);
 		MemFile::currentFile->fread(&_gbaMethods->GBAPal[16], sizeof(short), 16);
 	}
-	if (currentRomType == 0) {
-	
-	}
+
 	else if (currentRomType == 1) {
 		_gbaMethods->GBAPal[0] = 0;
 		MemFile::currentFile->seek(0x40805E);
 		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], 2, 47);
-		
+
 	}
 
 }
 //(unsigned char)comboArea.GetListIndex
-void TilesetManager::GetBaseGFX(gTileData* tileset, int area)
+void TilesetManager::GetBaseGFX(gTileData* tileset)
 {
 	unsigned char*  compBuffer = new unsigned char[64691];
 
-	if (currentRomType == 0) 
+	if (currentRomType == 0)
 	{
-		if ( area== 6) {
-			MemFile::currentFile->seek(0x5DA40C);
-			MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[2048], 1, 4098);
-		}
-		else {
-			MemFile::currentFile->seek(0x5D940C);
-			MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
-		}
+
+		MemFile::currentFile->seek(0x5D940C);
+		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
+
 	}
-	else if (currentRomType == 1) 
+	else if (currentRomType == 1)
 	{
 		MemFile::currentFile->seek(0x3F28C8);
 		MemFile::currentFile->fread(&GBAGraphics::VRAM->fGbuf[0x800], 1, 4098);
 	}
-
-
 
 	MemFile::currentFile->seek(tileset->gTiles - 0x8000000);//Seek the compreGlobalVars::gblVars->SSEd Tileset
 	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691);//Read compression
@@ -157,12 +149,12 @@ void TilesetManager::GetBaseGFX(gTileData* tileset, int area)
 	{
 		GBAGraphics::VRAM->fGbuf[6144 + byteCounter] = decompbuf[byteCounter];
 	}
+
 	delete[] decompbuf;
-
-
 	delete[] compBuffer;
 }
-void TilesetManager::GetBaseTileset(unsigned char TilesetVal, int area)
+
+void TilesetManager::GetBaseTileset(unsigned char TilesetVal)
 {
 
 	long decomplength = 0;
@@ -174,13 +166,12 @@ void TilesetManager::GetBaseTileset(unsigned char TilesetVal, int area)
 	memset(&GBAGraphics::VRAM->PcPalMem, 0, sizeof(GBAGraphics::VRAM->PcPalMem));
 	gTileData* roomTileset = &RoomTilesets[TilesetVal];
 
-	
+
 	ReadTSA(roomTileset);
 	GetPal(roomTileset);
-	GetBaseGFX(roomTileset, area);
+	GetBaseGFX(roomTileset);
 
 	_gbaMethods->DecodePal(_gbaMethods->GBAPal, GBAGraphics::VRAM->PcPalMem, 16, 0);
-	//InvalidateRect(hwndLPE, 0, 1);
 }
 
 void TilesetManager::Render(Image* srcImage)
@@ -188,7 +179,7 @@ void TilesetManager::Render(Image* srcImage)
 	TileImage->Destroy();
 	BGImage->Destroy();
 	animTiles->GetGFX();
-	
+
 	//LoadSpecialEffects(thisTileset->EffectSet);
 	TileImage->Load(GBAGraphics::VRAM->fGbuf, 1024);
 
@@ -213,17 +204,17 @@ int TilesetManager::GetBackground(gTileData* thisTileset)
 	MemFile::currentFile->seek(thisTileset->gBackground - 0x8000000);
 	MemFile::currentFile->fread(compBuffer, sizeof(char), 64691);//Read compression
 	int size = _gbaMethods->LZ77UnComp(compBuffer, decompbuf);
-	memcpy(&GBAGraphics::VRAM->BGBuf[0x7dE0- size], decompbuf, size);
+	memcpy(&GBAGraphics::VRAM->BGBuf[0x7dE0 - size], decompbuf, size);
 	delete[] decompbuf;
 	delete[] compBuffer;
 	return 0;
 }
 
-int TilesetManager::GetTileset(Image* dst, int area, unsigned char TilesetVal, int bg3)
+int TilesetManager::GetTileset(Image* dst, unsigned char TilesetVal, int bg3)
 {
 	gTileData* thisTileset = &RoomTilesets.at(TilesetVal);
 
-	GetBaseTileset(TilesetVal, area);
+	GetBaseTileset(TilesetVal);
 	if (animTiles)
 	{
 		delete animTiles;
@@ -232,14 +223,13 @@ int TilesetManager::GetTileset(Image* dst, int area, unsigned char TilesetVal, i
 
 	animTiles = new AnimatedTiles(GameConfiguration::mainCFG->RomSwitch);
 	animTiles->ReadTable(thisTileset->EffectSet);
-	
-	
-	if (bg3 == 0x40) 
+
+	if (bg3 == 0x40)
 	{
 		GetBackground(thisTileset);
 
 	}
-	
+
 	Render(dst);
 	return 0;
 }
@@ -272,29 +262,20 @@ void TilesetManager::DrawTileset(Image** imgTileset) {
 
 
 	}
-//	tileset->glInstance->rawImage = (unsigned long*)tileset->pixels;
-	
+	//	tileset->glInstance->rawImage = (unsigned long*)tileset->pixels;	
 }
 
 int TilesetManager::LoadSpecialEffects(long EffectNum) {
 
-	long  reference_table=0, tileset_table=0, ref_offset = 0;
+	long  reference_table = 0, tileset_table = 0, ref_offset = 0;
 	long  ani_source, gfx_destination, effectCounter, pointer = 0;
 
 
 	unsigned char ref_array[0x30];
 	unsigned char effectGraphic[128];
+	reference_table = GameConfiguration::mainCFG->GetDataContainer("AnimReference")->Value;
+	tileset_table = GameConfiguration::mainCFG->GetDataContainer("AnimTileset")->Value;
 
-
-
-	if (currentRomType == 0) {
-		reference_table = 0x35FA78;
-		tileset_table = 0x35F948;
-	}
-	else if (currentRomType == 1) {
-		reference_table = 0x3C8F90;
-		tileset_table = 0x3C8D58;
-	}
 	///if(!PreLoad){
 
 	MemFile::currentFile->seek(reference_table + ((EffectNum & 0xFF) * 0x30));
@@ -314,9 +295,9 @@ int TilesetManager::LoadSpecialEffects(long EffectNum) {
 		if (animTiles->specialEffects[effectCounter].GraphicPnt < 0x7FFFFFF) {
 			continue;
 		}
-	/*	if (SpecialEffects[effectCounter].GraphicEnd != 0 || SpecialEffects[effectCounter].Timer != 0) {
-			continue;
-		}*/
+		/*	if (SpecialEffects[effectCounter].GraphicEnd != 0 || SpecialEffects[effectCounter].Timer != 0) {
+				continue;
+			}*/
 		MemFile::currentFile->seek(animTiles->specialEffects[effectCounter].GraphicPnt - 0x8000000 + 128);
 
 

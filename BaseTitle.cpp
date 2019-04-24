@@ -9,6 +9,18 @@ BaseTitle::BaseTitle(GBAMethods* g, MemFile* thisTitle, char* titlename)
 	GBA = g;
 }
 
+void BaseTitle::GetBaseTilesetGFX(gTileData* tileset)
+{
+
+}
+void BaseTitle::SeekSpriteTable(int spriteID)
+{
+	unsigned long off = 0;
+	_thisTitle->seek((spriteID * 4) + GameConfiguration::mainCFG->GetDataContainer("SpriteSetTable")->Value);
+	_thisTitle->fread(&off, sizeof(long), 1);
+	_thisTitle->seek(off - 0x8000000);
+
+}
 void BaseTitle::SeekSpriteGFX(unsigned long tableOffset, int id)
 {
 	unsigned long addybuf = 0;
@@ -20,8 +32,15 @@ void BaseTitle::SeekSpriteGFX(unsigned long tableOffset, int id)
 BaseTitle::~BaseTitle()
 {
 }
-
-
+int BaseTitle::GetRoomCount(int area)
+{
+	return GameConfiguration::mainCFG->GetDataContainer("RoomsPerArea")->DataArray[area];
+}
+vector<string>* BaseTitle::GetAreaNames()
+{
+	DataContainer* areaNames = GameConfiguration::mainCFG->GetDataContainer("AreaNames");
+	return &areaNames->stringArray;
+}
 
 
 void BaseTitle::GetGFX(int sprID, unsigned char* buffer) {

@@ -24,7 +24,9 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 	Containers.push_back(new DataContainer(-1, "Framework", "UIState", 2, false, 0));
 	Containers.push_back(new DataContainer(1, "Framework", "UIState", 2, false, 0));
 	Containers.push_back(new DataContainer(0, "Framework", "UIState", 2, false, 0));
-	if (RomSwitch == 0 || RomSwitch==1) {
+	if (RomSwitch == 0 || RomSwitch == 1) {
+		Containers.push_back(new DataContainer(0, "Framework", "BaseTilesetGFX", 0x5D940C, false, 1));
+		Containers.push_back(new DataContainer(0, "Framework", "BaseRoomGFX", 0x75FAA8, false, 1));
 		Containers.push_back(new DataContainer(0, "Framework", "Doors", 0x75FAA8, false, 8));
 		Containers.push_back(new DataContainer(0, "Framework", "Scrolls", 0x75FD28, false, 0xB));
 		Containers.push_back(new DataContainer(0, "Framework", "Connections", 0x05EEB8, false, 1));
@@ -40,12 +42,15 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 		Containers.push_back(new DataContainer(0, "Framework", "SpriteGFX", 0x75EBF8, false, 0));
 		Containers.push_back(new DataContainer(0, "Framework", "SpritePal", 0x75EEF0, false, 0x0));
 		Containers.push_back(new DataContainer(0, "Framework", "SpritePalSizes", 0x75EBF8, false, 0x0));
+		Containers.push_back(new DataContainer(0, "Framework", "SpriteSetTable", 0x75F31C, false, 0x0));
 
-		unsigned long zmRoomsPerArea[8] = { 0x2A, 0x2A, 0x39, 0x21, 0x14, 0x16, 0x73 };
-		Containers.push_back(new DataContainer(0, "Framework", "RoomsPerArea", 0, false, zmRoomsPerArea, 8));	
-
-
-
+		unsigned long zmRoomsPerArea[] = { 0x2A, 0x2A, 0x39, 0x21, 0x14, 0x16, 0x73 };
+		char* zmAreas[] = { "Brinstar","Kraid","Norfair","Ridley","Tourian","Crateria","Chozodia" };
+		
+		Containers.push_back(new DataContainer(0, "Framework", "RoomsPerArea", 0, false, zmRoomsPerArea, 8));
+		Containers.push_back(new DataContainer(0, "Framework", "AreaNames", 0, false, zmAreas, 7));
+		
+		Containers.push_back(new DataContainer(1, "Framework", "BaseTilesetGFX", 0x3F28C8, false, 1));
 		Containers.push_back(new DataContainer(1, "Framework", "Doors", 0x79B894, false, 10));
 		Containers.push_back(new DataContainer(1, "Framework", "Scrolls", 0x79BB08, false, 0xC));
 		Containers.push_back(new DataContainer(1, "Framework", "Connections", 0x6945c, false, 1));
@@ -59,9 +64,12 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 		Containers.push_back(new DataContainer(1, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
 		Containers.push_back(new DataContainer(1, "Framework", "SpriteGFX", 0x79A5D8, false, 0));
 		Containers.push_back(new DataContainer(1, "Framework", "SpritePal", 0x79A8D4, false, 0x0));
+		Containers.push_back(new DataContainer(1, "Framework", "SpriteSetTable", 0x79ADD8, false, 0x0));
 
-		unsigned long mfRoomsPerArea[10] = { 0x57,0x36,0x3D,0x27,0x30,0x34,0x29,0x4,0x4,0x4 };
+		unsigned long mfRoomsPerArea[] = { 0x57,0x36,0x3D,0x27,0x30,0x34,0x29,0x4,0x4,0x4 };
 		Containers.push_back(new DataContainer(1, "Framework", "RoomsPerArea", 0, false, mfRoomsPerArea, 10));
+		char* mfAreas[]={"Main Deck","SRX","TRO","PYR","AQA","ARC","NOC","Debug1","Debug2","Debug3"};
+		Containers.push_back(new DataContainer(1, "Framework", "AreaNames", 0, false, mfAreas, 10));
 	}
 }
 
@@ -200,12 +208,34 @@ void GameConfiguration::Save()
 		//If this is an array the gets inited upon reading the file
 		if (entry->initedVal)
 		{
+			if (entry->isString)
+			{
+				/*for (int dataCounter = 0; dataCounter < entry->MemberCount; dataCounter++)
+				{
+
+
+					data.push_back(new JSONValue((int)entry->DataArray[dataCounter]));
+
+
+				}
+				thisEntry[L"stringArray"] = new JSONValue(data);*/
+			}
+			else 
+			{
+
+			
 			for (int dataCounter = 0; dataCounter < entry->MemberCount; dataCounter++)
 			{
-				data.push_back(new JSONValue((int)entry->DataArray[dataCounter]));
+				
+			
+					data.push_back(new JSONValue((int)entry->DataArray[dataCounter]));
+				
+				
+			}
+			thisEntry[L"DataArray"] = new JSONValue(data);
 			}
 		}
-		thisEntry[L"DataArray"] = new JSONValue(data);
+		
 
 		arr.push_back(new JSONValue(thisEntry));
 	}

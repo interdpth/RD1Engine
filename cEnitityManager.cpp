@@ -18,7 +18,7 @@ cEntityManager::~cEntityManager()
 	delete[] palinfo;
 	delete[] spriteset;
 }
-int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM , GFXData* spritedata, PalData*Palettedata, sprite_entry* SpriteInfo, unsigned char SpriteSetNo)
+int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, PalData*Palettedata, sprite_entry* SpriteInfo, unsigned char SpriteSetNo)
 {
 
 	int ii = 0, X = 0, i = 0;
@@ -28,38 +28,36 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM , GFXData* spritedat
 	if (ReadObjectDetailsFromROM == true) {
 		RD1Engine::theGame->mgrOAM->maxsprite = 0;
 
-		for (ii = 0; ii<15; ii++)
+		for (ii = 0; ii < 15; ii++)
 		{
 			enemydat[ii] = 16;
 			destination[ii] = 0;
 		}
 
-		for (X = 0; X<15; X++) {
+		for (X = 0; X < 15; X++) {
 			Palettedata[X].RomPointer = Palettedata[X].MemDst = Palettedata[X].Size = 0;
 			SpriteInfo[X].spriteID = SpriteInfo[X].sprdetail = 0;
 			spritedata[X].RomPointer = spritedata[X].MemDst = 0;
 
 		}
-		if (_gbaMethods->ROM) {
-			MemFile::currentFile->seek(SpriteSetNo * 4 + 0x79ADD8);
-			MemFile::currentFile->fread(&off, sizeof(long), 1);
-			MemFile::currentFile->seek(off - 0x8000000);
-			for (i = 0; i< 15; i++) {
+		RD1Engine::theGame->titleInstance->SeekSpriteTable(SpriteSetNo);
 
-				MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1);
-				MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1); 
-			}
+		for (i = 0; i < 15; i++) {
+
+			MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1);
+			MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1);
 		}
+
 
 	}
 	//	unsigned int BaseGame::theGame->mgrOAM->sprite_in[X].sprtype= BaseGame::theGame->mgrOAM->sprite_in[ii].sprtype, sprdetail= BaseGame::theGame->mgrOAM->sprite_in[ii].sprdetail, 
 	int prevsprdetail = 255;
 	RD1Engine::theGame->mgrOAM->maxsprite = 0;
 	////if (GlobalVars::gblVars->SSE == true)cSSE::SpriteSet->total = 0;
-	for (X = 0; X<15; X++)
+	for (X = 0; X < 15; X++)
 	{
 		sprite_entry* sprite_in = &RD1Engine::theGame->mgrOAM->roomSpriteIds[X];
-		
+
 		////if (GlobalVars::gblVars->SSE == true)cSSE::SpriteSet->total++;
 		if ((sprite_in->spriteID == 0) && (X != 0)) break;
 		RD1Engine::theGame->mgrOAM->maxsprite++;
@@ -100,12 +98,12 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 
 
 
-	for (X = 0; X<15; X++) {
+	for (X = 0; X < 15; X++) {
 		enemydat[X] = 0x10;
 		destination[X] = 0x00;
 	}
 
-	for (X = 0; X<15; X++) {
+	for (X = 0; X < 15; X++) {
 		Palettedata[X].RomPointer = Palettedata[X].MemDst = Palettedata[X].Size = 0;
 		if (ReadObjectDetailsFromROM == false)
 			SpriteInfo[X].spriteID = SpriteInfo[X].sprdetail = 0;
@@ -114,18 +112,16 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 
 	}
 	if (ReadObjectDetailsFromROM == false) {
-		MemFile::currentFile->seek((SpriteSetNo * 4) + 0x75F31C);
-		MemFile::currentFile->fread(&off, sizeof(long), 1);
-		MemFile::currentFile->seek(off - 0x8000000);
+		RD1Engine::theGame->titleInstance->SeekSpriteTable(SpriteSetNo);
 
-		for (i = 0; i< 15; i++) {
+		for (i = 0; i < 15; i++) {
 			MemFile::currentFile->fread(&SpriteInfo[i].spriteID, 1, 1);
 			MemFile::currentFile->fread(&SpriteInfo[i].sprdetail, 1, 1);
 		}
 	}
 	compare = 0xFF;
 
-	for (X = 0; X<15; X++) {
+	for (X = 0; X < 15; X++) {
 
 		if (SpriteInfo[X].spriteID == 0) {
 			max = X;
@@ -152,7 +148,7 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 						   //gfx and palette loading
 		spritedata[X].RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
 		spritedata[X].MemDst = (SpriteInfo[X].sprdetail * 0x800);
-		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4);
+		MemFile::currentFile->seek(spritedata[X].RomPointer);
 		MemFile::currentFile->fread(&off, 4, 1);
 		MemFile::currentFile->seek(off - 0x8000000);
 		MemFile::currentFile->fread(&thiscompheader.check_ten, 1, 1);       //Check byte should be 0x10 for lz
@@ -169,7 +165,7 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 	//	cSSE::SpriteSet->total = max;
 	//}
 	//else {
-		RD1Engine::theGame->mgrOAM->maxsprite = max;
+	RD1Engine::theGame->mgrOAM->maxsprite = max;
 	//}
 
 	return 0;
@@ -188,10 +184,10 @@ int cEntityManager::LoadPal(PalData* palinfo, sprite_entry* spriteset, long *Pal
 	memset(Palette, 0, 512);
 	//cSSE::SpriteSet->usedPAL = 0;
 	//	memset(&GBAcSprPal[128],0,sizeof( GBAGraphics::VRAM->GBASprPal)-128);
-	 memset(& GBAGraphics::VRAM->SprPal,0,0x4000);
+	memset(&GBAGraphics::VRAM->SprPal, 0, 0x4000);
 
 
-	for (x = 0; x<max; x++) {
+	for (x = 0; x < max; x++) {
 		if (palinfo[x].RomPointer != 0) {
 			unsigned char thisSprite = spriteset[x].spriteID;
 			if (x != 0 && palinfo[x].RomPointer == 0) break;
@@ -200,22 +196,14 @@ int cEntityManager::LoadPal(PalData* palinfo, sprite_entry* spriteset, long *Pal
 			MemFile::currentFile->fread(&addybuf, 4, 1);
 			MemFile::currentFile->seek(addybuf - 0x8000000);
 			MemFile::currentFile->fread(&transferpal, 1, (palinfo[x].Size) * 2);
-			/*sprintf(blah, "C:\\FusionLessonInEvolution\\SpriteGFXPAL\\Sprite_PAL_%X.bin", thisSprite);
-			fp = fopen(blah, "w+");
-			if (fp) {
-				fwrite(&transferpal, 1, (palinfo[x].Size) * 2,  fp);
-				fclose(fp);
-				fp = NULL;
-			}
-*/
-			//	if(paltransfer[x][1] == 0) continue;
+
 			sprintf(osh, "Dst is: %X", palinfo[x].MemDst);
 
 			if (128 + (palinfo[x].MemDst) < 256)
 			{
 				memcpy(&GBAGraphics::VRAM->GBASprPal[128 + (palinfo[x].MemDst)], &transferpal, (palinfo[x].Size) * 2);
 			}
-			//if (GlobalVars::gblVars->SSE) cSSE::SpriteSet->usedPAL += (palinfo[x].Size);
+			
 		}
 
 	}

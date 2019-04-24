@@ -569,10 +569,10 @@ int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targe
 		RD1Engine::theGame->titleInstance->GetGFX(currentSprite->id, &currentSprite->PreRAM[0x4000]);
 
 	}
-	bool OAMED = true;
+	
 	if (targetFrame->frameOffset < 0x8000000) return -1;
 
-	OAMED = false;
+	
 	delete[] decompbuf;
 	delete[] compBuffer;
 	return 0;

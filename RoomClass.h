@@ -43,5 +43,6 @@ public:
 	int GetLayerData(unsigned char compression, unsigned char Layer, unsigned long offset);
 	void Export(char* name);
 	void Import(char* name);
+	void SaveHeader(unsigned long offset);
 };
 

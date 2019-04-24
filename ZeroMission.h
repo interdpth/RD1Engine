@@ -11,6 +11,7 @@ public:
 	~ZeroMission();
 	int GetPalSize(int sprID) override;
 	void GetGFX(int sprID, unsigned char* buffer) override;
+
 	const char* PoseFile = "ZeroMissionSpritePositions.txt";
 	const char* GetPoseFile() override;
 	static const char* CodeName;

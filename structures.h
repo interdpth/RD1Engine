@@ -240,6 +240,7 @@ struct RECORD {
 	unsigned long	height;
 };
 
+//wtf
 class wndCPal {
 	HWND me;
 	long epal[256];

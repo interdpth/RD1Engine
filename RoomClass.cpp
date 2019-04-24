@@ -56,8 +56,6 @@ void RoomClass::LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage) 
 		else 
 		if (currentRomType == 1)
 		{
-		/*	GlobalVars::gblVars->ReadObjectDetailsFromROM = true;
-			GlobalVars::gblVars->SSE = true;*/
 			mgrEntities->MFLoadSet(currentRomType,mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
 		}
 		mgrEntities->LoadPal(mgrSpriteObj->paltransfer, mgrOAM->roomSpriteIds, GBAGraphics::VRAM->SprPal);
@@ -199,7 +197,7 @@ void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset
 
 	LoadHeader(offset);
 	
-	int load = RD1Engine::theGame->mgrTileset->GetTileset(tilesetsrc, area, roomHeader.bTileset, roomHeader.lBg3);
+	int load = RD1Engine::theGame->mgrTileset->GetTileset(tilesetsrc, roomHeader.bTileset, roomHeader.lBg3);
 	
 	LoadData();
 	RD1Engine::theGame->mgrDoors->LoadDoors(room);
@@ -243,4 +241,41 @@ RoomClass::~RoomClass()
 	delete mapMgr;
 	
 	delete mgrEntities;
+}
+
+void RoomClass::SaveHeader(unsigned long offset)
+{
+	MemFile::currentFile->seek(offset);
+	MemFile::currentFile->fwrite(&roomHeader.bTileset, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bBg0, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bBg1, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bBg2, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lBg3, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lForeground, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lLevelData, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lBackLayer, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lClipData, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lBackgroundTSA, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bUnknown1, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.TransForeground, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.iSep1, sizeof(unsigned short), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lSpritePointer, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bSpriteIndex1, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bEventSwitch, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.iSep2, sizeof(unsigned short), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lSpritePointer2, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bSpriteIndex2, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bEventSwitch2, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.iSeperator, sizeof(unsigned short), 1);
+	MemFile::currentFile->fwrite(&roomHeader.lSpritePointer3, sizeof(unsigned long), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bSpriteIndex3, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bMiniMapRoomX, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bMiniMapRoomY, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bEffect, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bSceneryYPos, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bNothing, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.bMusic, sizeof(unsigned char), 1);
+	MemFile::currentFile->fwrite(&roomHeader.blank, sizeof(unsigned char), 1);
+
+
 }

@@ -29,11 +29,14 @@ void ZeroMission::GetGFX(int sprID,unsigned char* buffer)
 {
 	unsigned char* compBuffer = new unsigned char[32687];
 	unsigned char* decompbuf = new unsigned char[64691];
+	memset(compBuffer, 0, 32687);
+	memset(decompbuf, 0, 64691);
 	SeekSpriteGFX(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value, sprID);
 
 	MemFile::currentFile->fread(compBuffer, 1, 32687);
 	int size = GBA->LZ77UnComp(compBuffer, decompbuf);
-	memcpy(buffer, &decompbuf, size);
+	for (int i = 0; i < size; i++) buffer[i] = decompbuf[i];
+	//memcpy(buffer, &decompbuf, size);
 	delete[] compBuffer;
 	delete[] decompbuf;
 }
