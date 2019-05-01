@@ -54,7 +54,10 @@ void OamFrameTable::Read()
 	}
 	
 }
-
+bool OamFrameTable::FramesExist(int id)
+{
+	return OAMFrameTable[id].front() != 0;
+}
 OamFrameTable::OamFrameTable(SupportedTitles theTitle, char* appPath)
 {
 	TitleType = theTitle;

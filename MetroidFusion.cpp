@@ -15,12 +15,13 @@ int MetroidFusion::GetPalSize(int sprID)
 	return ((MFSprSize[(sprID - 0x10) << 1] / 2048) * 16);
 }
 
-void MetroidFusion::GetGFX(int sprID, unsigned char* gfxBuffer)
+int MetroidFusion::GetGFX(int sprID, unsigned char* gfxBuffer)
 {
 	SeekSpriteGFX(GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value, sprID);
 	int size = this->MFSprSize[(sprID - 0x10) << 1];
 
 	MemFile::currentFile->fread(gfxBuffer, 1, size);
+	return size;
 }
 
 MetroidFusion::MetroidFusion(GBAMethods* g, MemFile* theGame) :BaseTitle(g, theGame, (char*)MetroidFusion::CodeName)

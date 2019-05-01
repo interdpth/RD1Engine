@@ -14,6 +14,8 @@ public:
 	void Read();
 	void Save();
 	HWND comboCotainer;
+	bool FramesExist(int id);
+
 	std::map<int,std::vector<unsigned long>> OAMFrameTable;
 	OamFrameTable(SupportedTitles theTitle, char* appPath);
 	~OamFrameTable();

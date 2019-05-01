@@ -447,7 +447,6 @@ int cOAMManager::LoadRoomOAM() {
 	return 0;
 }
 
-
 int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb) {
 	unsigned long addybuf = 0;
 	unsigned long size = 0;
@@ -456,9 +455,10 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 	unsigned long dst = 0;
 	unsigned char* decompbuf = new unsigned char[0x10000];
 	unsigned char*  compBuffer = new unsigned char[64691];
+	int usedGfx = 0;
 	//cSSE::SpriteSet->usedGFX = 0;
 	memset(&GraphicsBuffer[0x4000], 0, 0x4000);
-	gba->Reopen();
+
 	for (i = 0; i < 15; i++) {
 		unsigned char thisSprite = spriteset[i].spriteID;
 		dst = 0x4000 + (ginfo[i].MemDst);
@@ -468,50 +468,22 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 		}
 		if ((i != 0) && ginfo[i].MemDst == 0) continue;
 		if (ginfo[i].RomPointer == 0)		continue;
+		RD1Engine::theGame->titleInstance->GetGFX(thisSprite, &GraphicsBuffer[dst]);
 
-		switch (romSwitch) {
-		case 0:
-			MemFile::currentFile->seek(ginfo[i].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 4, 1);
-			MemFile::currentFile->seek(addybuf - 0x8000000);
-			MemFile::currentFile->fread(compBuffer, 1, 64691);
-			size = gba->LZ77UnComp(compBuffer, decompbuf);
-			memcpy(&GraphicsBuffer[dst], decompbuf, size);
-			break;
-		case 1:
-			MemFile::currentFile->seek(ginfo[i].RomPointer);
-			MemFile::currentFile->fread(&addybuf, 1, 4);
-			MemFile::currentFile->seek(addybuf - 0x8000000);
-			//MemFile::currentFile->fread(&GraphicsBuffer[dst],size, 1,  _gbaMethods->ROM);
-			size = ((MetroidFusion*)(RD1Engine::theGame->titleInstance))->MFSprSize[(thisSprite - 0x10) << 1];
-			MemFile::currentFile->fread(&decompbuf[dst], size, 1);
-			for (szCounter = 0; szCounter < size; szCounter++)
-			{
-				if (dst + szCounter > 0x8000)
-				{
-					GraphicsBuffer[0x8000 - dst] = decompbuf[0x8000 - dst];
-					break;
-				}
-				else
-				{
-					GraphicsBuffer[dst + szCounter] = decompbuf[dst + szCounter];
-				}
-			}
-			break;
-		}
-		//if (//GlobalVars::gblVars->SSE == true) cSSE::SpriteSet->usedGFX += size;
+		usedGfx += size;
 
 	}
+	
 
-	tb->Load(GraphicsBuffer, 1023);
+	tb->Load(GraphicsBuffer, 1024);
 	delete[] decompbuf;
 	delete[] compBuffer;
-	return 0;
+	return usedGfx;
 }
 
 
 
-//if (GlobalVars::gblVars->frameTables->OAMFrameTable[currentSprite->id].front() == 0) return 0;
+//if (GlobalVars::gblVars->frameTables->FramesExist(currentSprite->id].front() == 0) return 0;
 int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targetFrame) {
 
 	long GFXPnt = 0;
@@ -530,7 +502,7 @@ int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targe
 
 	
 	
-	CompHeader thiscompheader;
+
 	GFXPnt = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value;
 	GFXPnt += (currentSprite->id - 0x10) * 4;
 	PalPnt = GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (currentSprite->id - 0x10) * 4;
@@ -629,7 +601,7 @@ int cOAMManager::DrawOAM()
 			}
 			sprCounter++;
 		}
-		catch (char* a) { throw; }
+		catch (char* a) { throw a; }
 
 	}
 	DumpLayers();

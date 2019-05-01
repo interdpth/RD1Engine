@@ -14,7 +14,8 @@ public:
 	void SeekSpriteGFX(unsigned long tableOffset, int id);
 	void SeekSpriteTable(int spriteID);
 	void GetBaseTilesetGFX(gTileData* tileset);
-	virtual void GetGFX(int sprID, unsigned char* buffer);
+	void SeekPointer(unsigned long pointer);
+	virtual int GetGFX(int sprID, unsigned char* buffer);
 	virtual int GetPalSize(int sprID);
 	virtual const char* GetPoseFile();
 	vector<string>* GetAreaNames();

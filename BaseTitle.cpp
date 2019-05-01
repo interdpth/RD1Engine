@@ -42,9 +42,15 @@ vector<string>* BaseTitle::GetAreaNames()
 	return &areaNames->stringArray;
 }
 
-
-void BaseTitle::GetGFX(int sprID, unsigned char* buffer) {
-	return;
+void BaseTitle::SeekPointer(unsigned long pointer)
+{
+	unsigned long addybuf = 0;
+	_thisTitle->seek(pointer);
+	_thisTitle->fread(&addybuf, 4, 1);
+	_thisTitle->seek(addybuf - 0x8000000);
+}
+int BaseTitle::GetGFX(int sprID, unsigned char* buffer) {
+	return 0;
 }
 int BaseTitle::GetPalSize(int sprID) {
 	return -1;

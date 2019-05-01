@@ -10,7 +10,7 @@ public:
 	int GetPalSize(int sprID) override;
 	MetroidFusion(GBAMethods* g, MemFile* theGame);
 	~MetroidFusion();
-	void GetGFX(int sprID, unsigned char* gfxBuffer) override;
+	int GetGFX(int sprID, unsigned char* gfxBuffer) override;
 	const char* GetPoseFile() override;
 	const char* PoseFile = "fusionSpritePositions.txt";
 	static const char* CodeName;

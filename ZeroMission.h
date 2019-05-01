@@ -10,7 +10,7 @@ public:
 	ZeroMission(GBAMethods* g, MemFile* theGame);
 	~ZeroMission();
 	int GetPalSize(int sprID) override;
-	void GetGFX(int sprID, unsigned char* buffer) override;
+	int GetGFX(int sprID, unsigned char* buffer) override;
 
 	const char* PoseFile = "ZeroMissionSpritePositions.txt";
 	const char* GetPoseFile() override;

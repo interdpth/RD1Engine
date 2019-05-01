@@ -25,7 +25,7 @@ int ZeroMission::GetPalSize(int sprID)
 
 }
 //&SprG->PreRAM[0x4000]
-void ZeroMission::GetGFX(int sprID,unsigned char* buffer)
+int ZeroMission::GetGFX(int sprID,unsigned char* buffer)
 {
 	unsigned char* compBuffer = new unsigned char[32687];
 	unsigned char* decompbuf = new unsigned char[64691];
@@ -39,6 +39,7 @@ void ZeroMission::GetGFX(int sprID,unsigned char* buffer)
 	//memcpy(buffer, &decompbuf, size);
 	delete[] compBuffer;
 	delete[] decompbuf;
+	return size;
 }
 const char* ZeroMission::GetPoseFile()
 {
