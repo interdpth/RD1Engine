@@ -42,16 +42,7 @@
     <ClCompile Include="cEnitityManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Frames.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameUtilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SprGBuf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpriteObjectManager.cpp">
@@ -175,6 +166,21 @@
       <Filter>Title</Filter>
     </ClCompile>
     <ClCompile Include="BaseTitle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameManager.cpp">
+      <Filter>SpriteOAM</Filter>
+    </ClCompile>
+    <ClCompile Include="Frames.cpp">
+      <Filter>SpriteOAM</Filter>
+    </ClCompile>
+    <ClCompile Include="SprGBuf.cpp">
+      <Filter>SpriteOAM</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\grit\libgrit\cprs_lz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -330,6 +336,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseTitle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,6 +14,8 @@
 #include "backbuffer.h"
 #include "OamFrameTable.h"
 #include "BaseTypes.h"
+//#include "AreasManager.h"
+//#include "RoomsManager.h"
 using namespace std;
 int  DrawTileRect(HDC hdc, long theColor, MousePointer mpointer, int mul);
 class RoomClass;
@@ -34,6 +36,7 @@ public:
 	BaseTitle* titleInstance;
 	//ZeroMission* titleInstance;
 	WarioLand* wlInstance;
+	//AreasManager* AreaManager;
 	RoomClass* mainRoom;
 	SupportedTitles thisTitle;
 	cOAMManager*mgrOAM;
@@ -49,7 +52,7 @@ public:
 	void DrawSprites(Image* pic);
 	int DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype);
 	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex);
-	void DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage);
+	void DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage, TileBuffer* tileImage, TileBuffer* bgImage);
 	void DrawDoorIndicators(HDC g);
 	vector<long> RoomOffsets;
 	DoorManager * mgrDoors;

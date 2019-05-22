@@ -320,7 +320,7 @@ void FusionSamus::Logic()
 		Animtable = (SamusAnim*)&rawFile[GetPointer(0x28D2BC + PoseIndex)];
 		currentSizeTable = GetPointer(0x28D8DC);
 	SetGFXTablePointer:
-		GfxSizeTable = (currentSizeTable+PoseIndex);
+		GfxSizeTable = GetPointer(currentSizeTable+PoseIndex);
 		someIndex = CopyIndex;
 	SetOAM:
 		/*theCurrentAnim =(SamusAnim*) &Animtable[CurrentAnimation];
@@ -719,22 +719,22 @@ void FusionSamus::Logic()
 				}
 				else if (SamusSuitStatus & Varia)
 				{
-					APalPointer = ((unsigned short *)rawFile[0x28E9AC]);
+					APalPointer = ((unsigned short *)&rawFile[0x28E9AC]);
 				}
 				else
 				{
-					APalPointer = ((unsigned short *)rawFile[0x28E93C]);
+					APalPointer = ((unsigned short *)&rawFile[0x28E93C]);
 				}
 				UpdateSAXSamusPal(&APalPointer[CurrentAnimation], 0, 16, 0);
-				NewPalPointer = ((unsigned short *)rawFile[0x28E61C]);
+				NewPalPointer = ((unsigned short *)&rawFile[0x28E61C]);
 				goto SetPalPointer;
 			default:
 				goto BasicPal;
 			}
 		}
 		SuitPalLen = 64;
-		UpdateSAXSamusPal(((unsigned short *)rawFile[0x28DEDC]), 0, 16, 0);
-		NewPalPointer = ((unsigned short *)rawFile[0x28DEFC]);
+		UpdateSAXSamusPal(((unsigned short *)&rawFile[0x28DEDC]), 0, 16, 0);
+		NewPalPointer = ((unsigned short *)&rawFile[0x28DEFC]);
 		if (screwAttackAnimationCounter > 4u)
 		{
 			if (SpeedBoostCounter > 0x4Fu)

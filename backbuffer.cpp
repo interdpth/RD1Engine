@@ -128,18 +128,18 @@ void            BackBuffer::Zero()
 
 void            BackBuffer::SaveToFile(FILE * file)
 {
-   if (!mDC) // can't save if there's no image
+	if (!mDC) { // can't save if there's no image
 
-      return;
-
+		return;
+	}
    /*
     * You could probably use BITMAPFILEHEADER and BITMAPINFOHEADER structs here,
     *    but i hate dumping structs to a file because there's no guarantee things will align
     *    properly
     */
 
-   int             tmp;
-   short           sht;
+   int             tmp=0;
+   short           sht=0;
    DIBSECTION      dib;
 
    GetObject(
@@ -215,16 +215,17 @@ void            BackBuffer::SaveToFile(FILE * file)
       }
    }
    fwrite(pal, 4, 256, file);
+   int size = nHeight * nPitch * 32;
    // bits
-   char           *mybits = new char[nHeight * nPitch * 32];
+   char           *mybits = new char[size];
 
    GetBitmapBits(
                    this->hBmp, // handle to bitmap
-                    this->nHeight * nPitch * 32, // number of bytes to
+	   size, // number of bytes to
                                                        // copy
                     mybits // buffer to receive bits
       );
 
    fwrite(mybits, 1, nPitch * nHeight * 32, file);
-   delete[]mybits;
+   delete[] mybits;
 }

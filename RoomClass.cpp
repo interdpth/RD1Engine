@@ -51,15 +51,15 @@ void RoomClass::LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage) 
 		cOAMManager* mgrOAM = RD1Engine::theGame->mgrOAM;
 		if (currentRomType == 0)
 		{
-			mgrEntities->LoadSet(currentRomType,mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
+			mgrEntities->LoadSet(currentRomType,&mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
 		}
 		else 
 		if (currentRomType == 1)
 		{
-			mgrEntities->MFLoadSet(currentRomType,mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
+			mgrEntities->MFLoadSet(currentRomType,&mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
 		}
 		mgrEntities->LoadPal(mgrSpriteObj->paltransfer, mgrOAM->roomSpriteIds, GBAGraphics::VRAM->SprPal);
-		cOAMManager::LoadSpriteToMem(currentRomType,_gbaMethods, mgrSpriteObj->gfxpnt_dst, mgrOAM->roomSpriteIds, RD1Engine::theGame->idkVRAM.RAM, SpriteImage);
+		cOAMManager::LoadSpriteToMem(currentRomType,_gbaMethods, &mgrSpriteObj->gfxpnt_dst[0], mgrOAM->roomSpriteIds, RD1Engine::theGame->idkVRAM.RAM, SpriteImage);
 
 		RD1Engine::theGame->mgrOAM->LoadRoomOAM();
 

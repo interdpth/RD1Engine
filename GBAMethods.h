@@ -8,7 +8,7 @@
 #define s32 signed long
 #define s16 signed short
 #define s8 signed char
-
+#include "cprs.h"
 #include "nMapBuffer.h"
 #include "tinyfiledialogs.h"
 struct COLOR2

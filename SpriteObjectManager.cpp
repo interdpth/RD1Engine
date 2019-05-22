@@ -1,12 +1,12 @@
 #include "SpriteObjectManager.h"
-//extern unsigned long ZMSpritePos[0xFF][2];
-//oid LoadUpSprites();
+
 class cOAMEdit;
 SpriteObjectManager::SpriteObjectManager(SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int ObjCount)
 {
 	_currentFrames = currentFrames;
 	_OAMFrameTable = OAMFrameTable;
 	_gbaMethods = gba;
+	gfxpnt_dst.resize(16);
 	int i = 0;
 	for (i = 0; i < ObjCount; i++)
 	{
@@ -30,7 +30,7 @@ int SpriteObjectManager::ExportPal() {
 
 	char FileName[1024] = { 0 };
 	int i = 0;
-	_gbaMethods->ReturnFileName(NULL,NULL,"Please select a PAL file to export too\0*.PAL", FileName, 512, 0);
+	_gbaMethods->ReturnFileName(NULL, NULL, "Please select a PAL file to export too\0*.PAL", FileName, 512, 0);
 	strcat(FileName, ".pal");
 	FILE* fp = fopen(FileName, "w+b");
 	if (fp) {
@@ -40,8 +40,8 @@ int SpriteObjectManager::ExportPal() {
 			//			fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128 + i], 4, 1);
 		}
 	}
-		fclose(fp);
-	
+	fclose(fp);
+
 	//size then palettes
 	//FILE* fp  = fopen(
 	//_currentFrames->GetStaticFrame()->theSprite->palsize
@@ -55,7 +55,7 @@ int SpriteObjectManager::ImportGFX() {
 	memset(Buffer, 0, 32192);
 	unsigned short i = 0;
 	int sz = 0;
-delete[]  Buffer;
+	delete[]  Buffer;
 	return 0;
 }
 
@@ -64,11 +64,11 @@ int SpriteObjectManager::ExportGFX() {
 	//This doesn't need a size 
 	char FileName[512] = { 0 };
 	int i = 0;
-	_gbaMethods->ReturnFileName(NULL,NULL,"Please select a GFX file to export too\0*.GFX", FileName, 512, 0);
+	_gbaMethods->ReturnFileName(NULL, NULL, "Please select a GFX file to export too\0*.GFX", FileName, 512, 0);
 	FILE* fp = fopen(FileName, "w+b");
 	if (fp) {
 
-//		fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000],_currentFrames->GetStaticFrame()->theSprite->graphicsize, 1);
+		//		fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreRAM[0x4000],_currentFrames->GetStaticFrame()->theSprite->graphicsize, 1);
 		fclose(fp);
 	}
 	return 0;
@@ -98,16 +98,16 @@ int SpriteObjectManager::SavePal(int RomSwitch) {
 	//	if(paltransfer[x][1] == 0) continue;
 	//memcpy(& GBAGraphics::VRAM->GBASprPal[128], &transferpal, SGBSpr.palsize*2);
 
-	_gbaMethods->EncodePal(GBAGraphics::VRAM->GBASprPal,_currentFrames->GetStaticFrame()->theSprite->PreviewPal, 16, 0);
+	_gbaMethods->EncodePal(GBAGraphics::VRAM->GBASprPal, _currentFrames->GetStaticFrame()->theSprite->PreviewPal, 16, 0);
 	offset = _gbaMethods->FindFreeSpace(_currentFrames->GetStaticFrame()->theSprite->palsize * 2, 0xFF);
 	MemFile::currentFile->seek(offset);
-	MemFile::currentFile->fwrite(&GBAGraphics::VRAM->GBASprPal[128], 1,_currentFrames->GetStaticFrame()->theSprite->palsize * 2);
+	MemFile::currentFile->fwrite(&GBAGraphics::VRAM->GBASprPal[128], 1, _currentFrames->GetStaticFrame()->theSprite->palsize * 2);
 	offset += 0x8000000;
-	
-		MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (_currentFrames->GetStaticFrame()->theSprite->id - 0x10) * 4);
-	
-	
-		MemFile::currentFile->fwrite(&offset, 4, 1);
+
+	MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (_currentFrames->GetStaticFrame()->theSprite->id - 0x10) * 4);
+
+
+	MemFile::currentFile->fwrite(&offset, 4, 1);
 	//SGBSpr.palsize=  ((BaseGame::theGame->mgrOAM->MFSprSize[SGBSpr.id-0x10]/2048)*16);
 	//BaseGame::theGame->mgrOAM->MFSprSize[(_currentFrames->GetStaticFrame()->theSprite->id-0x10)<<1]=(_currentFrames->GetStaticFrame()->theSprite->palsize*177);
 
@@ -120,10 +120,10 @@ int SpriteObjectManager::SaveGFX(int RomSwitch) {
 	unsigned char*  GFXbuf = new unsigned char[32192];
 	memset(GFXbuf, 0, 32192);
 	unsigned long size = 0;
-	int SpriteID =_currentFrames->GetStaticFrame()->theSprite->id - 0x10;
-	SprGBuf* currSprite = _currentFrames->GetStaticFrame()->theSprite;
+	int SpriteID = _currentFrames->GetStaticFrame()->theSprite->id - 0x10;
+	SpriteObject* currSprite = _currentFrames->GetStaticFrame()->theSprite;
 	if (RomSwitch == 0) {
-	
+
 		size = _gbaMethods->LZ77Comp(currSprite->graphicsize, &currSprite->PreRAM[0x4000], sizeof(currSprite->PreRAM - 0x4000), GFXbuf);
 		//Just find new space 
 		GFXPointer = _gbaMethods->FindFreeSpace(size, 0xFF);
@@ -182,11 +182,11 @@ int SpriteObjectManager::SavePal(PalData* palinfo, sprite_entry* spriteset, long
 		MemFile::currentFile->seek(palinfo[x].RomPointer);
 		MemFile::currentFile->fread(&addybuf, 4, 1);
 		MemFile::currentFile->seek(addybuf - 0x8000000);
-	//	fwrite(&GBAGraphics::VRAM->GBASprPal[128 + (palinfo[x].MemDst)], 1, (palinfo[x].Size) * 2);
+		//	fwrite(&GBAGraphics::VRAM->GBASprPal[128 + (palinfo[x].MemDst)], 1, (palinfo[x].Size) * 2);
 
-		//	if(paltransfer[x][1] == 0) continue;
+			//	if(paltransfer[x][1] == 0) continue;
 
-		//	memcpy(& GBAGraphics::VRAM->GBASprPal[128+(palinfo[x].MemDst  )  ], &transferpal, (palinfo[x].Size)*2);
+			//	memcpy(& GBAGraphics::VRAM->GBASprPal[128+(palinfo[x].MemDst  )  ], &transferpal, (palinfo[x].Size)*2);
 		SpriteSet->usedPAL += (palinfo[x].Size);
 	}
 
@@ -217,7 +217,7 @@ void SpriteObjectManager::AddSpriteObject(int ObjectSet)
 
 void SpriteObjectManager::DeleteSpriteObject(int ObjectSet, int ObjID)
 {
-	if (ObjID==-1 || SpriteObjects[ObjectSet].Max() < ObjID) {//Can't delete object, doesn't exist
+	if (ObjID == -1 || SpriteObjects[ObjectSet].Max() < ObjID) {//Can't delete object, doesn't exist
 		return;
 	}
 
@@ -242,7 +242,7 @@ int SpriteObjectManager::GetZMSetSZ(long* GFXSizes, long*PalSizes, sprite_entry*
 	compare = 0xFF;
 
 
-	for (X = 0; X < SpriteSet->total; X++) {
+	for (X = 0; X < SpriteSet->spriteCount; X++) {
 
 
 
@@ -289,7 +289,7 @@ int SpriteObjectManager::GetMFSetSZ(long* GFXSizes, long*PalSizes, sprite_entry*
 
 
 
-	for (X = 0; X < SpriteSet->total; X++) {
+	for (X = 0; X < SpriteSet->spriteCount; X++) {
 		sprite_entry* sprite_in = &RD1Engine::theGame->mgrOAM->roomSpriteIds[X];
 
 		if ((sprite_in->spriteID == 0) && (X != 0)) break;
@@ -362,7 +362,7 @@ int SpriteObjectManager::LoadEnemies(RHeader* roomHeader) {
 
 
 
-	for (i = 0; i <SpriteObjects.size(); i++) {
+	for (i = 0; i < SpriteObjects.size(); i++) {
 		MemFile::currentFile->seek(offsetlist[i] - 0x8000000);
 		SpriteObjects[i].Enemies.clear();//Ayyyy
 		max = 0;
@@ -404,18 +404,18 @@ void DumpLayers()
 			{
 				thisSprite->SetStaticFrame(frameCounter);
 				Frame* curFrame = thisSprite->GetStaticFrame();
-//				curFrame->theSprite->PreviewSprite.RefreshImage();
-				
-					char * string = new char[MAX_PATH];
-					sprintf(string, "C:\\ReleaseFolder\\dumplayer%d_%d.bmp", sprCounter, frameCounter);
-					DeleteFile(string);
-					FILE* fp = fopen(string, "w+b");
+				//				curFrame->theSprite->PreviewSprite.RefreshImage();
+
+				char * string = new char[MAX_PATH];
+				sprintf(string, "C:\\ReleaseFolder\\dumplayer%d_%d.bmp", sprCounter, frameCounter);
+				DeleteFile(string);
+				FILE* fp = fopen(string, "w+b");
 
 				//	curFrame->theSprite->PreviewSprite._fullCache->SaveToFile(fp);
-					fclose(fp);
-					delete[] string;
-				
-				
+				fclose(fp);
+				delete[] string;
+
+
 			}
 
 
@@ -432,11 +432,11 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 	int d = 0;
 	RECT myrect;
 	HBRUSH curbrush;
-	
+
 	//RECT blah = {0,0,0,0};
 	nEnemyList* Sprites = &SpriteObjects[Number];
 	Frame* tmpFrame = NULL;
-	
+
 	DumpLayers();
 	int m = Sprites->Max();
 	for (i = 0; i < m; i++) {
@@ -447,7 +447,7 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 		tSprite = ((Sprites->Enemies[i].Creature) & 0xF) - 1;
 		if (tSprite > RD1Engine::theGame->mainRoom->mgrSpriteObjects->RoomSprites.size())
 		{
-		continue;
+			continue;
 		}
 		if (tSprite < 0)
 		{
@@ -465,23 +465,23 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 		{
 			continue;
 		}
-			tmpFrame =RoomSprites.at(tSprite)->GetAnimatedFrame();
-			SpriteWidth = ((tmpFrame->theSprite->Borders.right - tmpFrame->theSprite->Borders.left));
-			SpriteHeight = ((tmpFrame->theSprite->Borders.bottom - tmpFrame->theSprite->Borders.top));
+		tmpFrame = RoomSprites.at(tSprite)->GetAnimatedFrame();
+		SpriteWidth = ((tmpFrame->theSprite->Borders.right - tmpFrame->theSprite->Borders.left));
+		SpriteHeight = ((tmpFrame->theSprite->Borders.bottom - tmpFrame->theSprite->Borders.top));
 
-			if (SpriteWidth == 0 || SpriteHeight == 0)
-			{
-				return 0;
-			}
-			//SpriteWidth = (SpriteWidth / 16) * 16;
-			//SpriteHeight = (SpriteWidth / 16) * 16;
-			if (i == 1) {
-				i = i - 1;
-				i++;
-			}
+		if (SpriteWidth == 0 || SpriteHeight == 0)
+		{
+			return 0;
+		}
+		//SpriteWidth = (SpriteWidth / 16) * 16;
+		//SpriteHeight = (SpriteWidth / 16) * 16;
+		if (i == 1) {
+			i = i - 1;
+			i++;
+		}
 		//}
-			int SpriteX = (Sprites->Enemies[i].X ) * 16;; //((Sprites->Enemies[i].X) - ((SpriteWidth/8)*8) / 16) * 16;
-			int SpriteY = (Sprites->Enemies[i].Y ) * 16;//(Sprites->Enemies[i].Y - ((SpriteHeight / 8) * 8) / 16) * 16;
+		int SpriteX = (Sprites->Enemies[i].X) * 16;; //((Sprites->Enemies[i].X) - ((SpriteWidth/8)*8) / 16) * 16;
+		int SpriteY = (Sprites->Enemies[i].Y) * 16;//(Sprites->Enemies[i].Y - ((SpriteHeight / 8) * 8) / 16) * 16;
 		PosModify* modifer = &RD1Engine::theGame->poseModifier[sprite_in->spriteID];
 
 		if (modifer)
@@ -491,19 +491,19 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 		}
 
 		_OAMFrameTable = &RD1Engine::theGame->frameTables->OAMFrameTable;
-		std::vector<unsigned long>* thisGuy =& _OAMFrameTable->at(sprite_in->spriteID);
+		std::vector<unsigned long>* thisGuy = &_OAMFrameTable->at(sprite_in->spriteID);
 		if (!(thisGuy->size() > 0)) {
 
 			continue;
 		}
-	
+
 		if (thisGuy->size() == 0)
 		{
 			continue;
 		}
 		if (thisGuy->size() && !badFrame)
 		{
-			
+
 
 			int adjustedXorigin = 0;
 			int adjustedYorigin = 0;
@@ -531,7 +531,7 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 
 			try
 			{
-				
+
 				tmpFrame->theSprite->PreviewSprite.GetFullImage()->TransBlit(
 
 					drawBuffer->DC(),
@@ -542,14 +542,14 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 					256,
 					0,
 					0);
-				
+
 
 			}
-			catch(...)
+			catch (...)
 			{
 				Logger::log->LogIt(Logger::DEBUG, "ay");
 			}
-		
+
 
 		}
 		else {

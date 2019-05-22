@@ -3,11 +3,11 @@
 #include "OAM.h"
 #include "clsPreviewSprite.h"
 #include "image.h"
-class SprGBuf {
+class SpriteObject {
 public: 
-	SprGBuf(unsigned char* gfxRam, long* pal);
-	SprGBuf();
-	~SprGBuf();
+	SpriteObject(unsigned char* gfxRam, long* pal);
+	SpriteObject();
+	~SpriteObject();
 	void Create(unsigned char* gfxRam, long* pal);
 	bool selfInitPal;
 	bool selfInitGFX;
@@ -15,8 +15,8 @@ public:
 	bool created;
 	RECT  Borders;
 	clsPreviewSprite PreviewSprite;
-	long*  PreviewPal;// [512];
-	unsigned char*  PreRAM;// [0x8000];//Funny name XD
+	long*  PreviewPal;
+	unsigned char*  PreRAM;
 	unsigned short PartNo;            
 	std::vector<OverAllOAM>  OAM;
 	TileBuffer* Tiles;

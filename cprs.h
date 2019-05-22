@@ -63,6 +63,8 @@ unsigned int cprs_gba_rle8(RECORD *dst, const RECORD *src);
 
 unsigned int cprs_gba_huff(RECORD *dst, const RECORD *src, int srcB);
 
+unsigned int lz77gba_compress(RECORD *dst, const RECORD *src);
+unsigned int lz77gba_decompress(RECORD *dst, const RECORD *src);
 
 // --------------------------------------------------------------------
 // INLINES 

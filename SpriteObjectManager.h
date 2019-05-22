@@ -25,7 +25,7 @@ public:
 	
 	
     unsigned char compare;
-	GFXData gfxpnt_dst[16];  //0 = pointer to gfx, 1 = destination in VRAM
+	vector<GFXData> gfxpnt_dst;  //0 = pointer to gfx, 1 = destination in VRAM
 	PalData paltransfer[16]; //0 = pointer to pal, 1 = destination, 2 = WORD count (*2 for bytes)
 	RECT OverallSize[16];
 	vector<FrameManager*> RoomSprites; 

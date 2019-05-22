@@ -11,7 +11,7 @@
 class cOAMManager
 {
 public:
-	static int CalcSpriteBounds(SprGBuf* SpriteDetails);
+	static int CalcSpriteBounds(SpriteObject* SpriteDetails);
 	cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, int crf);
 	~cOAMManager();
 	GBAMethods* _gbaMethods;
@@ -33,8 +33,8 @@ public:
 	int SetFrames();
 	int SetParts();
 	int SetupPreview(int TitleChoice);
-	static void CalcPartSizes(SprGBuf* SpriteDetails);
-	static int DrawPSprite(SprGBuf* SpriteDetails );
+	static void CalcPartSizes(SpriteObject* SpriteDetails);
+	static int DrawPSprite(SpriteObject* SpriteDetails );
 	static unsigned char maxsprite;
 	int AnimateSprite();
 	int GetSpriteData();
@@ -42,8 +42,8 @@ public:
 	static char* GetSpriteSize(int a, int b);
 	int LoadRoomOAM();
 	int DrawOAM();
-	int SaveSprite(SaveOptions savetype, SprGBuf* tSprite, unsigned long Offset);
-	static int DecodeOAM(bool OAMED, SprGBuf* tSprite, unsigned long Offset);
+	int SaveSprite(SaveOptions savetype, SpriteObject* tSprite, unsigned long Offset);
+	static int DecodeOAM(bool OAMED, SpriteObject* tSprite, unsigned long Offset);
 	static int LoadSpriteToMem(bool romSwitch,GBAMethods* gba, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb);
 	int currentRomType;
 	static int SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targetFrame);

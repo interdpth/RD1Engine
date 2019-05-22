@@ -1,6 +1,6 @@
 #include "SprGBuf.h"
 
-SprGBuf::SprGBuf()
+SpriteObject::SpriteObject()
 {
 	this->PreviewPal=0;// [512];
 	this->PreRAM = 0;// [0x8000];//Funny name XD
@@ -12,7 +12,7 @@ SprGBuf::SprGBuf()
 //	PreviewSprite->_fullCache = NULL;
 	
 }
-SprGBuf::SprGBuf(unsigned char* gfxRam, long* pal)
+SpriteObject::SpriteObject(unsigned char* gfxRam, long* pal)
 {
 	
 	this->PreviewPal = pal;// [512];
@@ -23,7 +23,7 @@ SprGBuf::SprGBuf(unsigned char* gfxRam, long* pal)
 	this->Create(gfxRam, pal);
 }
 ///Constru
-void SprGBuf::Create(unsigned char* gfxRam, long* pal)
+void SpriteObject::Create(unsigned char* gfxRam, long* pal)
 {
 	Tiles = new TileBuffer();
 	if (gfxRam == NULL)
@@ -71,7 +71,7 @@ void SprGBuf::Create(unsigned char* gfxRam, long* pal)
 }
 
 
-SprGBuf::~SprGBuf()
+SpriteObject::~SpriteObject()
 {
 	if (selfInitGFX)
 	{

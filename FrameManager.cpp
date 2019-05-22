@@ -33,8 +33,8 @@ void FrameManager::AddFrame(Frame* src, int SpriteID)
 		theFrame = new Frame(_gbaMethods );
 		theFrame->frameOffset = 0x8BADBEEF;
 		theFrame->frameTimer = src->frameTimer;
-		theFrame->theSprite = new SprGBuf(theTileGFX, thePalette);
-		memcpy(&theFrame->theSprite, &src->theSprite, sizeof(SprGBuf));
+		theFrame->theSprite = new SpriteObject(theTileGFX, thePalette);
+		memcpy(&theFrame->theSprite, &src->theSprite, sizeof(SpriteObject));
 		theFrame->theSprite->id = src->theSprite->id;
 		memcpy(&theFrame->theSprite->Borders, &src->theSprite->Borders, sizeof(RECT));
 	

@@ -404,7 +404,7 @@ unsigned long             GBAMethods::LZ77Comp(unsigned long decmpsize, unsigned
 	src.height = decmpsize;
 	src.width = 1;
 
-	int size = (int)cprs_gba_lz77(&dst, &src);
+	int size = (int)lz77gba_compress(&dst, &src);
 
 
 

@@ -1,8 +1,15 @@
 #pragma once
+#include <vector>
+#include "RoomClass.h"
 class GameArea
 {
+	std::vector<RoomClass> _rooms;
+	int roomIndex;
 public:
-	GameArea();
+	RoomClass* GetCurrentRoom();
+	void AddBlankRoom();
+	void Save();
+	GameArea(unsigned long areaOffset);
 	~GameArea();
 };
 

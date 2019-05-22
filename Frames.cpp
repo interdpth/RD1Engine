@@ -19,7 +19,7 @@ Frame::Frame(GBAMethods* gbaMethods)
 	_gbaMethods = gbaMethods;
 	theSprite = NULL;
 	Empty();
-	theSprite = new SprGBuf();
+	theSprite = new SpriteObject();
 }
 
 Frame::Frame(GBAMethods* gbaMethods, int newIndex, int SpriteID)
@@ -32,7 +32,7 @@ Frame::Frame(GBAMethods* gbaMethods, int newIndex, int SpriteID)
 	index = newIndex;
 	animUpdated = true;
 	frameInited = false;
-	this->theSprite = new SprGBuf(NULL, NULL);
+	this->theSprite = new SpriteObject(NULL, NULL);
 	OverAllOAM  tmp;
 	tmp.enOAM.OAM0 = 0;
 	tmp.enOAM.OAM1 = 0;
@@ -61,7 +61,7 @@ Frame::Frame(GBAMethods* gbaMethods, unsigned long sourceOffset,  int frameIndex
 	else {
 		frameOffset = sourceOffset;
 	}
-	this->theSprite = new SprGBuf(tileGFX, pal);
+	this->theSprite = new SpriteObject(tileGFX, pal);
 	/*this->theSprite->PreviewSprite.Create(1, 1);*/
 	index = frameIndex;
 	theSprite->id = spriteID;

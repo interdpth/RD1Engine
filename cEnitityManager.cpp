@@ -6,7 +6,8 @@
 cEntityManager::cEntityManager(GBAMethods *methods)
 {
 	_gbaMethods = methods;
-	gfxinfo = new GFXData[16];
+//	gfxinfo = new GFXData[16];
+	gfxinfo.resize(16);
 	palinfo = new PalData[16];
 	spriteset = new sprite_entry[16];
 }
@@ -14,19 +15,20 @@ cEntityManager::cEntityManager(GBAMethods *methods)
 
 cEntityManager::~cEntityManager()
 {
-	delete[] gfxinfo;;
 	delete[] palinfo;
 	delete[] spriteset;
 }
-int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, PalData*Palettedata, sprite_entry* SpriteInfo, unsigned char SpriteSetNo)
+int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, vector<GFXData>* spritedata, PalData*Palettedata, sprite_entry* SpriteInfo, unsigned char SpriteSetNo)
 {
 
 	int ii = 0, X = 0, i = 0;
 	unsigned char enemydat[15] = { 0 };
 	unsigned char destination[15] = { 0 };
 	unsigned long off = 0;
+	spritedata->clear();
+	spritedata->resize(16);
 	if (ReadObjectDetailsFromROM == true) {
-		RD1Engine::theGame->mgrOAM->maxsprite = 0;
+
 
 		for (ii = 0; ii < 15; ii++)
 		{
@@ -37,7 +39,7 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata
 		for (X = 0; X < 15; X++) {
 			Palettedata[X].RomPointer = Palettedata[X].MemDst = Palettedata[X].Size = 0;
 			SpriteInfo[X].spriteID = SpriteInfo[X].sprdetail = 0;
-			spritedata[X].RomPointer = spritedata[X].MemDst = 0;
+			spritedata->at(X).RomPointer = spritedata->at(X).MemDst = 0;
 
 		}
 		RD1Engine::theGame->titleInstance->SeekSpriteTable(SpriteSetNo);
@@ -56,7 +58,7 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata
 	////if (GlobalVars::gblVars->SSE == true)cSSE::SpriteSet->total = 0;
 	for (X = 0; X < 15; X++)
 	{
-		sprite_entry* sprite_in = &RD1Engine::theGame->mgrOAM->roomSpriteIds[X];
+		sprite_entry* sprite_in = &SpriteInfo[X];
 
 		////if (GlobalVars::gblVars->SSE == true)cSSE::SpriteSet->total++;
 		if ((sprite_in->spriteID == 0) && (X != 0)) break;
@@ -67,8 +69,8 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata
 		if ((sprite_in->sprdetail != prevsprdetail) && (sprite_in->sprdetail != 8))
 		{
 
-			spritedata[X].RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
-			spritedata[X].MemDst = (SpriteInfo[X].sprdetail * 0x800);
+			spritedata->at(X).RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
+			spritedata->at(X).MemDst = (SpriteInfo[X].sprdetail * 0x800);
 
 
 			Palettedata[X].RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpritePal")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
@@ -82,11 +84,11 @@ int cEntityManager::MFLoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata
 
 
 
-	return 0;
+	return X;
 }
 
 
-int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, PalData*Palettedata, sprite_entry* SpriteInfo, unsigned char SpriteSetNo) {
+int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, vector<GFXData>* spritedata, PalData*Palettedata, sprite_entry* SpriteInfo, unsigned char SpriteSetNo) {
 
 	long off = 0;
 	int X, i, compare;
@@ -105,11 +107,10 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 
 	for (X = 0; X < 15; X++) {
 		Palettedata[X].RomPointer = Palettedata[X].MemDst = Palettedata[X].Size = 0;
-		if (ReadObjectDetailsFromROM == false)
+	/*	if (ReadObjectDetailsFromROM == false)
 			SpriteInfo[X].spriteID = SpriteInfo[X].sprdetail = 0;
 
-		spritedata[X].RomPointer = spritedata[X].MemDst = 0;
-
+*/
 	}
 	if (ReadObjectDetailsFromROM == false) {
 		RD1Engine::theGame->titleInstance->SeekSpriteTable(SpriteSetNo);
@@ -146,9 +147,9 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 			continue;      //if detail# = 8, dont load gfx & pals
 
 						   //gfx and palette loading
-		spritedata[X].RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
-		spritedata[X].MemDst = (SpriteInfo[X].sprdetail * 0x800);
-		MemFile::currentFile->seek(spritedata[X].RomPointer);
+		spritedata->at(X).RomPointer = GameConfiguration::mainCFG->GetDataContainer("SpriteGFX")->Value + (SpriteInfo[X].spriteID - 0x10) * 4;
+		spritedata->at(X).MemDst = (SpriteInfo[X].sprdetail * 0x800);
+		MemFile::currentFile->seek(spritedata->at(X).RomPointer);
 		MemFile::currentFile->fread(&off, 4, 1);
 		MemFile::currentFile->seek(off - 0x8000000);
 		MemFile::currentFile->fread(&thiscompheader.check_ten, 1, 1);       //Check byte should be 0x10 for lz
@@ -168,7 +169,7 @@ int cEntityManager::LoadSet(bool ReadObjectDetailsFromROM, GFXData* spritedata, 
 	RD1Engine::theGame->mgrOAM->maxsprite = max;
 	//}
 
-	return 0;
+	return max;
 }
 
 

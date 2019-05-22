@@ -1,12 +1,11 @@
 #include "GameArea.h"
-
-
-
-GameArea::GameArea()
+GameArea::GameArea(unsigned long areaOffset)
 {
+
 }
 
 
 GameArea::~GameArea()
 {
+
 }

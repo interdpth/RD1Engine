@@ -33,12 +33,12 @@ char* cOAMManager::GetSpriteSize(int a, int b) {
 	return (char*)&sizesStr[a][b][0];
 }
 
-void DrawPart(SprGBuf* SpriteDetails, int x, int y)
+void DrawPart(SpriteObject* SpriteDetails, int x, int y)
 {
 	return;
 }
 
-int cOAMManager::CalcSpriteBounds(SprGBuf* SpriteDetails) {
+int cOAMManager::CalcSpriteBounds(SpriteObject* SpriteDetails) {
 
 	int width = 0;
 	int height = 0;
@@ -83,7 +83,6 @@ int cOAMManager::CalcSpriteBounds(SprGBuf* SpriteDetails) {
 			continue;
 		}
 
-		//PosModify* modifer = &BaseGame::theGame->poseModifier[sprite_in->spriteID];
 		sx = (thisPart->enOAM.OAM1 & 511);
 		sy = (thisPart->enOAM.OAM0 & 0xFF);
 		if (sy & 0x80)
@@ -91,19 +90,12 @@ int cOAMManager::CalcSpriteBounds(SprGBuf* SpriteDetails) {
 		if (sx & 0x100)
 			sx = sx - 511; //same here
 
-						   /*sx = sx + 8;
-						   sy = sy + 16;*/
-						   //Set up the basic tile
-
-						   /* sx += 24;
-						   sy += 104;*/
-
 
 		int Pal = ((thisPart->enOAM.OAM2 & 0xF000));
 
-		//MsgBox "Out of Memory Bounds": Exit Function
+
 		Tile = Pal + (thisPart->enOAM.OAM2 & 0x3FF);
-		//Tile+= SpriteDetails->OAM[i];deOAM.VerticalFlip*0x800;
+		
 
 		//Now switch on this and find the sprite width and height.
 		thisPart->deOAM.ObjShape = thisPart->enOAM.OAM0 >> 14;
@@ -115,12 +107,6 @@ int cOAMManager::CalcSpriteBounds(SprGBuf* SpriteDetails) {
 		PartSize[partCounter].right = width;
 		PartSize[partCounter].bottom = height;
 		xFlip = yFlip = fh = fw = 0;
-
-
-		/*OamBuffer.Blit(SpriteDetails->PreviewSprite.GetFullImage().DC(), 0, 0,
-		SpriteDetails->Borders.right - SpriteDetails->Borders.left,
-		SpriteDetails->Borders.bottom - SpriteDetails->Borders.top, SpriteDetails->Borders.left, SpriteDetails->Borders.top);*/
-
 	}
 
 	//Determine i
@@ -153,7 +139,7 @@ int cOAMManager::CalcSpriteBounds(SprGBuf* SpriteDetails) {
 
 
 
-int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
+int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 
 	if (SpriteDetails->id <= 0xF)
 	{
@@ -324,7 +310,7 @@ int cOAMManager::DrawPSprite(SprGBuf* SpriteDetails) {
 
 
 ///Saves Serialized Program Interface Type Effects(SPRITES)
-int cOAMManager::SaveSprite(SaveOptions savetype, SprGBuf* tSprite, unsigned long Offset)
+int cOAMManager::SaveSprite(SaveOptions savetype, SpriteObject* tSprite, unsigned long Offset)
 {
 	unsigned long theOffset = Offset;
 	if (theOffset > 0x8000000)
@@ -348,7 +334,7 @@ int cOAMManager::SaveSprite(SaveOptions savetype, SprGBuf* tSprite, unsigned lon
 }
 
 
-int cOAMManager::DecodeOAM(bool OAMED, SprGBuf* tSprite, unsigned long Offset) {
+int cOAMManager::DecodeOAM(bool OAMED, SpriteObject* tSprite, unsigned long Offset) {
 
 	unsigned short spritecount = 0;
 
@@ -456,19 +442,18 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 	unsigned char* decompbuf = new unsigned char[0x10000];
 	unsigned char*  compBuffer = new unsigned char[64691];
 	int usedGfx = 0;
-	//cSSE::SpriteSet->usedGFX = 0;
+
 	memset(&GraphicsBuffer[0x4000], 0, 0x4000);
 
 	for (i = 0; i < 15; i++) {
 		unsigned char thisSprite = spriteset[i].spriteID;
 		dst = 0x4000 + (ginfo[i].MemDst);
 		if (dst >= 0x8000) {
-			//MessageBox(0,"Sprites are bad, said sprites will not be drawn.","ERROR",MB_OK);
 			return 0;
 		}
 		if ((i != 0) && ginfo[i].MemDst == 0) continue;
 		if (ginfo[i].RomPointer == 0)		continue;
-		RD1Engine::theGame->titleInstance->GetGFX(thisSprite, &GraphicsBuffer[dst]);
+		size=RD1Engine::theGame->titleInstance->GetGFX(thisSprite, &GraphicsBuffer[dst]);
 
 		usedGfx += size;
 
@@ -491,7 +476,7 @@ int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targe
 	unsigned char*  compBuffer = new unsigned char[32688];
 	long addybuf = 0;
 	long size = 0;
-	SprGBuf*currentSprite = targetFrame->theSprite;
+	SpriteObject*currentSprite = targetFrame->theSprite;
 	int i = 0;
 	int ii = 0;
 	char blah[256] = { 0 };
@@ -534,9 +519,6 @@ int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targe
 	}
 
 	if (!targetFrame->theSprite->selfInitGFX) {
-
-		
-
 
 		RD1Engine::theGame->titleInstance->GetGFX(currentSprite->id, &currentSprite->PreRAM[0x4000]);
 
@@ -644,106 +626,6 @@ int cOAMManager::DrawOAM()
 	//OverAllOAM *obj = NULL;
 	//sprite_entry* sprite_in = &BaseGame::theGame->mgrOAM->roomSpriteIds[cursprite];
 	//SpriteObjectManager* sprMgr = RD1Engine::theGame->mainRoom->mgrSpriteObjects;
-	//RECT* overAllRect;
-	//RECT* currentPart;
-	////Draw reverse order
-	//int maxParts = BaseGame::theGame->mgrOAM->oamPiece[cursprite];
-	//for (partCounter = maxParts - 1; partCounter >= 0; partCounter--) {
-	//	if (maxParts - partCounter >= 0x100) {
-
-	//		MessageBox(0, "There's a bad part in this sprite, exiting drawing.", "Error", MB_OK);
-	//		break;
-	//	}
-
-	//	
-	//	obj = &BaseGame::theGame->mgrOAM->thisoam[cursprite][maxParts - partCounter - 1];
-
-	//	if (obj->deOAM.ObjShape == 3)
-	//		continue;
-
-	//	sx = (obj->enOAM.OAM1 & 511);
-	//	sy = (obj->enOAM.OAM0 & 255);
-	//	if (sy & 0x80)
-	//		sy = sy - 256; //check for the negative
-	//	if (sx & 0x100)
-	//		sx = sx - 511; //same here
-	//	
-
-	//	int Pal = (((obj->enOAM.OAM2 & 0xF000) >> 0xC) +	(sprite_in->sprdetail)) * 4096;
-
-	//	//MsgBox "Out of Memory Bounds": Exit Function
-	//	Tile = Pal + (sprite_in->sprdetail * 2048) / 32 +(obj->enOAM.OAM2 & 0x3FF);
-	//
-
-	//	//Now switch on this and find the sprite width and height.
-
-
-	//	width = objSizes[obj->enOAM.OAM0 >> 14][obj->enOAM.OAM1 >> 14][0];
-	//	height = objSizes[obj->enOAM.OAM0 >> 14][obj->enOAM.OAM1 >> 14][1];
-	//	PartSize[maxParts - partCounter - 1].left = sx;
-	//	PartSize[maxParts - partCounter - 1].top = sy;
-	//	PartSize[maxParts - partCounter - 1].right = width;
-	//	PartSize[maxParts - partCounter - 1].bottom = height;
-	//	xFlip = yFlip = fh = fw = 0;
-
-	//	if (obj->enOAM.OAM1 & 0x1000) {
-	//		//formula goes here;
-	//		xFlip = width / 8 - 1; //if width = 16 y
-	//		fw = 0x400;
-	//	}
-	//	if (obj->enOAM.OAM1 & 0x2000) {
-	//		yFlip = height / 8 - 1;
-	//		fh = 0x800;
-	//	}
-
-	//	for (ty = 0; ty < height / 8; ty++) {
-
-	//		for (tx = 0; tx < width / 8; tx++) {
-
-	//			OamBuffer.Draw(*SpriteImage, sx + (tx^xFlip) * 8, sy + ((ty) ^ yFlip) * 8, Tile + tx + (ty * 32) + fh + fw);
-
-	//		}
-	//	}
-	//}
-
-	////Determine i
-	//if (BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1>127) return 0;
-	//overAllRect = &sprMgr->OverallSize[cursprite];
-	//overAllRect->left = PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1].left;
-	//overAllRect->top = PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1].top;
-	//overAllRect->right = PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1].left + PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1].right;
-	//overAllRect->bottom = PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1].top + PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - 1].bottom;
-
-	//for (partCounter = 1; partCounter < BaseGame::theGame->mgrOAM->oamPiece[cursprite]; partCounter++) {
-	//	//Check for top coord 
-	//	//0 = Starting X
-	//	//1 = Startiny Y
-	//	//2 = Width
-	//	//3 = Height
-	//	if (PartSize[maxParts - partCounter - 1].left < overAllRect->left)
-	//	{
-	//		overAllRect->left = PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - partCounter - 1].left;
-	//	}
-	//	if (PartSize[maxParts - partCounter - 1].top < overAllRect->top)
-	//	{
-	//		overAllRect->top = PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - partCounter - 1].top;
-	//	}
-	//		
-
-	//	overAllRect->right =
-	//		max(overAllRect->right, PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - partCounter - 1].left + PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - partCounter - 1].right);
-	//	overAllRect->bottom =
-	//		max(overAllRect->bottom, PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - partCounter - 1].top + PartSize[BaseGame::theGame->mgrOAM->oamPiece[cursprite] - partCounter - 1].bottom);
-
-	//}
-
-	////sprMgr->SpritePics[cursprite].Create(overAllRect->right - overAllRect->left, overAllRect->bottom - overAllRect->top);
-
-	////sprMgr->SpritePics[cursprite].SetPalette(GBAGraphics::VRAM->SprPal);
-
-	////OamBuffer.Blit(sprMgr->SpritePics[cursprite].DC(), 0, 0,		overAllRect->right - overAllRect->left,		overAllRect->bottom - overAllRect->top,		overAllRect->left, overAllRect->top);
-
-
 
 	return 0;
 }

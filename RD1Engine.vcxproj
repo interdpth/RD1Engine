@@ -75,8 +75,8 @@
     <LibraryPath>..\grit\libgrit;C:\GLEW\lib\Release\Win32;..\grit\cldib\;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MixedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\GLEW\include\GL;$(IncludePath);..\grit\libgrit;..\grit\cldib</IncludePath>
@@ -90,7 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <EnablePREfast>true</EnablePREfast>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\grit\libgrit\cprs_lz.cpp" />
     <ClCompile Include="AreasManager.cpp" />
     <ClCompile Include="backbuffer.cpp" />
     <ClCompile Include="BaseTitle.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="OpenGL2.cpp" />
     <ClCompile Include="RD1Engine.cpp" />
     <ClCompile Include="RoomClass.cpp" />
+    <ClCompile Include="RoomsManager.cpp" />
     <ClCompile Include="SamusBase.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSON.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSONValue.cpp" />
@@ -227,6 +229,7 @@
     <ClInclude Include="opengl.h" />
     <ClInclude Include="OpenGL2.h" />
     <ClInclude Include="RoomClass.h" />
+    <ClInclude Include="RoomsManager.h" />
     <ClInclude Include="SamusBase.h" />
     <ClInclude Include="SimpleJSON-master\src\JSON.h" />
     <ClInclude Include="SimpleJSON-master\src\JSONValue.h" />

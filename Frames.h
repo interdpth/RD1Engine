@@ -32,7 +32,7 @@ public:
 	void Empty();
 	unsigned long frameOffset;
 	unsigned long frameTimer; 
-	SprGBuf* theSprite;
+	SpriteObject* theSprite;
 	int index;
 	bool animUpdated; 
 	bool frameInited;

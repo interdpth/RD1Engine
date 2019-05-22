@@ -77,7 +77,7 @@ public:
 	SamusBase();
 	~SamusBase();
 
-	SprGBuf* theSprite;
+	SpriteObject* theSprite;
 	virtual void Logic(){}
 	void Load()
 	{
@@ -156,7 +156,7 @@ public:
 	}
 	void PackSamus()
 	{
-		theSprite = new SprGBuf();
+		theSprite = new SpriteObject();
 		
 		unsigned int sloutCounter; // r7
 		unsigned int OamCounter; // r6
@@ -185,7 +185,7 @@ unsigned short v3 = 0;
 			nextDrawSlot = (startOAMIndex) & 0xFF;
 			MemFile::currentFile->seek(SamusOAMPointer - 0x8000000 + 2);
 			
-			for (int count =0; count < nextDrawSlot; count++) 
+			for (unsigned int count =0; count < nextDrawSlot; count++) 
 			{
 				OverAllOAM thisOAM;
 				memset(&thisOAM, 0, sizeof(OverAllOAM));

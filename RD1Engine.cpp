@@ -55,7 +55,7 @@ void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer
 
 void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset)
 {
-	char buffer[256];
+	char buffer[512];
 	sprintf(buffer, "Loading Area: %d Room: %X, Offset %X", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
 	if (mainRoom)
@@ -71,7 +71,7 @@ int RD1Engine::GetPalSize(int sprID)
 {
 	int palSize = 0;
 
-		palSize = titleInstance->GetPalSize(sprID);
+	palSize = titleInstance->GetPalSize(sprID);
 
 	return palSize;
 }
@@ -97,7 +97,7 @@ void RD1Engine::GetArrays()
 	theGame->mgrTileset->ReadTable();
 
 
-	
+
 	if (RD1Engine::theGame->thisTitle == SupportedTitles::titleMF)
 	{
 		((MetroidFusion*)(RD1Engine::theGame->titleInstance))->LoadGameData();
@@ -153,12 +153,12 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 		titleInstance = new MetroidFusion(_gbaMethods, MemFile::currentFile);
 
 		mgrOAM->MFSprSize = ((MetroidFusion*)(titleInstance))->MFSprSize;
-	
-		
+
+
 		break;
 	case SupportedTitles::titleZM:
 		titleInstance = new ZeroMission(_gbaMethods, MemFile::currentFile);
-	
+
 		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED ZM");
 		break;
 	case SupportedTitles::titleWL:
@@ -173,11 +173,11 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 
 	}
 
-	if(titleInstance!=NULL)
+	if (titleInstance != NULL)
 	{
 		LoadModifiers((char*)titleInstance->GetPoseFile());
 	}
-	
+
 	mainRoom = new RoomClass((int)theTitle, ImageTileset, NULL, _gbaMethods, &frameTables->OAMFrameTable, NULL);
 }
 void RD1Engine::LoadModifiers(char* fn)
@@ -465,7 +465,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 	nMapBuffer* buffLevelData = mgr->GetLayer(MapManager::LevelData);
 	nMapBuffer* buffBackLayer = mgr->GetLayer(MapManager::Backlayer);
 	nMapBuffer* buffBackground = mgr->GetLayer(MapManager::BackgroundLayer);
-	unsigned short Width = buffLevelData->X * 16 , Height = buffLevelData->Y * 16;
+	unsigned short Width = buffLevelData->X * 16, Height = buffLevelData->Y * 16;
 
 
 	if (!((currentRomType == 0) || (currentRomType == 1))) return 0;
@@ -582,7 +582,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
 
-	
+
 	DrawStatus.dirty = false;
 	return 0;
 }
@@ -610,7 +610,7 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 		pic->SetPalette(GBAGraphics::VRAM->PcPalMem);
 		//this type uses the background set for tiles.
 
-		for (int ScenRep = 0; ScenRep < mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; ScenRep++) 
+		for (int ScenRep = 0; ScenRep < mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; ScenRep++)
 		{
 			for (thisX = 0; thisX < X; thisX++) {
 				for (thisY = 0; thisY < Y; thisY++) {
@@ -731,7 +731,11 @@ void RD1Engine::DrawDoorIndicators(HDC g)
 	}
 }
 
-void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage)
+int percentage(int val, float p)
+{
+	return (int)((float)(val * p));
+}
+void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage, TileBuffer* tileImage, TileBuffer* bgImage)
 {
 	//Font thisFont = new Font("Arial", 16);
 	DataContainer* roomsPerArea = GameConfiguration::mainCFG->GetDataContainer("RoomsPerArea");
@@ -741,7 +745,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	//Calculate widths
 	int maxMapWidth = 0;
 	int maxMapHeight = 0;
-	for (int roomCounter = 0; roomCounter < maxRooms / 8; roomCounter++)
+	for (int roomCounter = 0; roomCounter < maxRooms; roomCounter++)
 	{
 		LoadRoomSpriteSet(thisArea, roomCounter, Tileset, SpriteImage);
 
@@ -751,12 +755,12 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		int calcWidth = header->bMiniMapRoomX * 16 * 16 + bounds->X;
 		maxMapHeight = maxMapHeight > calcHeight ? maxMapHeight : calcHeight;
 		maxMapWidth = maxMapWidth > calcWidth ? maxMapWidth : calcWidth;
-
 	}
 
 
-	Image* theBigPicture = new Image();
-	theBigPicture->Create(maxMapWidth + 512, maxMapHeight + 512);
+	BackBuffer* theBigPicture = new BackBuffer();
+	theBigPicture->Create(percentage(maxMapWidth, 0.8), percentage(maxMapHeight, 0.8));
+
 	//Image thebigImage = theBigPicture;
 	std::vector<RECT> overLapList;// = new List<Rectangle>();
 	HDC g = theBigPicture->DC();
@@ -765,15 +769,19 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 
 		char infoString[12048] = { 0 };
 		LoadRoomSpriteSet(thisArea, roomCounter, Tileset, SpriteImage);
+		//theGame->LoadRoom(thisArea, roomCounter, Tileset, SpriteImage, (RoomOffsets[thisArea] - 0x8000000) + (roomCounter * 0x3C));
+
 		DrawStatus.dirty = 1;
-		//DrawRoom();
+		theGame->DrawRoom(tileImage, bgImage, -1);
 		vector<nEnemyList>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;
 		RHeader* header = &theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
 		sprintf(infoString, "%sArea %X: Room %X", infoString, thisArea, roomCounter);
 		int enemyCounter = 0;
+		BackBuffer room;
+		room.Create(bounds->X * 16, bounds->Y * 16);
 
-
+		HDC r = room.DC();
 		if (hey->size() > 0) sprintf(infoString, "%s\nEnemies1: %d", infoString, (hey->at(0)).Max());
 		if (hey->size() > 1) sprintf(infoString, "%s\nEnemies2: %d : Event Trigger - %X", infoString, (hey->at(1)).Max(), header->bEventSwitch);
 		if (hey->size() > 2) sprintf(infoString, "%s\nEnemies3: %d : Event Trigger - %X", infoString, (hey->at(2)).Max(), header->bEventSwitch2);
@@ -785,25 +793,34 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		int maxWidth = bounds->X * 16;
 		int maxHeight = bounds->Y * 16;
 
-		DrawDoorIndicators(g);
+
+		BitBlt(r,
+			0,
+			0,
+			bounds->X * 16,
+			bounds->Y * 16,
+			ThisBackBuffer.DC(), 0, 0, SRCCOPY);
+
+
+		DrawDoorIndicators(r);
 		SetTextColor(g, RGB(255, 255, 0));
 
 		TextOut(
 			g,
-			header->bMiniMapRoomX * 16 * 16 + 16,
-			header->bMiniMapRoomY * 16 * 16 + maxHeight / 2,
+			8,
+			(bounds->Y / 2) * 16,
 			infoString,
 			strlen(infoString)
 		);
 
 
-		BitBlt(g,
-			header->bMiniMapRoomX * 16 * 16,
-			header->bMiniMapRoomY * 16 * 16,
-			bounds->X * 16,
-			bounds->Y * 16,
-			ThisBackBuffer.DC(), 0, 0, SRCCOPY);
-
+	
+		StretchBlt(g,
+			percentage(header->bMiniMapRoomX * 16 * 16, 0.8),
+			percentage(header->bMiniMapRoomY * 16 * 16, 0.8),
+			percentage(bounds->X * 16, 0.8),
+			percentage(bounds->Y * 16, 0.8),
+			r, 0, 0, bounds->X * 16, bounds->Y * 16, SRCCOPY);
 
 	}
 	//Image* minimap = new Image(512, 512);
@@ -816,7 +833,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	//	ThisBackBuffer.DC(), 0, 0, SRCCOPY);
 	//delete minimap;
 	//delete Tileset;
-	FILE* fp = fopen("boom.bmp", "w+b");
+	FILE* fp = fopen("boom2.bmp", "w+b");
 	theBigPicture->SaveToFile(fp);
 	fclose(fp);
 	delete theBigPicture;

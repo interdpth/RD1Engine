@@ -230,15 +230,15 @@ struct SpritesetData
 	unsigned char  graphics[0x8000];
 
 	long pal[512];
-	unsigned char total;
+	unsigned char spriteCount;
 };
 
 
-struct RECORD {
-	unsigned char	*data;
-	unsigned long	width;
-	unsigned long	height;
-};
+//struct RECORD {
+//	unsigned char	*data;
+//	unsigned long	width;
+//	unsigned long	height;
+//};
 
 //wtf
 class wndCPal {
