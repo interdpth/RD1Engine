@@ -13,6 +13,7 @@ unsigned long GetPointer(unsigned long addr)
 	memcpy(&pnt, &rawFile[addr], 4);
 	return pnt - 0x8000000;
 }
+
 unsigned long Getlong(unsigned long addr)
 {
 	unsigned long theAddress = addr;
@@ -30,6 +31,7 @@ unsigned char* GetData(unsigned long addr, unsigned long size)
 {
 	return NULL;;
 }
+
 FusionSamus::FusionSamus()
 {
 	_8BitFrameCounter = 0;
@@ -323,27 +325,18 @@ void FusionSamus::Logic()
 		GfxSizeTable = GetPointer(currentSizeTable+PoseIndex);
 		someIndex = CopyIndex;
 	SetOAM:
-		/*theCurrentAnim =(SamusAnim*) &Animtable[CurrentAnimation];
-		SamusOAMPointer = theCurrentAnim->OAMPointer;
-		tophalf = (PieceSize*)&rawFile[(unsigned long)theCurrentAnim->Tophalf-0x8000000];
-		SamusGFXTophalfTileLen = 32 * tophalf->BotomHalfLen;
-		tophalf = (tophalf + 4);
-		SamusGFXBottomHalfLen = 32 * tophalf->BotomHalfLen;
-		SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf - 0x8000000;
-		SamusGFXBottomOffset = (unsigned long*)(&tophalf->Top + SamusGFXTophalfTileLen);
-		legspointer = (PieceSize*)&rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
-		SamusGFXLegsTopLen = 32 * legspointer->BotomHalfLen;
-		legspointer = (legspointer + 1);
-		SamusGFXLegsBottomLen = 32 * legspointer->BotomHalfLen;
-		SamusGFXLegsTopOffset = (unsigned long*)&legspointer->Top;
-		SamusGFXLegsBottomOffset = (unsigned long*)(&legspointer->Top + SamusGFXLegsTopLen);*/
 		theCurrentAnim = &Animtable[CurrentAnimation];
 		SamusOAMPointer = theCurrentAnim->OAMPointer;
+
 		tophalf = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
 		SamusGFXTophalfTileLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
 		SamusGFXBottomHalfLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf+ 1 - 0x8000000];
+
+
 		SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf+2 - 0x8000000;
 		SamusGFXBottomOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000  + SamusGFXTophalfTileLen;
+
+
 		legspointer =(unsigned long*) &rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
 		SamusGFXLegsTopLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
 		SamusGFXLegsBottomLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf + 1 - 0x8000000];
@@ -449,10 +442,9 @@ void FusionSamus::Logic()
 			case ShootingOnHorizladder:
 			{
 				//THIS IS WRONMG
-				unsigned long g = GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1));
-				GfxTablePnt = g;
-				//unsigned long off = *GfxTablePnt;
-				gfxsize = *(unsigned long*)g;
+				GfxSizeTable = GfxSizeTable + (4 * 2 * CurrentAnimation);
+				//GfxTablePnt = ;
+				gfxsize = rawFile[GfxSizeTable];
 				if (MissilesSelected & 1)
 				{
 					if (SamusDirection & DirectionRight)
@@ -677,7 +669,7 @@ void FusionSamus::Logic()
 			case FrozenInMorphBall:
 			case FrozenInMorphballFalling:
 				SuitPalLen = 64;
-				FinalPalPointer = ((unsigned short *)rawFile[0x28E0FC]);
+				FinalPalPointer = ((unsigned short *)&rawFile[0x28E0FC]);
 				PalIndex = 0;
 				PalSize = 32;
 				goto JustUpdatePal;

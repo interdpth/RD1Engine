@@ -14,7 +14,7 @@
 #include "backbuffer.h"
 #include "OamFrameTable.h"
 #include "BaseTypes.h"
-//#include "AreasManager.h"
+#include "AreasManager.h"
 //#include "RoomsManager.h"
 using namespace std;
 int  DrawTileRect(HDC hdc, long theColor, MousePointer mpointer, int mul);
@@ -41,6 +41,7 @@ public:
 	SupportedTitles thisTitle;
 	cOAMManager*mgrOAM;
 	OamFrameTable* frameTables;
+	AreasManager* areaManager;
 	int DisplayDoors(unsigned char Room);
 	drawstate DrawStatus;
 	int             DrawClipIdent();
@@ -49,18 +50,25 @@ public:
 	void LoadModifiers(char* fn);
 	void LoadRoomSpriteSet(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);
 	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset);
+	
+	
+	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, RHeader*currHeader
+	);
+
+	
 	void DrawSprites(Image* pic);
 	int DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype);
 	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex);
 	void DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImage, TileBuffer* tileImage, TileBuffer* bgImage);
 	void DrawDoorIndicators(HDC g);
-	vector<long> RoomOffsets;
-	DoorManager * mgrDoors;
+	
+
 	clsRoomScrolls * mgrScrolls;
 	RD1Engine(SupportedTitles theTitle, OamFrameTable* frametables, TileBuffer * bg, TileBuffer* TileImage, Image* Tileset);
 	int GetPalSize(int sprID);
 	BackBuffer ThisBackBuffer;
 	int currentRomType;
+	DoorManager * mgrDoors;
 	sSpritev idkVRAM;
 	int             Save(MemFile * fp);
 	int SaveLevel(unsigned long HeaderOffset);

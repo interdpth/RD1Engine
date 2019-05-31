@@ -446,6 +446,10 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 	memset(&GraphicsBuffer[0x4000], 0, 0x4000);
 
 	for (i = 0; i < 15; i++) {
+		if (spriteset[i].spriteID < 0x11)
+		{
+			break;
+		}
 		unsigned char thisSprite = spriteset[i].spriteID;
 		dst = 0x4000 + (ginfo[i].MemDst);
 		if (dst >= 0x8000) {

@@ -29,17 +29,21 @@ public:
 	int currentVertScroll;
 	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset);
 	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames);
-	
+	RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, RHeader* offset);
+
+	void Setup(Image* tilesetsrc, int area, int room);
 	~RoomClass();
 	MapManager * mapMgr;
 	SpriteObjectManager* mgrSpriteObjects;
 	cEntityManager* mgrEntities;
-	RHeader roomHeader;
+	RHeader* roomHeader;
 	RHeader copyHeader;
+	unsigned originalOffset;
 	int LoadData();
 	void LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage);
 	int LoadHeader(long Offset);
 	void Load(Image* tileset, int area, int room, unsigned long offset);
+	void Load(Image* tileset, int area, int room, RHeader* offset);
 	int GetLayerData(unsigned char compression, unsigned char Layer, unsigned long offset);
 	void Export(char* name);
 	void Import(char* name);

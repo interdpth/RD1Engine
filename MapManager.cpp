@@ -7,7 +7,7 @@
 #include "BaseGame.h"
 #define GetX(lParam) LOWORD(lParam)
 #define GetY(lParam) HIWORD(lParam)
-void MapManager::MoveObject(LPARAM lParam) {
+void MapManager::MoveObject(LPARAM lParam, int index) {
 	editingStates thisState = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetState();//Wait what
 	if (thisState == editingStates::MAP) {
 //		mpMap.sY = GetY(lParam) / 16;
@@ -32,20 +32,20 @@ void MapManager::MoveObject(LPARAM lParam) {
 		//Get shit to our door
 		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
 		if (objID != -1) {
-			//switch ((unsigned char)comboSpriteSet.GetListIndex()) {
-			//case 0:
-			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].X = (GetX(lParam) / 16);//;
-			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].Y = (GetY(lParam) / 16);//;
-			//	break;
-			//case 1:
-			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].X = (GetX(lParam) / 16);//;
-			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].Y = (GetY(lParam) / 16);//;
-			//	break;
-			//case 2:
-			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].X = (GetX(lParam) / 16);//;
-			//	RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].Y = (GetY(lParam) / 16);//;
-			//	break;
-			//}
+			switch (index) {
+			case 0:
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].X = (GetX(lParam) / 16);//;
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].Y = (GetY(lParam) / 16);//;
+				break;
+			case 1:
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].X = (GetX(lParam) / 16);//;
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].Y = (GetY(lParam) / 16);//;
+				break;
+			case 2:
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].X = (GetX(lParam) / 16);//;
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].Y = (GetY(lParam) / 16);//;
+				break;
+			}
 
 		
 		}

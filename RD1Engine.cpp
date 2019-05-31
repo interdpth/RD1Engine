@@ -46,11 +46,29 @@ void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer
 	char buffer[256];
 	sprintf(buffer, "Loading Area: %d Room: %X, Offset %X", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
-	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
-	LoadRoom(area, room, Tileset, SpriteImage, offset);
+//	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
+	GameArea* currentArea = theGame->areaManager->GetCurrentArea();
+	RHeader* thisHeader = currentArea->GetCurrentRoom();
+	LoadRoom(area, room, Tileset, SpriteImage, thisHeader);
 	////Change to room header 
 	mainRoom->LoadUpSprites(spriteindex, SpriteImage);
 
+}
+
+
+void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, RHeader*currHeader)
+{
+	char buffer[512];
+	//sprintf(buffer, "Loading Area: %d Room: %X, Offset %X", area, room, offset);
+	Logger::log->LogIt(Logger::DEBUG, buffer);
+	if (mainRoom)
+	{
+		delete mainRoom;
+		mainRoom = NULL;
+	}
+	areaManager->SetCurrentArea(area);
+	areaManager->GetCurrentArea()->SetCurrentRoom(room);
+	mainRoom = new RoomClass(currentRomType, Tileset, (SpritesetData*)NULL, _gbaMethods, (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*)NULL, area, room, areaManager->GetCurrentArea()->GetCurrentRoom() );
 }
 
 void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset)
@@ -114,13 +132,11 @@ void RD1Engine::GetArrays()
 int RD1Engine::LoadAreaTable()
 {
 	DataContainer* areas = GameConfiguration::mainCFG->GetDataContainer("Areas");
-	MemFile::currentFile->seek(areas->Value);
-	for (int i = 0; i < areas->MemberCount; i++)
-	{
-		unsigned long gamePointer = 0;
-		MemFile::currentFile->fread(&gamePointer, sizeof(long), 1);
-		RoomOffsets.push_back(gamePointer);
-	}
+	DataContainer* areaNames = GameConfiguration::mainCFG->GetDataContainer("AreaNames");
+	areaManager = new AreasManager(MemFile::currentFile, &areaNames->stringArray, areas->MemberCount, theGame->thisTitle);
+	areaManager->Load(areas->Value);
+
+
 	return areas->MemberCount;
 }
 
@@ -486,7 +502,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 	//Setup rendermap
 
 
-	if (mainRoom->roomHeader.lBg3 & 0x40) {
+	if (mainRoom->roomHeader->lBg3 & 0x40) {
 
 		int mX = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->X * 8;
 		int mY = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->Y * 8;
@@ -512,7 +528,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 	if (DrawStatus.BG2) {
 
-		DrawLayer(buffBackLayer, &imgMap, mainRoom->roomHeader.bBg2);//Backlayer
+		DrawLayer(buffBackLayer, &imgMap, mainRoom->roomHeader->bBg2);//Backlayer
 		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 		buffBackLayer->Dirty = 0;
 
@@ -524,7 +540,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 		int
 			alphaHigh = 16;
 		int alphaLow = 0;
-		DrawLayer(buffLevelData, &imgMap, mainRoom->roomHeader.bBg1);
+		DrawLayer(buffLevelData, &imgMap, mainRoom->roomHeader->bBg1);
 
 		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 
@@ -543,9 +559,9 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 	if (DrawStatus.BG0) {
 
-		DrawLayer(buffForeground, &imgMap, mainRoom->roomHeader.bBg0);//Foreground
+		DrawLayer(buffForeground, &imgMap, mainRoom->roomHeader->bBg0);//Foreground
 
-		if ((signed)mainRoom->roomHeader.TransForeground > 16)
+		if ((signed)mainRoom->roomHeader->TransForeground > 16)
 		{
 			BLENDFUNCTION bfn = { 0 }; // Struct with info for AlphaBlend
 			bfn.BlendOp = AC_SRC_OVER;
@@ -556,7 +572,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 		}
 		else {
-			imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader.bSceneryYPos, Width, Height, 0, 0);
+			imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader->bSceneryYPos, Width, Height, 0, 0);
 		}
 
 		buffForeground->Dirty = 0;
@@ -749,7 +765,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	{
 		LoadRoomSpriteSet(thisArea, roomCounter, Tileset, SpriteImage);
 
-		RHeader* header = &theGame->mainRoom->roomHeader;
+		RHeader* header = theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
 		int calcHeight = header->bMiniMapRoomY * 16 * 16 + bounds->Y;
 		int calcWidth = header->bMiniMapRoomX * 16 * 16 + bounds->X;
@@ -774,7 +790,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		DrawStatus.dirty = 1;
 		theGame->DrawRoom(tileImage, bgImage, -1);
 		vector<nEnemyList>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;
-		RHeader* header = &theGame->mainRoom->roomHeader;
+		RHeader* header = theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
 		sprintf(infoString, "%sArea %X: Room %X", infoString, thisArea, roomCounter);
 		int enemyCounter = 0;
@@ -814,7 +830,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		);
 
 
-	
+
 		StretchBlt(g,
 			percentage(header->bMiniMapRoomX * 16 * 16, 0.8),
 			percentage(header->bMiniMapRoomY * 16 * 16, 0.8),
@@ -1079,9 +1095,9 @@ int             RD1Engine::Save(MemFile * fp)
 	{
 
 
-		MapManager::SaveLayer(_gbaMethods, RD1Engine::theGame->mainRoom->roomHeader.bBg0, &RD1Engine::theGame->mainRoom->roomHeader.lForeground, mm->GetLayer(MapManager::ForeGround));
-		MapManager::SaveLayer(_gbaMethods, RD1Engine::theGame->mainRoom->roomHeader.bBg1, &RD1Engine::theGame->mainRoom->roomHeader.lLevelData, mm->GetLayer(MapManager::LevelData));
-		MapManager::SaveLayer(_gbaMethods, RD1Engine::theGame->mainRoom->roomHeader.bBg2, &RD1Engine::theGame->mainRoom->roomHeader.lBackLayer, mm->GetLayer(MapManager::Backlayer));
+		MapManager::SaveLayer(_gbaMethods, mainRoom->roomHeader->bBg0, &RD1Engine::theGame->mainRoom->roomHeader->lForeground, mm->GetLayer(MapManager::ForeGround));
+		MapManager::SaveLayer(_gbaMethods, RD1Engine::theGame->mainRoom->roomHeader->bBg1, &RD1Engine::theGame->mainRoom->roomHeader->lLevelData, mm->GetLayer(MapManager::LevelData));
+		MapManager::SaveLayer(_gbaMethods, RD1Engine::theGame->mainRoom->roomHeader->bBg2, &RD1Engine::theGame->mainRoom->roomHeader->lBackLayer, mm->GetLayer(MapManager::Backlayer));
 
 		if (mm->GetLayer(MapManager::Clipdata)->SDirty == 1)
 		{
@@ -1090,7 +1106,7 @@ int             RD1Engine::Save(MemFile * fp)
 			offset = _gbaMethods->FindFreeSpace(tlength + 4, 0xFF);
 			if (offset != 0)
 			{
-				RD1Engine::theGame->mainRoom->roomHeader.lClipData = 0x8000000 + offset;
+				RD1Engine::theGame->mainRoom->roomHeader->lClipData = 0x8000000 + offset;
 				MemFile::currentFile->seek(offset);
 				MemFile::currentFile->fputc(mm->GetLayer(MapManager::Clipdata)->X);
 				MemFile::currentFile->fputc(mm->GetLayer(MapManager::Clipdata)->Y);
@@ -1113,11 +1129,11 @@ int  RD1Engine::SaveLevel(unsigned long HeaderOffset) {
 	if (theFile) {
 		//   while(1){ 
 		Save(theFile);
-		//   if(BaseGame::theGame->mainRoom->roomHeader.lBackLayer!=BaseGame::theGame->mainRoom->roomHeader.lLevelData) break;
+		//   if(BaseGame::theGame->mainRoom->roomHeader->lBackLayer!=BaseGame::theGame->mainRoom->roomHeader->lLevelData) break;
 		//	}
-		RD1Engine::theGame->mainRoom->mgrSpriteObjects->SaveSprites(&RD1Engine::theGame->mainRoom->roomHeader);
+		RD1Engine::theGame->mainRoom->mgrSpriteObjects->SaveSprites(theGame->mainRoom->roomHeader);
 		theFile->seek(HeaderOffset);
-		roomHeader = &RD1Engine::theGame->mainRoom->roomHeader;
+		roomHeader = RD1Engine::theGame->mainRoom->roomHeader;
 
 
 		theFile->fwrite(&roomHeader->bTileset, sizeof(unsigned char), 1);

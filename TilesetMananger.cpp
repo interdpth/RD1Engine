@@ -373,7 +373,7 @@ int TilesetManager::MFGlobalGFX() {
 
 
 
-//BaseGame::theGame->mainRoom->roomHeader.lBackgroundTSA
+//BaseGame::theGame->mainRoom->roomHeader->lBackgroundTSA
 int TilesetManager::GetCBG(unsigned long backgroundPointer) {
 	new std::exception("GetCBG needs a recode entirely.");
 	MemFile* rom = MemFile::currentFile;

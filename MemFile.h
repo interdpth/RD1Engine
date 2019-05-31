@@ -16,10 +16,11 @@ public:
 	void seek(unsigned long offset);
 	void fread(void* dst, int count, int size);	
 	unsigned char fgetc();
-	unsigned char fputc(char val);
+	unsigned char fputc(unsigned char val);
 	void fwrite(void* dst, int count, int size);
 	bool ValidFileSize();
 	unsigned char* GetFile();
+	int ftell();
 	~MemFile();
 private: 
 	unsigned char* _theFile; 

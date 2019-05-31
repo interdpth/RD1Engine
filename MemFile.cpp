@@ -31,7 +31,7 @@ MemFile::MemFile(char* file, int expectedMinSize)
 	fileName = file;
 	//get file size
 	fseek(FP, 0, SEEK_END);
-	_fileSize = ftell(FP);
+	_fileSize = ::ftell(FP);
 
 
 	//read full size
@@ -98,10 +98,15 @@ void MemFile::fwrite(void* src, int count, int size)
 	fileIndex += readSize;	
 }
 
-unsigned char MemFile::fputc(char val)
+unsigned char MemFile::fputc(unsigned char val)
 {
 	_theFile[fileIndex++]=val;
 	return _theFile[fileIndex-1];
+}
+
+int MemFile::ftell()
+{
+	return fileIndex;
 }
 
 MemFile::~MemFile()

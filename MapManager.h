@@ -30,7 +30,7 @@ public:
 	MapEditingState* GetState() {
 		return ThisMapState;
 	}
-	void MoveObject(LPARAM lParam);
+	void MoveObject(LPARAM lParam, int index=-1);
 	void Destroy();
 	void Blank();
 	static int SaveLayer(GBAMethods* GBA, unsigned char layerbyte, unsigned long* LayerPointer, nMapBuffer * layer);
