@@ -1,3 +1,6 @@
+#include <vector>
+#include "GameConfiguration.h"
+#include "..\MemFile\MemFile.h"
 #include "AnimatedTiles.h"
 #include "GBAGraphics.h"
 

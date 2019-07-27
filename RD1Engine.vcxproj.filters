@@ -36,9 +36,6 @@
     <ClCompile Include="AnimatedTiles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="backbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cEnitityManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,22 +60,13 @@
     <ClCompile Include="GBAMethods.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LeakFinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MemFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OamFrameTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OffsetStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RD1Engine.cpp">
@@ -94,9 +82,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SimpleJSON-master\src\JSONValue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tilebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TilesetMananger.cpp">
@@ -183,12 +168,24 @@
     <ClCompile Include="..\grit\libgrit\cprs_lz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\MemFile\MemFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Win32GBAImageClasses\backbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Win32GBAImageClasses\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Win32GBAImageClasses\tilebuffer.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Win32GBAImageClasses\OpenGL2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedTiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="backbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cEnitityManager.h">
@@ -224,13 +221,7 @@
     <ClInclude Include="GBAMethods.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LeakFinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MemFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MetroidFusion.h">
@@ -245,12 +236,6 @@
     <ClInclude Include="OffsetStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="opengl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RoomClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -261,9 +246,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SimpleJSON-master\src\JSONValue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tilebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TilesetManager.h">
@@ -339,6 +321,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RoomsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MemFile\MemFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Win32GBAImageClasses\backbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Win32GBAImageClasses\image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Win32GBAImageClasses\OpenGL2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

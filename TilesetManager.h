@@ -5,7 +5,7 @@
 #include "AnimatedTiles.h"
 #include "GBAGraphics.h"
 //#include "BaseGame.h"
-#include "image.h"
+#include "..\Win32GBAImageClasses\image.h"
 #include "GBAMethods.h"
 #include "BaseGame.h"
 class TilesetManager

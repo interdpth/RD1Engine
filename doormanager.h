@@ -3,7 +3,7 @@
 #include "GameConfiguration.h"
 #include "ConnectionsEditor.h"
 #include "structures.h"
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 #include "GBAMethods.h"
 #include <vector>
 using namespace std;

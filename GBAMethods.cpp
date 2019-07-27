@@ -775,7 +775,7 @@ int             GBAMethods::ReturnFileName(HINSTANCE inst, HWND wnd, char *Filte
    Flag |= OFN_EXPLORER;
    OPENFILENAME    ofn;
 
-   memset(&ofn, 0, sizeof(OPENFILENAME));
+   memset(&ofn, 0, sizeof(ofn));
    ofn.lStructSize = sizeof(OPENFILENAME);
    ofn.lpstrInitialDir = ".";
    ofn.hwndOwner = wnd;

@@ -1,7 +1,6 @@
 #pragma once
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 #include "BaseTypes.h"
-#include "MemFile.h"
 #include "GameConfiguration.h"
 #include "GameArea.h"
 #include <vector>
@@ -14,7 +13,7 @@ public:
 	int SetCurrentArea(int index);
 	
 	AreasManager(MemFile* file, vector<string>*, int areaMax, SupportedTitles title);
-	void Load(unsigned long offset);
+	void LoadAreas(unsigned long offset);
 	void Save();
 
 private:

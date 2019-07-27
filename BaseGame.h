@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 #include "LeakFinder.h"
-#include "backbuffer.h"
+#include "..\Win32GBAImageClasses\backbuffer.h"
 #include "OamFrameTable.h"
 #include "BaseTypes.h"
 #include "AreasManager.h"

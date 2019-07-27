@@ -1,6 +1,6 @@
 #include "FusionSamus.h"
 
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 unsigned long GetPointer(unsigned long addr)
 {
 	unsigned long theAddress = addr;

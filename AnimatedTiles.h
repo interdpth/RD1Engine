@@ -1,8 +1,7 @@
 #pragma once
-#include <vector>
-#include "GameConfiguration.h"
+
 #include "Structures.h"
-#include "MemFile.h"
+
 using namespace std;
 class AnimatedTiles
 {

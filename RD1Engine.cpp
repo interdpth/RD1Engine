@@ -131,10 +131,14 @@ void RD1Engine::GetArrays()
 
 int RD1Engine::LoadAreaTable()
 {
-	DataContainer* areas = GameConfiguration::mainCFG->GetDataContainer("Areas");
+	DataContainer* areas = GameConfiguration::mainCFG->GetDataContainer("AreasPointer");
 	DataContainer* areaNames = GameConfiguration::mainCFG->GetDataContainer("AreaNames");
 	areaManager = new AreasManager(MemFile::currentFile, &areaNames->stringArray, areas->MemberCount, theGame->thisTitle);
-	areaManager->Load(areas->Value);
+	MemFile::currentFile->seek(areas->Value);
+	unsigned long areaTable = 0;
+	MemFile::currentFile->fread(&areaTable, 1, 4);
+
+	areaManager->LoadAreas(areaTable-0x8000000);
 
 
 	return areas->MemberCount;
@@ -194,13 +198,13 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 		LoadModifiers((char*)titleInstance->GetPoseFile());
 	}
 
-	mainRoom = new RoomClass((int)theTitle, ImageTileset, NULL, _gbaMethods, &frameTables->OAMFrameTable, NULL);
+	mainRoom = new RoomClass(theTitle, ImageTileset, NULL, _gbaMethods, &frameTables->OAMFrameTable, NULL);
 }
 void RD1Engine::LoadModifiers(char* fn)
 {
 	FILE* fp = fopen(fn, "r");
 	long eoff = 0;
-	char* buf = new char[256];
+	char buf[256];
 	int id = 0;
 	int xpos = 0;
 	int ypos = 0;
@@ -212,7 +216,7 @@ void RD1Engine::LoadModifiers(char* fn)
 		while (ftell(fp) < eoff) {
 			memset(buf, 0, 256);
 
-			fgets(buf, 256, fp);
+			fgets(buf, 255, fp);
 			id = 0;
 			xpos = 0;
 			ypos = 0;
@@ -227,8 +231,9 @@ void RD1Engine::LoadModifiers(char* fn)
 
 			poseModifier[id] = tmp;
 		}
+		fclose(fp);
 	}
-	delete[] buf;
+	
 
 }
 RD1Engine::~RD1Engine()
@@ -1170,7 +1175,7 @@ int  RD1Engine::SaveLevel(unsigned long HeaderOffset) {
 		RD1Engine::theGame->mgrScrolls->SaveScroll(_gbaMethods);
 		RD1Engine::theGame->mgrDoors->SaveDoors(RD1Engine::theGame->mainRoom->Area);
 		RD1Engine::theGame->mainRoom->LoadHeader(HeaderOffset);
-		MemFile::currentFile->Save();
+		MemFile::currentFile->save();
 
 	}
 	//fp = NULL;

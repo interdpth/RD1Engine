@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <Windows.h>
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 #include "SprGBuf.h"
 #include "FrameManager.h"
 #pragma once
@@ -154,7 +154,7 @@ public:
 
 			DMA3DAD = Sprite_tiles;
 
-			for (int i = 0; i < DMA3CNT_L; i++) {
+			for (unsigned int i = 0; i < DMA3CNT_L; i++) {
 				DMA3DAD[i] = DMA3SAD[i];
 			}
 		}

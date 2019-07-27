@@ -1,5 +1,5 @@
 #pragma once
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 #include "GBAMethods.h"
 #include "GameConfiguration.h"
 #include "structures.h"

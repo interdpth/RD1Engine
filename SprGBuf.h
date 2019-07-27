@@ -2,7 +2,7 @@
 #include "Structures.h"
 #include "OAM.h"
 #include "clsPreviewSprite.h"
-#include "image.h"
+#include "..\Win32GBAImageClasses\image.h"
 class SpriteObject {
 public: 
 	SpriteObject(unsigned char* gfxRam, long* pal);

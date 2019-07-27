@@ -4,7 +4,7 @@
 #include <time.h>
 #include "SprGBuf.h"
 #include "cOAMManager.h"
-#include "backbuffer.h"
+#include "..\Win32GBAImageClasses\backbuffer.h"
 #include "Structures.h"
 #include "BaseGame.h"
 using namespace std;

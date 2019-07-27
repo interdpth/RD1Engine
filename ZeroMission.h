@@ -1,6 +1,6 @@
 #pragma once
 #include "GameConfiguration.h"
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 #include "Structures.h"
 #include "RD1Title.h"
 #include "BaseTitle.h"

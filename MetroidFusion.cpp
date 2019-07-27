@@ -1,5 +1,5 @@
 #include "MetroidFusion.h"
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 
 const char* MetroidFusion::CodeName = "AMTE";
 

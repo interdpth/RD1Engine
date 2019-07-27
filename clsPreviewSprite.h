@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 #include "LeakFinder.h"
-#include "image.h"
+#include "..\Win32GBAImageClasses\image.h"
 class clsPreviewSprite
 {
 private:

@@ -2,7 +2,7 @@
 #include "GameConfiguration.h"
 #include "Structures.h"
 #include "GBAMethods.h"
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 struct sctype {
 	unsigned char xStart;
 	unsigned char xEnd;

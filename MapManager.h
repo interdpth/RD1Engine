@@ -2,8 +2,8 @@
 #include "nMapBuffer.h"
 #include "GBAMethods.h"
 #include "MapEditingState.h"
-#include "backbuffer.h"
-#include "MemFile.h"
+#include "..\Win32GBAImageClasses\backbuffer.h"
+#include "..\MemFile\MemFile.h"
 #include "structures.h"
 class MapManager
 {

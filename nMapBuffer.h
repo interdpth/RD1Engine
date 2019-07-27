@@ -1,7 +1,7 @@
 #pragma once
 #include "cCopyData.h"
 #include "cUndoBuffer.h"
-#include "image.h"
+#include "..\Win32GBAImageClasses\image.h"
 class nMapBuffer
 {
 public:

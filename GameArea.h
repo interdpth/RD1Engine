@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "structures.h"
-#include "MemFile.h"
+#include "..\MemFile\MemFile.h"
 class GameArea
 {
 	std::vector<RHeader> _rooms;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "image.h"
+#include "..\Win32GBAImageClasses\image.h"
 #include <vector>
 using namespace std;
 class CachedImage

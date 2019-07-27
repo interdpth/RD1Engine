@@ -1,5 +1,5 @@
 #include "GameConfiguration.h"
-
+#include "BaseTypes.h"
 
 GameConfiguration* GameConfiguration::mainCFG;
 
@@ -20,56 +20,81 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 {
 	Containers.clear();
 	float zoomTypes[3] = { 1,1.5,2 };
+	
 	Containers.push_back(new DataContainer(-1, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
 	Containers.push_back(new DataContainer(-1, "Framework", "UIState", 2, false, 0));
-	Containers.push_back(new DataContainer(1, "Framework", "UIState", 2, false, 0));
-	Containers.push_back(new DataContainer(0, "Framework", "UIState", 2, false, 0));
-	if (RomSwitch == 0 || RomSwitch == 1) {
-		Containers.push_back(new DataContainer(0, "Framework", "BaseTilesetGFX", 0x5D940C, false, 1));
-		Containers.push_back(new DataContainer(0, "Framework", "BaseRoomGFX", 0x75FAA8, false, 1));
-		Containers.push_back(new DataContainer(0, "Framework", "Doors", 0x75FAA8, false, 8));
-		Containers.push_back(new DataContainer(0, "Framework", "Scrolls", 0x75FD28, false, 0xB));
-		Containers.push_back(new DataContainer(0, "Framework", "Connections", 0x05EEB8, false, 1));
-		Containers.push_back(new DataContainer(0, "Framework", "Tileset", 0x33DFDC, false, 0x50));
-		Containers.push_back(new DataContainer(0, "Framework", "Areas", 0x75FAC4, false, 0x7));
-		Containers.push_back(new DataContainer(0, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
-		Containers.push_back(new DataContainer(0, "Framework", "AnimReference", 0x35FA78, false, 0x30));
-		Containers.push_back(new DataContainer(0, "Framework", "AnimTileset", 0x35F948, false, 0x0));
+	  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "UIState", 2, false, 0));
+	Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "UIState", 2, false, 0));
+	Containers.push_back(new DataContainer((int)SupportedTitles::titleWL, "Framework", "UIState", 2, false, 0));
+	if (RomSwitch == 0 || RomSwitch == 1 || RomSwitch == 2) {
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "BaseTilesetGFX", 0x5D940C, false, 1));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "BaseRoomGFX", 0x75FAA8, false, 1));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Doors", 0x75FAA8, false, 8));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Scrolls", 0x75FD28, false, 0xB));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Connections", 0x05EEB8, false, 1));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Tileset", 0x33DFDC, false, 0x50));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Areas", 0x75FAC4, false, 0x7));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AnimReference", 0x35FA78, false, 0x30));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AnimTileset", 0x35F948, false, 0x0));
 
-		Containers.push_back(new DataContainer(0, "Framework", "TextGFX", 0x415460, false, 0x8000));
-		Containers.push_back(new DataContainer(0, "Framework", "TextPal", 0x375738, false, 0x20));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "TextGFX", 0x415460, false, 0x8000));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "TextPal", 0x375738, false, 0x20));
 
-		Containers.push_back(new DataContainer(0, "Framework", "SpriteGFX", 0x75EBF8, false, 0));
-		Containers.push_back(new DataContainer(0, "Framework", "SpritePal", 0x75EEF0, false, 0x0));
-		Containers.push_back(new DataContainer(0, "Framework", "SpritePalSizes", 0x75EBF8, false, 0x0));
-		Containers.push_back(new DataContainer(0, "Framework", "SpriteSetTable", 0x75F31C, false, 0x0));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "SpriteGFX", 0x75EBF8, false, 0));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "SpritePal", 0x75EEF0, false, 0x0));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "SpritePalSizes", 0x75EBF8, false, 0x0));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "SpriteSetTable", 0x75F31C, false, 0x0));
 
 		unsigned long zmRoomsPerArea[] = { 0x2A, 0x2A, 0x39, 0x21, 0x14, 0x16, 0x73 };
 		char* zmAreas[] = { "Brinstar","Kraid","Norfair","Ridley","Tourian","Crateria","Chozodia" };
 		
-		Containers.push_back(new DataContainer(0, "Framework", "RoomsPerArea", 0, false, zmRoomsPerArea, 8));
-		Containers.push_back(new DataContainer(0, "Framework", "AreaNames", 0, false, zmAreas, 7));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "RoomsPerArea", 0, false, zmRoomsPerArea, 8));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AreaNames", 0, false, zmAreas, 7));
 		
-		Containers.push_back(new DataContainer(1, "Framework", "BaseTilesetGFX", 0x3F28C8, false, 1));
-		Containers.push_back(new DataContainer(1, "Framework", "Doors", 0x79B894, false, 10));
-		Containers.push_back(new DataContainer(1, "Framework", "Scrolls", 0x79BB08, false, 0xC));
-		Containers.push_back(new DataContainer(1, "Framework", "Connections", 0x6945c, false, 1));
-		Containers.push_back(new DataContainer(1, "Framework", "Tileset", 0x3BF888, false, 0x80));
-		Containers.push_back(new DataContainer(1, "Framework", "Areas", 0x79B8BC, false, 0xA));
-		Containers.push_back(new DataContainer(1, "Framework", "SpriteSizes", 0x2E4A50, false, 0xC0));
-		Containers.push_back(new DataContainer(1, "Framework", "AnimReference", 0x3C8F90, false, 0x30));
-		Containers.push_back(new DataContainer(1, "Framework", "AnimTileset", 0x3C8D58, false, 0x0));
-		Containers.push_back(new DataContainer(1, "Framework", "TextGFX", 0x682FAC, false, 0x8000));
-		Containers.push_back(new DataContainer(1, "Framework", "TextPal", 0x598d0c, false, 0x20));
-		Containers.push_back(new DataContainer(1, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
-		Containers.push_back(new DataContainer(1, "Framework", "SpriteGFX", 0x79A5D8, false, 0));
-		Containers.push_back(new DataContainer(1, "Framework", "SpritePal", 0x79A8D4, false, 0x0));
-		Containers.push_back(new DataContainer(1, "Framework", "SpriteSetTable", 0x79ADD8, false, 0x0));
+
+		//End ZM
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "BaseTilesetGFX", 0x3F28C8, false, 1));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "Doors", 0x79B894, false, 10));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "Scrolls", 0x79BB08, false, 0xC));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "Connections", 0x6945c, false, 1));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "Tileset", 0x3BF888, false, 0x80));
+
+
+
+		  //AreaHeaderPtr = 648AC
+			 // TilesetPtr = 6471C
+			 // AnimTilesetPtr = 699E0
+			 // AnimGfxPtr = 699E4
+			 // AnimPalettePtr = 6FF08
+			 // SpriteGfxRowsPtr = F880
+			 // ScrollsPtr = 69D14
+
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TilesetPointer", 0x6471C, false, 1));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AreasPointer", 0x648AC, false, 0xA));
+		  //Deprecated
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "Areas", 0x79B8BC, false, 0xA));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpriteSizes", 0x2E4A50, false, 0xC0));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AnimReference", 0x3C8F90, false, 0x30));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AnimTileset", 0x3C8D58, false, 0x0));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TextGFX", 0x682FAC, false, 0x8000));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TextPal", 0x598d0c, false, 0x20));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpriteGFX", 0x79A5D8, false, 0));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpritePal", 0x79A8D4, false, 0x0));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpriteSetTable", 0x79ADD8, false, 0x0));
 
 		unsigned long mfRoomsPerArea[] = { 0x57,0x36,0x3D,0x27,0x30,0x34,0x29,0x4,0x4,0x4 };
-		Containers.push_back(new DataContainer(1, "Framework", "RoomsPerArea", 0, false, mfRoomsPerArea, 10));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "RoomsPerArea", 0, false, mfRoomsPerArea, 10));
 		char* mfAreas[]={"Main Deck","SRX","TRO","PYR","AQA","ARC","NOC","Debug1","Debug2","Debug3"};
-		Containers.push_back(new DataContainer(1, "Framework", "AreaNames", 0, false, mfAreas, 10));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AreaNames", 0, false, mfAreas, 10));
+		  //End MF
+
+
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleWL, "Framework", "BaseTilesetGFX", 0x3F28C8, false, 1));
+
+
+
 	}
 }
 

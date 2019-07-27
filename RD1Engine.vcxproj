@@ -143,8 +143,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\grit\libgrit\cprs_lz.cpp" />
+    <ClCompile Include="..\MemFile\MemFile.cpp" />
+    <ClCompile Include="..\Win32GBAImageClasses\backbuffer.cpp" />
+    <ClCompile Include="..\Win32GBAImageClasses\image.cpp" />
+    <ClCompile Include="..\Win32GBAImageClasses\OpenGL2.cpp" />
+    <ClCompile Include="..\Win32GBAImageClasses\tilebuffer.cpp" />
     <ClCompile Include="AreasManager.cpp" />
-    <ClCompile Include="backbuffer.cpp" />
     <ClCompile Include="BaseTitle.cpp" />
     <ClCompile Include="cCopyData.cpp" />
     <ClCompile Include="cEnitityManager.cpp" />
@@ -164,25 +168,21 @@
     <ClCompile Include="GBAGraphics.cpp" />
     <ClCompile Include="GBAMethods.cpp" />
     <ClCompile Include="GritInterface.cpp" />
-    <ClCompile Include="image.cpp" />
     <ClCompile Include="ImageCache.cpp" />
     <ClCompile Include="LeakFinder.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MapEditingState.cpp" />
     <ClCompile Include="MapManager.cpp" />
-    <ClCompile Include="MemFile.cpp" />
     <ClCompile Include="MetroidFusion.cpp" />
     <ClCompile Include="nMapBuffer.cpp" />
     <ClCompile Include="OamFrameTable.cpp" />
     <ClCompile Include="OffsetStorage.cpp" />
-    <ClCompile Include="OpenGL2.cpp" />
     <ClCompile Include="RD1Engine.cpp" />
     <ClCompile Include="RoomClass.cpp" />
     <ClCompile Include="RoomsManager.cpp" />
     <ClCompile Include="SamusBase.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSON.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSONValue.cpp" />
-    <ClCompile Include="tilebuffer.cpp" />
     <ClCompile Include="TilesetMananger.cpp" />
     <ClCompile Include="WarioLand.cpp" />
     <ClCompile Include="ZeroMission.cpp" />
@@ -194,6 +194,10 @@
     <ClCompile Include="SpriteObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\MemFile\MemFile.h" />
+    <ClInclude Include="..\Win32GBAImageClasses\backbuffer.h" />
+    <ClInclude Include="..\Win32GBAImageClasses\image.h" />
+    <ClInclude Include="..\Win32GBAImageClasses\OpenGL2.h" />
     <ClInclude Include="AreasManager.h" />
     <ClInclude Include="BaseGame.h" />
     <ClInclude Include="BaseTitle.h" />
@@ -217,17 +221,13 @@
     <ClInclude Include="GBAGraphics.h" />
     <ClInclude Include="GBAMethods.h" />
     <ClInclude Include="GritInterface.h" />
-    <ClInclude Include="image.h" />
     <ClInclude Include="ImageCache.h" />
     <ClInclude Include="LeakFinder.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="MemFile.h" />
     <ClInclude Include="MetroidFusion.h" />
     <ClInclude Include="OAM.h" />
     <ClInclude Include="OamFrameTable.h" />
     <ClInclude Include="OffsetStorage.h" />
-    <ClInclude Include="opengl.h" />
-    <ClInclude Include="OpenGL2.h" />
     <ClInclude Include="RoomClass.h" />
     <ClInclude Include="RoomsManager.h" />
     <ClInclude Include="SamusBase.h" />
@@ -235,12 +235,10 @@
     <ClInclude Include="SimpleJSON-master\src\JSONValue.h" />
     <ClInclude Include="SprGBuf.h" />
     <ClInclude Include="stb.h" />
-    <ClInclude Include="tilebuffer.h" />
     <ClInclude Include="TilesetManager.h" />
     <ClInclude Include="WarioLand.h" />
     <ClInclude Include="ZeroMission.h" />
     <ClInclude Include="AnimatedTiles.h" />
-    <ClInclude Include="backbuffer.h" />
     <ClInclude Include="cEnitityManager.h" />
     <ClInclude Include="FrameManager.h" />
     <ClInclude Include="Frames.h" />

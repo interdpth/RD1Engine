@@ -5,8 +5,8 @@
 //#include "GlobalVars.h"
 #include "GBAGraphics.h"
 #include <Windows.h>
-#include "Image.h"
-#include "backbuffer.h"
+#include "..\Win32GBAImageClasses\Image.h"
+#include "..\Win32GBAImageClasses\backbuffer.h"
 #include "FrameManager.h"
 #include "GBAMethods.h"
 using namespace std;
