@@ -23,6 +23,6 @@ private:
 	int _currentArea;
 	unsigned long _currentOffset;
 	SupportedTitles _myTitle;
-	vector<GameArea> areas;
+	vector<GameArea*> areas;
 	unsigned long tableOffset;
 };

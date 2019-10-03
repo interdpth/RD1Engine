@@ -7,6 +7,7 @@ bool GameConfiguration::LiteralCompare(char* a, char* b)
 {
 	int len = strlen(a);
 	int i = 0;
+	if (len != strlen(b)) return false;
 	for (i = 0; i < len; i++)
 	{
 		if (a[i] != b[i]) {
@@ -27,6 +28,19 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 	Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "UIState", 2, false, 0));
 	Containers.push_back(new DataContainer((int)SupportedTitles::titleWL, "Framework", "UIState", 2, false, 0));
 	if (RomSwitch == 0 || RomSwitch == 1 || RomSwitch == 2) {
+
+		/*
+		AreaHeaderPtr=56480
+TilesetPtr=56250
+AnimTilesetPtr=5E200
+AnimGfxPtr=5E1F8
+TankGfxOffset=752AB4
+AnimPalettePtr=5E320*/
+
+
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "TilesetPointer", 0x56250, false, 0x50));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AreasPointer", 0x56480, false, 0xA));
+
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "BaseTilesetGFX", 0x5D940C, false, 1));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "BaseRoomGFX", 0x75FAA8, false, 1));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Doors", 0x75FAA8, false, 8));
@@ -70,10 +84,12 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 			 // SpriteGfxRowsPtr = F880
 			 // ScrollsPtr = 69D14
 
-		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TilesetPointer", 0x6471C, false, 1));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TilesetPointer", 0x6471C, false, 0x80));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AreasPointer", 0x648AC, false, 0xA));
 		  //Deprecated
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "Areas", 0x79B8BC, false, 0xA));
+
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AreaHeaderPtr", 0x648AC, false, 0xA));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpriteSizes", 0x2E4A50, false, 0xC0));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AnimReference", 0x3C8F90, false, 0x30));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AnimTileset", 0x3C8D58, false, 0x0));

@@ -119,7 +119,7 @@ void FusionSamus::Logic()
 		int PoseIndex; // r0
 		SamusAnim   *Animtable=NULL; // r6
 		unsigned long currentSizeTable = NULL; // r1
-		SamusAnim   *DifferentAnimTable = NULL; // r2
+	    unsigned long  *DifferentAnimTable = NULL; // r2
 		int TheDirectionIndex; // r1
 		unsigned long GfxSizeTable = NULL; // r4
 		int someIndex; // r5
@@ -306,13 +306,16 @@ void FusionSamus::Logic()
 				goto SetGFXTablePointer;
 			case HitByOmega:
 				samusDirection = (-(Button_input & 0x70) | Button_input & 0x70u) >> 31;
-			//	DifferentAnimTable = ((SamusAnim**)rawFile[0x28D784]);
-			LABEL_40:
+				DifferentAnimTable = (unsigned long*)&rawFile[0x28D784];
+			LABEL_40: 
+				{
 				TheDirectionIndex = 4 * IsSamusFacingLeft;
-			//	Animtable = (&DifferentAnimTable[2 * samusDirection])[IsSamusFacingLeft];
-			    GfxSizeTable = GetPointer(0x28D8DC);
+
+				Animtable = (SamusAnim*)&DifferentAnimTable[2 * samusDirection + IsSamusFacingLeft];
+				GfxSizeTable = GetPointer(0x28D8DC+((2 * SamusPose + IsSamusFacingLeft)*4));
 				someIndex = TheDirectionIndex;
 				goto SetOAM;
+				}
 			default:
 				break;
 			}

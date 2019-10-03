@@ -175,19 +175,20 @@ int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 	ty = 0;
 
 
-	delete SpriteDetails->Tiles;
-	SpriteDetails->Tiles = new TileBuffer();
+	delete SpriteDetails->sprTileBuffer;
+	SpriteDetails->sprTileBuffer = new TileBuffer();
 
 	SpriteDetails->PreviewSprite.Create(512, 512);
 
 
 	SpriteDetails->PreviewSprite.SetPalette(SpriteDetails->PreviewPal);
 
-	SpriteDetails->Tiles->Load(SpriteDetails->PreRAM, 1023);
+	SpriteDetails->sprTileBuffer->Load(SpriteDetails->PreRAM, 1023);
 	
 
 	vector<OverAllOAM> partCopies;
-	partCopies.insert(partCopies.end(), SpriteDetails->OAM.begin(), SpriteDetails->OAM.end());
+	partCopies.resize(SpriteDetails->OAM.size());
+		partCopies.insert(partCopies.begin() , SpriteDetails->OAM.begin(), SpriteDetails->OAM.end());
 	CalcSpriteBounds(SpriteDetails);
 	int adjustedXorigin = 0;
 	int adjustedYorigin = 0;
@@ -269,7 +270,7 @@ int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 			{
 				for (tx = 0; tx < width / 8; tx++)
 				{
-					SpriteDetails->PreviewSprite.Draw(*SpriteDetails->Tiles, adjustedXorigin + sx + (tx^xFlip) * 8,
+					SpriteDetails->PreviewSprite.Draw(*SpriteDetails->sprTileBuffer, adjustedXorigin + sx + (tx^xFlip) * 8,
 						adjustedYorigin + sy + ((ty) ^ yFlip) * 8, Tile + tx + (ty * 32) + fh + fw);
 				}
 			}
@@ -412,7 +413,7 @@ int cOAMManager::LoadRoomOAM() {
 		sprintf(windowText, "Processing %d\n", spriteID);
 		Logger::log->LogIt(Logger::DEBUG, windowText);
 		std::vector<unsigned long>& frameTable = (OAMFrameTable->at(spriteID));
-		FrameManager* newFrameSet = new FrameManager(_gbaMethods,frameTable[0],spriteID, currentRomType, RD1Engine::theGame->idkVRAM.RAM, GBAGraphics::VRAM->SprPal);
+		FrameManager* newFrameSet = new FrameManager(_gbaMethods,frameTable[0],spriteID, currentRomType, GBAGraphics::VRAM->SprVRAM, GBAGraphics::VRAM->SprPal);
 		if (newFrameSet != NULL)
 		{
 			for each(Frame* f in newFrameSet->theFrames)

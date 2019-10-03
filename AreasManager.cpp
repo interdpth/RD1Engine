@@ -14,22 +14,25 @@ AreasManager::AreasManager(MemFile* file, vector<string>* areaList, int areaMax,
 }
 
 
-GameArea* AreasManager::GetCurrentArea() { return &areas[_currentArea]; }
+GameArea* AreasManager::GetCurrentArea() { return areas[_currentArea]; }
 int AreasManager::SetCurrentArea(int index) { _currentArea = index; return index; }
 void AreasManager::LoadAreas(unsigned long offset) {
 	MemFile::currentFile->seek(offset);
 	DataContainer* areasData = GameConfiguration::mainCFG->GetDataContainer("RoomsPerArea");
 	tableOffset = offset;
-		for (int i = 0; i < _areaCount; i++)
-		{
-			unsigned long gamePointer = 0;
-			unsigned long curDAD = 0;
-			MemFile::currentFile->fread(&gamePointer, sizeof(long), 1);
-			curDAD = MemFile::currentFile->ftell();
-			GameArea* g = new GameArea(gamePointer, areasData->DataArray[i]);
-			areas.push_back(*g);
-			MemFile::currentFile->seek(curDAD);
-			delete g;
-		}
+	for (int i = 0; i < _areaCount; i++)
+	{
+		unsigned long gamePointer = 0;
+		unsigned long curDAD = 0;
+		MemFile::currentFile->fread(&gamePointer, sizeof(long), 1);
+		curDAD = MemFile::currentFile->ftell();
+
+		areas.push_back(new GameArea(gamePointer, areasData->DataArray[i]));
+		MemFile::currentFile->seek(curDAD);
+
+	}
 }
-void AreasManager::Save() {}
+void AreasManager::Save() {
+
+
+}

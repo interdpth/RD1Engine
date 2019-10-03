@@ -2,6 +2,7 @@
 GameArea::GameArea(unsigned long areaOffset, int count)
 {
 	MemFile::currentFile->seek(areaOffset-0x8000000);
+	_rooms.clear();
 	for (int roomCounter = 0; roomCounter < count; roomCounter++)
 	{
 		RHeader currHeader;

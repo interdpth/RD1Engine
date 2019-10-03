@@ -1,6 +1,6 @@
 #include "MetroidFusion.h"
 #include "..\MemFile\MemFile.h"
-
+#include "GBAGraphics.h"
 const char* MetroidFusion::CodeName = "AMTE";
 
 void MetroidFusion::LoadGameData()
@@ -8,6 +8,12 @@ void MetroidFusion::LoadGameData()
 	DataContainer* sprSize = GameConfiguration::mainCFG->GetDataContainer("SpriteSizes");
 	MemFile::currentFile->seek(sprSize->Value);
 	MemFile::currentFile->fread(&MFSprSize, 2, 0x180);
+	MemFile::currentFile->seek(0x3e419c);
+	MemFile::currentFile->fread(&GBAGraphics::VRAM->SprVRAM[0x900], 1, 0x36E0);
+	MemFile::currentFile->seek(0x58b466);
+	MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x40], 1, 0x14);
+	MemFile::currentFile->seek(0x3E40F2);
+	MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x56], 1, 0x3E);
 }
 
 int MetroidFusion::GetPalSize(int sprID)

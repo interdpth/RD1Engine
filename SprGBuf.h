@@ -19,7 +19,7 @@ public:
 	unsigned char*  PreRAM;
 	unsigned short PartNo;            
 	std::vector<OverAllOAM>  OAM;
-	TileBuffer* Tiles;
+	TileBuffer* sprTileBuffer;
 	int maxparts;
 	unsigned char details;
 	unsigned short palsize;

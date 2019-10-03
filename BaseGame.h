@@ -35,7 +35,7 @@ public:
 	TilesetManager* mgrTileset;
 	BaseTitle* titleInstance;
 	//ZeroMission* titleInstance;
-	WarioLand* wlInstance;
+	
 	//AreasManager* AreaManager;
 	RoomClass* mainRoom;
 	SupportedTitles thisTitle;
@@ -69,7 +69,7 @@ public:
 	BackBuffer ThisBackBuffer;
 	int currentRomType;
 	DoorManager * mgrDoors;
-	sSpritev idkVRAM;
+	sSpritev SpriteVRAM;
 	int             Save(MemFile * fp);
 	int SaveLevel(unsigned long HeaderOffset);
 	bool CheckHeader(RHeader* tstHeader);

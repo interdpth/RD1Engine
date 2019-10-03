@@ -199,10 +199,6 @@ int SpriteObjectManager::SavePal(PalData* palinfo, sprite_entry* spriteset, long
 
 void SpriteObjectManager::AddSpriteObject(int ObjectSet)
 {
-	if (SpriteObjects[ObjectSet].Max() == 15) {
-		return;
-	}
-
 	nEnemies tmp;
 	tmp.Creature = 0x11;
 	tmp.X = 1;

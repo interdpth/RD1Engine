@@ -10,7 +10,6 @@ public:
     static GBAGraphics* VRAM;
 	long SprPal[0x1000];
 	short GBASprPal[0x500];
-
-	
+	unsigned char SprVRAM[0x8000];	
 };
 

@@ -39,7 +39,7 @@ public:
 	DataContainer(int romSwitch, char* s, char* n, unsigned long o, bool iP2P,  char** members, int len)//This needs to be read in from XML at some point. 
 	{
 		RomSwitch = romSwitch;
-		MemberCount = len + 1;
+		MemberCount = len;
 		DataArray = NULL;
 		
 		for (int strCount = 0; strCount < len; strCount++)
@@ -56,7 +56,7 @@ public:
 	DataContainer(int romSwitch, char* s, char* n, unsigned long o, bool iP2P, int members)//This needs to be read in from XML at some point. 
 	{
 		RomSwitch = romSwitch;
-		MemberCount = members+1;
+		MemberCount = members;
 		DataArray = new unsigned long[MemberCount];
 		memset(DataArray, 0, sizeof(unsigned long)*MemberCount);
 		sprintf(Name, "%s", n);

@@ -59,7 +59,7 @@ void RoomClass::LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage) 
 			mgrEntities->MFLoadSet(currentRomType,&mgrSpriteObj->gfxpnt_dst, mgrSpriteObj->paltransfer, sprite_in, sprch);
 		}
 		mgrEntities->LoadPal(mgrSpriteObj->paltransfer, mgrOAM->roomSpriteIds, GBAGraphics::VRAM->SprPal);
-		cOAMManager::LoadSpriteToMem(currentRomType,_gbaMethods, &mgrSpriteObj->gfxpnt_dst[0], mgrOAM->roomSpriteIds, RD1Engine::theGame->idkVRAM.RAM, SpriteImage);
+		cOAMManager::LoadSpriteToMem(currentRomType,_gbaMethods, &mgrSpriteObj->gfxpnt_dst[0], mgrOAM->roomSpriteIds,  GBAGraphics::VRAM->SprVRAM, SpriteImage);
 
 		RD1Engine::theGame->mgrOAM->LoadRoomOAM();
 
@@ -141,7 +141,7 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 		{
 			delete ELayer[Layer]->TileBuf2D;
 		}
-		ELayer[Layer]->TileBuf2D = new unsigned short[ELayer[Layer]->X * ELayer[Layer]->Y];
+		ELayer[Layer]->TileBuf2D = new unsigned short[ELayer[Layer]->X * ELayer[Layer]->Y*2];
 		memset(ELayer[Layer]->TileBuf2D, 0, 2 * ELayer[Layer]->X * ELayer[Layer]->Y);
 		ELayer[Layer]->oSize = _gbaMethods->UncompRle(ELayer[Layer]->X*ELayer[Layer]->Y, compBuffer, (unsigned char*)ELayer[Layer]->TileBuf2D, &ELayer[Layer]->ThisCompsize);
 	}

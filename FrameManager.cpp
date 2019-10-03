@@ -48,7 +48,7 @@ void FrameManager::AddFrame(Frame* src, int SpriteID)
 			theFrame->theSprite->OAM.push_back(src->theSprite->OAM[OAMCounter]);
 		}
 
-		theFrame->theSprite->Tiles->Load((BYTE*)&theFrame->theSprite->PreRAM, 1023);
+		theFrame->theSprite->sprTileBuffer->Load((BYTE*)&theFrame->theSprite->PreRAM, 1023);
 		theFrame->theSprite->maxparts = src->theSprite->maxparts;
 		theFrame->theSprite->details = src->theSprite->details;
 		theFrame->theSprite->palsize = src->theSprite->palsize;

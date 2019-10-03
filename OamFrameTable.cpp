@@ -68,13 +68,13 @@ OamFrameTable::OamFrameTable(SupportedTitles theTitle, char* appPath)
 	std::string filePath = appPath + std::string(titlePointer);
 
 	sprintf(fileName, "%s", filePath.c_str());
-	for (int i = 0; i < 0xFF; i++)
+	for (int i = 0; i < OAMFrameTable.size(); i++)
 	{
 		OAMFrameTable[i].clear();
 	}
 	Read();
 
-	for (int i = 0; i < 0xFF; i++)
+	for (int i = 0; i <  OAMFrameTable.size(); i++)
 	{
 		if (OAMFrameTable[i].size()==0)
 		{

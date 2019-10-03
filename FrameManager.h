@@ -2,7 +2,7 @@
 #include <vector>
 #include "BaseGame.h"
 #include "Frames.h"
-//#include "cOAMEdit.h"
+//#include OAMEditor\cOAMEdit.h
 using namespace std;
 class Frame;
 ///Holds info about the current animation

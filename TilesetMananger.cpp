@@ -23,8 +23,12 @@ TilesetManager::~TilesetManager()
 
 void TilesetManager::ReadTable()
 {
-	DataContainer* tileset = GameConfiguration::mainCFG->GetDataContainer("Tileset");
+	DataContainer* tileset = GameConfiguration::mainCFG->GetDataContainer("TilesetPointer");
+
 	MemFile::currentFile->seek(tileset->Value);//Tileset
+	unsigned long pnter = 0;
+	MemFile::currentFile->fread(&pnter, sizeof(long), 1);
+	MemFile::currentFile->seek(pnter-0x8000000);//
 	for (int i = 0; i < tileset->MemberCount; i++) {
 		gTileData tileset;
 		MemFile::currentFile->fread(&tileset.gTiles, sizeof(long), 1);
@@ -83,12 +87,13 @@ void TilesetManager::ReadTSA(gTileData* tileData)
 	MemFile::currentFile->seek(tileData->TSAMap - 0x8000000);
 	memset(&TSA.nTSA, 0, sizeof(TSA.nTSA));
 	MemFile::currentFile->fread(&TSA.ID, sizeof(short), 1);
+	void* hey = &MemFile::currentFile->currentFile->GetFile()[MemFile::currentFile->ftell()-1];
 	TSA.max = 0;
 	//MemFile::currentFile->fread(&TSA.nTSA,sizeof(short),0x1080,_gbaMethods->ROM);
-	for (int byteCounter = 0; byteCounter < 0x1080; byteCounter++) {
+	for (int byteCounter = 0; byteCounter < 0xFFFF; byteCounter++) {
 		MemFile::currentFile->fread(&TileCheck, 2, 1);
 		TSA.nTSA[byteCounter] = TileCheck;
-		if (TileCheck == 0x2) {
+		if (TileCheck == 0x2 || TileCheck==0xffff) {
 			break;
 
 		}
@@ -181,7 +186,7 @@ void TilesetManager::Render(Image* srcImage)
 	animTiles->GetGFX();
 
 	//LoadSpecialEffects(thisTileset->EffectSet);
-	TileImage->Load(GBAGraphics::VRAM->fGbuf, 1024);
+	TileImage->Load(GBAGraphics::VRAM->fGbuf, sizeof(GBAGraphics::VRAM->fGbuf)/32);
 
 	DrawTileset(&srcImage);
 

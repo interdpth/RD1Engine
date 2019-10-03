@@ -26,7 +26,7 @@ enum SaveOptions
 struct sTilesetBlockStructure {
 	int max;
 	unsigned short ID;
-	unsigned short nTSA[0x1080];
+	unsigned short nTSA[0x4000];
 };
 
 struct gTileData {
@@ -126,11 +126,20 @@ struct sDoor {
 
 
 
+struct virtualEnemy 
+{
+	//This creature is actually the real spriteobject.
+	unsigned char Creature;
 
+	unsigned char screenX;
+	unsigned char screenY;
+};
 struct nEnemies {
 	unsigned char Y;
 	unsigned char X;
 	unsigned char Creature;
+
+	virtualEnemy onScreen;
 };
 
 
@@ -205,7 +214,7 @@ struct MFS {
 
 
 struct sSpritev {
-	unsigned char RAM[0x10000];
+	
 };
 
 

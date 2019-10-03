@@ -119,14 +119,7 @@ void RD1Engine::GetArrays()
 	if (RD1Engine::theGame->thisTitle == SupportedTitles::titleMF)
 	{
 		((MetroidFusion*)(RD1Engine::theGame->titleInstance))->LoadGameData();
-		MemFile::currentFile->seek(0x3e419c);
-		MemFile::currentFile->fread(&idkVRAM.RAM[0x900], 1, 0x36E0);
-		MemFile::currentFile->seek(0x58b466);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x40], 1, 0x14);
-		MemFile::currentFile->seek(0x3E40F2);
-		MemFile::currentFile->fread(&GBAGraphics::VRAM->GBASprPal[0x56], 1, 0x3E);
 	}
-
 }
 
 int RD1Engine::LoadAreaTable()
@@ -171,7 +164,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	{
 	case SupportedTitles::titleMF:
 		titleInstance = new MetroidFusion(_gbaMethods, MemFile::currentFile);
-
+		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED MF");
 		mgrOAM->MFSprSize = ((MetroidFusion*)(titleInstance))->MFSprSize;
 
 
@@ -182,6 +175,7 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED ZM");
 		break;
 	case SupportedTitles::titleWL:
+		titleInstance = new WarioLand(_gbaMethods, MemFile::currentFile);
 		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED WARIO LAND");
 		break;
 
@@ -509,15 +503,12 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 	if (mainRoom->roomHeader->lBg3 & 0x40) {
 
-		int mX = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->X * 8;
-		int mY = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->Y * 8;
+		int mX = mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->X ;
+		int mY = mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->Y;
 		Image* bg3Img = new Image();
-		bg3Img->Create(mX * 8, mY * 8);
+		bg3Img->Create(mX * 16, mY * 16);
 
-		float newX = (float)mX * (float)Width;
-		newX /= 100;
-		//newX *= Width;
-	///	newX = newX/Width;
+		
 		bg3Img->SetPalette(GBAGraphics::VRAM->PcPalMem);
 
 		DrawLayer(buffBackground, bg3Img, 0x40);// BGImage);
@@ -627,29 +618,30 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 
 	if (ctype == 0x40) {
 		//LZ 
-						//pic->Create(BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X*16,BaseGame::theGame->mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y*16);
 		pic->SetPalette(GBAGraphics::VRAM->PcPalMem);
 		//this type uses the background set for tiles.
 
-		for (int ScenRep = 0; ScenRep < mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X; ScenRep++)
+		int repeatX = pic->Width  / X ;
+		int repeatY = pic->Height / Y;
+		for (int rX = 0; rX < repeatX; rX++)
 		{
-			for (thisX = 0; thisX < X; thisX++) {
-				for (thisY = 0; thisY < Y; thisY++) {
-
-					pic->Draw(*_bgBuffer, (thisX) * 8, (thisY) * 8, TileBuf2D[(thisX)+(thisY * X)]);
+			for (int ry = 0; ry < repeatY; ry++)
+			{
+				for (thisX = 0; thisX < X; thisX++) 
+				{
+					for (thisY = 0; thisY < Y; thisY++)
+					{
+						pic->Draw(*_bgBuffer, (rX*X*8) + (thisX) * 8, (ry*Y*8) +  (thisY) * 8, TileBuf2D[(thisX)+(thisY * X)]);
+					}
 				}
 			}
 		}
-
 	}
 	else
 		if (ctype == 0x10) {
-			//	for(thisY=Map->DrawRect.top;thisY<(Map->DrawRect.bottom);thisY++){
-
-			//		for(thisX = Map->DrawRect.left; thisX < (Map->DrawRect.right);thisX++){// from here if something is enabled then draw it 
-			for (thisY = 0; thisY < (Map->Y); thisY++) {
-
-				for (thisX = 0; thisX < (Map->X); thisX++) {// from here if something is enabled then draw it 
+		for (thisY = 0; thisY < (Map->Y); thisY++) 
+		{				for (thisX = 0; thisX < (Map->X); thisX++) 
+				{// from here if something is enabled then draw it 
 					TILE = (TileBuf2D[thisX + (thisY * X)]);
 
 					BitBlt(pic->DC(), (thisX) << 4, (thisY) << 4, 16, 16, _tileset->DC(), (TILE % 16) << 4, (TILE >> 4) << 4, SRCCOPY);
@@ -659,50 +651,6 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 	return 0;
 }
 
-//int RD1Engine::DrawBackGround(Image* img, TileBuffer* bimage) {
-//
-//
-//	int mX = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->X;
-//	int mY = mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->Y;
-//	int difference = (mY > mX ? mX : mY);
-//	int HorScenRep = 0;
-//	int VerScenRep = 0;
-//
-//
-//	//nHScroll[SceneHScroll] = nVScroll[SceneVScroll] = nVScroll[STVScroll] = 0;
-//	//nMaxHScroll[SceneHScroll] = 0;
-//	//nMaxVScroll[SceneVScroll] = mY / 8;
-//	//nMaxVScroll[STVScroll] = 2;//for now
-//
-//	int i, x, y, scrX, scrY;
-//	i = x = y = scrX = scrY = 0;//
-//	int rex = (mX == 64 ? 2 : 1);
-//	int rey = (mY == 64 ? 2 : 1);
-//
-//
-//	if (mX && mY) {
-//		/*for (scrY = 0; scrY < rey; scrY++)
-//		{
-//			for (scrX = 0; scrX < rex; scrX++)
-//			{*/
-//		for (y = 0; y < 32; ++y)
-//		{
-//			for (x = 0; x < 32; ++x)
-//			{
-//				/*for (int WRep = 0; WRep <= mainRoom->mapMgr->GetLayer(MapManager::LevelData)->X / mX + 1; WRep++) {
-//					for (int HRep = 0; HRep <= mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Y / mY + 1; HRep++) {
-//					*/	img->Draw(*bimage, x * 8 + scrX * 256, y * 8 + scrY * 256, mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer)->TileBuf2D[i]);
-//					/*	}
-//					}*/
-//			i++;
-//			}
-//		}
-//		/*	}
-//		}*/
-//	}
-//
-//	return 0;
-//}
 
 
 void RD1Engine::DrawDoorIndicators(HDC g)
@@ -831,7 +779,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 			8,
 			(bounds->Y / 2) * 16,
 			infoString,
-			strlen(infoString)
+			strlen(infoString)+1
 		);
 
 
