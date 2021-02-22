@@ -71,6 +71,7 @@ public:
 		WaveBeam = 0x8,
 		IceBeam = 0x10,
 	};
+	void SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose);
 	int CurrentAnimation;
 
 	int Invincibilitytimer;
@@ -95,6 +96,7 @@ public:
 	int	EventController;
 	unsigned char byte_3001304;
 	//Tables 
+	SamusAnim* Animtable;
 	unsigned long XabsorbTable = 0x828E13C;
 	FusionSamus();
 	~FusionSamus();

@@ -117,7 +117,7 @@ void FusionSamus::Logic()
 		signed int samusDirection; // r7
 		int CopyIndex; // r2
 		int PoseIndex; // r0
-		SamusAnim   *Animtable=NULL; // r6
+	// r6
 		unsigned long currentSizeTable = NULL; // r1
 	    unsigned long  *DifferentAnimTable = NULL; // r2
 		int TheDirectionIndex; // r1
@@ -177,9 +177,7 @@ void FusionSamus::Logic()
 		ArmCannonDirection = IsSamusFacingLeft;
 		samusDirection = ArmCannonDirection;
 		facingDirections = samusDirection * 4;
-		
-
-	
+			
 		
 		if (SamusPose <= 0x3Fu)
 		{
@@ -191,8 +189,7 @@ void FusionSamus::Logic()
 				PoseIndex = 4 * IsSamusFacingLeft + 8 * ArmCannonDirection;
 				unsigned long index = GetPointer(0x28D4C4 + PoseIndex);
 				unsigned long pnta = GetPointer(index);
-				
-				
+							
 
 				Animtable =	(SamusAnim*)&rawFile[GetPointer(0x28D4C4 + PoseIndex)];
 
@@ -327,20 +324,68 @@ void FusionSamus::Logic()
 	SetGFXTablePointer:
 		GfxSizeTable = GetPointer(currentSizeTable+PoseIndex);
 		someIndex = CopyIndex;
+
+
+		//loopie loop
 	SetOAM:
-		theCurrentAnim = &Animtable[CurrentAnimation];
+		SetOAM(1, samusDirection, facingDirections, CurrentPose);
+		
+	}
+
+	//Loads up the logic for the specific animation.
+	void FusionSamus::SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose)
+	{
+		unsigned char* rawFile = MemFile::currentFile->GetFile();
+		int IsSamusFacingLeft; // r4
+	
+		
+		int CopyIndex; // r2
+		int PoseIndex; // r0
+	// r6
+		unsigned long currentSizeTable = NULL; // r1
+		unsigned long* DifferentAnimTable = NULL; // r2
+		int TheDirectionIndex; // r1
+		unsigned long GfxSizeTable = NULL; // r4
+		int someIndex; // r5
+		SamusAnim* theCurrentAnim = NULL; // r6
+		unsigned  long* tophalf; // r3
+		unsigned long* legspointer = NULL; // r3
+		unsigned long* CannonBottomTemp; // r0
+		signed __int16 bottomgfxsize; // r0
+	
+		unsigned long* CannonBottomHalfFXOffset; // r0
+		unsigned short* NewPalPointer = NULL; // r4
+		unsigned int speedBoostIndex; // r1
+		int indexByXTimer; // r1
+		unsigned short* PalTablePointer = NULL; // r0
+		unsigned short* FinalPalPointer = NULL; // r0
+		int PalIndex; // r1
+		int PalSize; // r2
+		unsigned short* AnotherPalPointer = NULL; // r4
+		unsigned int CurAnimState; // r1
+		int SavingPalIndex; // r1
+		unsigned short* APalTable = NULL; // r0
+		unsigned short* APalPointer = { 0 }; // r1
+		__int32 ChargeBeamStartPalCounter; // r1
+		int chargeCounter; // r1
+		unsigned short* PalPointer = NULL; // r4
+
+		IsSamusFacingLeft = true;// isFacingLeft;
+		//loopie loop
+	SetOAM:
+
+		theCurrentAnim = &Animtable[anim];
 		SamusOAMPointer = theCurrentAnim->OAMPointer;
 
 		tophalf = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
 		SamusGFXTophalfTileLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
-		SamusGFXBottomHalfLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf+ 1 - 0x8000000];
+		SamusGFXBottomHalfLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf + 1 - 0x8000000];
 
 
-		SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf+2 - 0x8000000;
-		SamusGFXBottomOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000  + SamusGFXTophalfTileLen;
+		SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000;
+		SamusGFXBottomOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000 + SamusGFXTophalfTileLen;
 
-
-		legspointer =(unsigned long*) &rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
+ legspointer = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
 		SamusGFXLegsTopLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
 		SamusGFXLegsBottomLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf + 1 - 0x8000000];
 		SamusGFXLegsTopOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000;
@@ -351,7 +396,7 @@ void FusionSamus::Logic()
 		if (SamusPose - 23 > 0x29)
 		{
 		HandleDirection:
-			GfxSizeTable=GfxSizeTable + (4 * 2 * CurrentAnimation);
+			GfxSizeTable = GfxSizeTable + (4 * 2 * CurrentAnimation);
 			//GfxTablePnt = ;
 			gfxsize = rawFile[GfxSizeTable];
 			if (MissilesSelected & 1)
@@ -366,25 +411,25 @@ void FusionSamus::Logic()
 				{
 					facingDirections = 4 * samusDirection;
 					CannonTopHalfGFXOffset = GetPointer(0x28F9CC + facingDirections);
-					CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9E4+ facingDirections)];
+					CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9E4 + facingDirections)];
 				}
 			}
 			else if (SamusDirection & DirectionRight)
 			{
 				facingDirections = 4 * samusDirection;
 				CannonTopHalfGFXOffset = GetPointer(0x28F93C + facingDirections);;
-				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F954+ facingDirections)];
+				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F954 + facingDirections)];
 			}
 			else
 			{
 				facingDirections = 4 * samusDirection;
 				CannonTopHalfGFXOffset = GetPointer(0x28F96C + facingDirections);
-				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F984+ facingDirections)];
+				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F984 + facingDirections)];
 			}
 		SetCannonBottomHalfFXOffsetTemp:
-		CannonBottomTemp = (facingDirections + CannonBottomHalfFXOffset);
+			CannonBottomTemp = (facingDirections + CannonBottomHalfFXOffset);
 		SetCannonBottomHalfGFXOffset:
-		CannonBottomHalfGFXOffset = (unsigned long)CannonBottomTemp;
+			CannonBottomHalfGFXOffset = (unsigned long)CannonBottomTemp;
 			bottomgfxsize = 192;
 		SetCannonTopHalfLen:
 			CannonTopHalfGFXLen = bottomgfxsize;
@@ -398,14 +443,14 @@ void FusionSamus::Logic()
 			case Elevator_:
 				//GfxTablePnt = &((unsigned long*)rawFile[0x28BF98])[2 * screwAttackAnimationCounter];
 				gfxsize = 0x2000;
-				CannonTopHalfGFXOffset = 0x2DE9B0 + samusDirection*4;
-				CannonBottomTemp = ((unsigned long *)rawFile[0x2DEA70 + samusDirection * 4]);
+				CannonTopHalfGFXOffset = 0x2DE9B0 + samusDirection * 4;
+				CannonBottomTemp = ((unsigned long*)rawFile[0x2DEA70 + samusDirection * 4]);
 				goto SetCannonBottomHalfGFXOffset;
 			case ScrewAttacking:
-			//	GfxTablePnt = &((unsigned long **)rawFile[0x28D66C])[someIndex][2 * screwAttackAnimationCounter];
+				//	GfxTablePnt = &((unsigned long **)rawFile[0x28D66C])[someIndex][2 * screwAttackAnimationCounter];
 				gfxsize = 4096;
-				CannonTopHalfGFXOffset = 0x28FABC+samusDirection*4+screwAttackAnimationCounter;
-				CannonBottomHalfFXOffset = &((unsigned long **)rawFile[0x28FACC])[samusDirection][ screwAttackAnimationCounter];
+				CannonTopHalfGFXOffset = 0x28FABC + samusDirection * 4 + screwAttackAnimationCounter;
+				CannonBottomHalfFXOffset = &((unsigned long**)rawFile[0x28FACC])[samusDirection][screwAttackAnimationCounter];
 				bottomgfxsize = 256;
 				goto SetCannonTopHalfLen;
 			case CannonLadder:
@@ -418,26 +463,26 @@ void FusionSamus::Logic()
 					{
 						facingDirections = 4 * samusDirection;
 						CannonTopHalfGFXOffset = 0x28F99C + facingDirections;
-						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9B4 + facingDirections]);
+						CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9B4 + facingDirections]);
 					}
 					else
 					{
 						facingDirections = 4 * samusDirection;
 						CannonTopHalfGFXOffset = 0x28F9CC + facingDirections;
-						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9E4 + facingDirections]);
+						CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9E4 + facingDirections]);
 					}
 				}
 				else if (SamusDirection & DirectionRight)
 				{
 					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset =0x28FA5C + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA74 + facingDirections]);
+					CannonTopHalfGFXOffset = 0x28FA5C + facingDirections;
+					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA74 + facingDirections]);
 				}
 				else
 				{
 					facingDirections = 4 * samusDirection;
 					CannonTopHalfGFXOffset = 0x28FA8C + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FAA4 + facingDirections]);
+					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FAA4 + facingDirections]);
 				}
 				goto SetCannonBottomHalfFXOffsetTemp;
 			case HangingHorizLadder:
@@ -454,26 +499,26 @@ void FusionSamus::Logic()
 					{
 						facingDirections = 4 * samusDirection;
 						CannonTopHalfGFXOffset = 0x28F99C + facingDirections;
-						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9B4 + facingDirections]);
+						CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9B4 + facingDirections]);
 					}
 					else
 					{
 						facingDirections = 4 * samusDirection;
 						CannonTopHalfGFXOffset = 0x28F9CC + facingDirections;
-						CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28F9E4 + facingDirections]);
+						CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9E4 + facingDirections]);
 					}
 				}
 				else if (SamusDirection & DirectionRight)
 				{
 					facingDirections = 4 * samusDirection;
 					CannonTopHalfGFXOffset = 0x28F9FC + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA14 + facingDirections]);
+					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA14 + facingDirections]);
 				}
 				else
 				{
 					facingDirections = 4 * samusDirection;
 					CannonTopHalfGFXOffset = 0x28FA2C + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long *)rawFile[0x28FA44 + facingDirections]);
+					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA44 + facingDirections]);
 				}
 				goto SetCannonBottomHalfFXOffsetTemp;
 			}
@@ -481,7 +526,7 @@ void FusionSamus::Logic()
 				//GfxTablePnt = ((unsigned long **)rawFile[0x28D774 + someIndex])[2 * screwAttackAnimationCounter];
 				gfxsize = 0x2000;
 				CannonTopHalfGFXOffset = 0x2E4250 + facingDirections;
-				CannonBottomHalfGFXOffset = 0x2E4450+ facingDirections;
+				CannonBottomHalfGFXOffset = 0x2E4450 + facingDirections;
 				bottomgfxsize = 512;
 				goto SetCannonTopHalfLen;
 			case LoadSave:
@@ -489,8 +534,8 @@ void FusionSamus::Logic()
 					break;
 				//GfxTablePnt = &((unsigned long rawFile[0x28CE8C])[samusDirection][2 * screwAttackAnimationCounter];
 				gfxsize = 4096;
-				CannonTopHalfGFXOffset = 0x28FADC + 4*screwAttackAnimationCounter;
-				CannonBottomHalfGFXOffset = 0x28FB9C+4*screwAttackAnimationCounter;
+				CannonTopHalfGFXOffset = 0x28FADC + 4 * screwAttackAnimationCounter;
+				CannonBottomHalfGFXOffset = 0x28FB9C + 4 * screwAttackAnimationCounter;
 				CannonTopHalfGFXLen = 384;
 				bottomgfxsize = 256;
 				goto SetCannonBottomHalfFXOffsetLen;
@@ -498,18 +543,18 @@ void FusionSamus::Logic()
 				switch (ScrewAttackState)
 				{
 				case 0:
-				/*	DMA3SAD = ((unsigned short *)rawFile[0x2DF730;
-					DMA3DAD = &Sprite_tiles[576];
-					DMA3CNT_L = 0x80000030;
-					v19 = DMA3CNT_L;
-					DMA3SAD = ((unsigned short *)rawFile[0x2DF790;
-					DMA3DAD = &Sprite_tiles[832];
-					DMA3CNT_L = 0x80000020;
-					DMAReturn2 = DMA3CNT_L;*/
+					/*	DMA3SAD = ((unsigned short *)rawFile[0x2DF730;
+						DMA3DAD = &Sprite_tiles[576];
+						DMA3CNT_L = 0x80000030;
+						v19 = DMA3CNT_L;
+						DMA3SAD = ((unsigned short *)rawFile[0x2DF790;
+						DMA3DAD = &Sprite_tiles[832];
+						DMA3CNT_L = 0x80000020;
+						DMAReturn2 = DMA3CNT_L;*/
 					goto LABEL_82;
 				case 2:
-				//	GfxTablePnt = &((unsigned long **)rawFile[0x28D77C])[samusDirection][someIndex];// [2 * screwAttackAnimationCounter];
-						
+					//	GfxTablePnt = &((unsigned long **)rawFile[0x28D77C])[samusDirection][someIndex];// [2 * screwAttackAnimationCounter];
+
 					gfxsize = 0x2000;
 					/*CannonTopHalfGFXOffset = ((SamusAnim*)rawFile[0x28FC5C])[screwAttackAnimationCounter][samusDirection].Tophalf;
 					CannonBottomHalfGFXOffset = ((SamusAnim*)rawFile[0x28FC74])[screwAttackAnimationCounter][samusDirection].BottomHalf;*/
@@ -545,7 +590,7 @@ void FusionSamus::Logic()
 			{
 			SomeSuitLen:
 				SuitPalLen = 64;
-				NewPalPointer = ((unsigned short *)rawFile[0x28DDFC]);
+				NewPalPointer = ((unsigned short*)rawFile[0x28DDFC]);
 			AnUpdatePal:
 				UpdateSAXSamusPal(NewPalPointer, 0, 16, 0);
 				goto SetPalPointer;
@@ -556,30 +601,30 @@ void FusionSamus::Logic()
 				SuitPalLen = 64;
 				if (SpeedBoosting || Shinespark_timer)
 				{
-					NewPalPointer = ((unsigned short *)rawFile[0x28DEBC]);
+					NewPalPointer = ((unsigned short*)rawFile[0x28DEBC]);
 					if (_8BitFrameCounter & 8)
-						NewPalPointer = ((unsigned short *)rawFile[0x28DE9C]);
+						NewPalPointer = ((unsigned short*)rawFile[0x28DE9C]);
 					goto AnUpdatePal;
 				}
 				if (ChargeBeamCounter <= 0x3Fu)
 				{
 					if (SamusSuitStatus & SaxSuit)
 					{
-						PalPointer = ((unsigned short *)rawFile[0x28DDDC]);
+						PalPointer = ((unsigned short*)rawFile[0x28DDDC]);
 					}
 					else if (SamusSuitStatus & 0x20)
 					{
-					PalPointer = ((unsigned short *)rawFile[0x28DDBC]);
+						PalPointer = ((unsigned short*)rawFile[0x28DDBC]);
 					}
 					else
 					{
-						PalPointer = (unsigned short *)(&rawFile[0x28DD7C]);
+						PalPointer = (unsigned short*)(&rawFile[0x28DD7C]);
 						if (SamusSuitStatus & 0x10)
-							PalPointer = &((unsigned short *)rawFile[0x28DD7C])[8];
+							PalPointer = &((unsigned short*)rawFile[0x28DD7C])[8];
 					}
 					UpdateSAXSamusPal(PalPointer, 0, 16, 0);
 					if (CurrentPose != 52)
-						PalPointer =(unsigned short *) (&rawFile[0x28DE1C]);
+						PalPointer = (unsigned short*)(&rawFile[0x28DE1C]);
 					UpdateSAXSamusPal(PalPointer, 16, 16, 0);
 					return;
 				}
@@ -599,32 +644,32 @@ void FusionSamus::Logic()
 				if (BeamStatus & 0x10)
 				{
 					indexByXTimer = 8 * chargeCounter;
-					PalTablePointer = ((unsigned short *)rawFile[0x28F4FC]);
+					PalTablePointer = ((unsigned short*)rawFile[0x28F4FC]);
 				}
 				else if (BeamStatus & 8)
 				{
 					indexByXTimer = 8 * chargeCounter;
-					PalTablePointer = ((unsigned short *)rawFile[0x28F2FC]);
+					PalTablePointer = ((unsigned short*)rawFile[0x28F2FC]);
 				}
 				else if (BeamStatus & 4)
 				{
 					indexByXTimer = 8 * chargeCounter;
-					PalTablePointer = ((unsigned short *)rawFile[0x28F0FC]);
+					PalTablePointer = ((unsigned short*)rawFile[0x28F0FC]);
 				}
 				else if (BeamStatus & 2)
 				{
 					indexByXTimer = 8 * chargeCounter;
-				   PalTablePointer = ((unsigned short *)rawFile[0x28EEFC]);
+					PalTablePointer = ((unsigned short*)rawFile[0x28EEFC]);
 				}
 				else if (BeamStatus & 1)
 				{
 					indexByXTimer = 8 * chargeCounter;
-					PalTablePointer = ((unsigned short *)rawFile[0x28ECFC]);
+					PalTablePointer = ((unsigned short*)rawFile[0x28ECFC]);
 				}
 				else
 				{
 					indexByXTimer = 8 * chargeCounter;
-					PalTablePointer = ((unsigned short *)rawFile[0x28EAFC]);
+					PalTablePointer = ((unsigned short*)rawFile[0x28EAFC]);
 				}
 				goto ChangePalPointer;
 			}
@@ -636,10 +681,10 @@ void FusionSamus::Logic()
 				{
 					if (CurrentAnimation <= 7u)
 					{
-						AnotherPalPointer = ((unsigned short *)rawFile[0x28DE3C]);
+						AnotherPalPointer = ((unsigned short*)rawFile[0x28DE3C]);
 						goto LABEL_111;
 					}
-					AnotherPalPointer = ((unsigned short *)rawFile[0x28DE3C]);
+					AnotherPalPointer = ((unsigned short*)rawFile[0x28DE3C]);
 					if (CurrentAnimation <= 0xCu)
 						goto LABEL_110;
 				}
@@ -647,15 +692,15 @@ void FusionSamus::Logic()
 				{
 					if (SamusSuitStatus & SaxSuit)
 					{
-						AnotherPalPointer = ((unsigned short *)rawFile[0x28DDDC]);
+						AnotherPalPointer = ((unsigned short*)rawFile[0x28DDDC]);
 						goto LABEL_111;
 					}
 					if (SamusSuitStatus & GravitySuit)
 					{
-						AnotherPalPointer = ((unsigned short *)rawFile[0x28DDBC]);
+						AnotherPalPointer = ((unsigned short*)rawFile[0x28DDBC]);
 						goto LABEL_111;
 					}
-					AnotherPalPointer = ((unsigned short *)rawFile[0x28DD7C]);
+					AnotherPalPointer = ((unsigned short*)rawFile[0x28DD7C]);
 					if (SamusSuitStatus & Varia)
 					{
 					LABEL_110:
@@ -665,14 +710,14 @@ void FusionSamus::Logic()
 				}
 			LABEL_111:
 				UpdateSAXSamusPal(AnotherPalPointer, 0, 16, 0);
-				NewPalPointer = ((unsigned short *)rawFile[0x28DE7C]);
+				NewPalPointer = ((unsigned short*)rawFile[0x28DE7C]);
 				goto SetPalPointer;
 			case Frozen:
 			case FrozenAndFalling:
 			case FrozenInMorphBall:
 			case FrozenInMorphballFalling:
 				SuitPalLen = 64;
-				FinalPalPointer = ((unsigned short *)&rawFile[0x28E0FC]);
+				FinalPalPointer = ((unsigned short*)&rawFile[0x28E0FC]);
 				PalIndex = 0;
 				PalSize = 32;
 				goto JustUpdatePal;
@@ -682,22 +727,22 @@ void FusionSamus::Logic()
 				if (SamusSuitStatus & SaxSuit)
 				{
 					SavingPalIndex = 8 * CurAnimState;
-					APalTable = ((unsigned short *)rawFile[0x28F87C]);
+					APalTable = ((unsigned short*)rawFile[0x28F87C]);
 				}
 				else if (SamusSuitStatus & GravitySuit)
 				{
 					SavingPalIndex = 8 * CurAnimState;
-					APalTable = ((unsigned short *)rawFile[0x28F7FC]);
+					APalTable = ((unsigned short*)rawFile[0x28F7FC]);
 				}
 				else if (SamusSuitStatus & Varia)
 				{
 					SavingPalIndex = 8 * CurAnimState;
-					APalTable = ((unsigned short *)rawFile[0x28F77C]);
+					APalTable = ((unsigned short*)rawFile[0x28F77C]);
 				}
 				else
 				{
 					SavingPalIndex = 8 * CurAnimState;
-					APalTable = ((unsigned short *)rawFile[0x28F6FC]);
+					APalTable = ((unsigned short*)rawFile[0x28F6FC]);
 				}
 				FinalPalPointer = &APalTable[SavingPalIndex];
 				PalIndex = 0;
@@ -706,7 +751,7 @@ void FusionSamus::Logic()
 				SuitPalLen = 64;
 				if (SamusSuitStatus & SaxSuit)
 				{
-				APalPointer = ((unsigned short *)rawFile[0x28EA8C]);
+					APalPointer = ((unsigned short*)rawFile[0x28EA8C]);
 				}
 				else if (SamusSuitStatus & GravitySuit)
 				{
@@ -714,22 +759,22 @@ void FusionSamus::Logic()
 				}
 				else if (SamusSuitStatus & Varia)
 				{
-					APalPointer = ((unsigned short *)&rawFile[0x28E9AC]);
+					APalPointer = ((unsigned short*)&rawFile[0x28E9AC]);
 				}
 				else
 				{
-					APalPointer = ((unsigned short *)&rawFile[0x28E93C]);
+					APalPointer = ((unsigned short*)&rawFile[0x28E93C]);
 				}
 				UpdateSAXSamusPal(&APalPointer[CurrentAnimation], 0, 16, 0);
-				NewPalPointer = ((unsigned short *)&rawFile[0x28E61C]);
+				NewPalPointer = ((unsigned short*)&rawFile[0x28E61C]);
 				goto SetPalPointer;
 			default:
 				goto BasicPal;
 			}
 		}
 		SuitPalLen = 64;
-		UpdateSAXSamusPal(((unsigned short *)&rawFile[0x28DEDC]), 0, 16, 0);
-		NewPalPointer = ((unsigned short *)&rawFile[0x28DEFC]);
+		UpdateSAXSamusPal(((unsigned short*)&rawFile[0x28DEDC]), 0, 16, 0);
+		NewPalPointer = ((unsigned short*)&rawFile[0x28DEFC]);
 		if (screwAttackAnimationCounter > 4u)
 		{
 			if (SpeedBoostCounter > 0x4Fu)
@@ -745,7 +790,7 @@ void FusionSamus::Logic()
 				speedBoostIndex = 15;
 			else
 				speedBoostIndex = SpeedBoostCounter << 24 >> 26;
-			NewPalPointer = &((unsigned short *)rawFile[0x28DEFC])[8 * speedBoostIndex];
+			NewPalPointer = &((unsigned short*)rawFile[0x28DEFC])[8 * speedBoostIndex];
 		}
 	SetPalPointer:
 		FinalPalPointer = NewPalPointer;
@@ -754,7 +799,7 @@ void FusionSamus::Logic()
 		PalSize = 16;
 	JustUpdatePal:
 		UpdateSAXSamusPal(FinalPalPointer, PalIndex, PalSize, 0);
-		
+
 	}
 
 
