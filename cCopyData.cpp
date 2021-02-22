@@ -53,7 +53,10 @@ int cCopyData::Paste(unsigned short *pnt) {
 
 
 
-cCopyData::cCopyData() {
+cCopyData::cCopyData() 
+{
+	CopyWidth = 0;	
+		memset(&DataHold, 0, sizeof(DataHold));
 }
 
 cCopyData::~cCopyData() {

@@ -4,6 +4,7 @@
 
 SamusBase::SamusBase()
 {
+	theSprite = new SpriteObject();
 }
 
 

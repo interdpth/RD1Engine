@@ -28,15 +28,10 @@ void TilesetManager::ReadTable()
 	MemFile::currentFile->seek(tileset->Value);//Tileset
 	unsigned long pnter = 0;
 	MemFile::currentFile->fread(&pnter, sizeof(long), 1);
-	MemFile::currentFile->seek(pnter-0x8000000);//
-	for (int i = 0; i < tileset->MemberCount; i++) {
-		gTileData tileset;
-		MemFile::currentFile->fread(&tileset.gTiles, sizeof(long), 1);
-		MemFile::currentFile->fread(&tileset.pTiles, sizeof(long), 1);
-		MemFile::currentFile->fread(&tileset.gBackground, sizeof(long), 1);
-		MemFile::currentFile->fread(&tileset.TSAMap, sizeof(long), 1);
-		MemFile::currentFile->fread(&tileset.EffectSet, sizeof(long), 1);
-		RoomTilesets.push_back(tileset);
+	//gTileData* tiles = ;//
+	for (int i = 0; i < tileset->MemberCount; i++) 
+	{
+		RoomTilesets.push_back((gTileData*)&MemFile::currentFile->GetFile()[pnter - 0x8000000 + i * 20]);
 	}
 }
 
@@ -56,13 +51,13 @@ int TilesetManager::SaveTileset(unsigned char TilesetVal) {
 	MemFile::currentFile->seek(GameConfiguration::mainCFG->GetDataContainer("Tileset")->Value);//Tileset
 
 
-	for (int i = 0; i < GameConfiguration::mainCFG->GetDataContainer("Tileset")->MemberCount; i++) {
-		MemFile::currentFile->fwrite(&RoomTilesets[i].gTiles, 4, 1);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].pTiles, 4, 1);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].gBackground, 4, 1);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].TSAMap, 4, 1);
-		MemFile::currentFile->fwrite(&RoomTilesets[i].EffectSet, 4, 1);
-	}
+	//for (int i = 0; i < GameConfiguration::mainCFG->GetDataContainer("Tileset")->MemberCount; i++) {
+	//	MemFile::currentFile->fwrite(&RoomTilesets[i].gTiles, 4, 1);
+	//	MemFile::currentFile->fwrite(&RoomTilesets[i].pTiles, 4, 1);
+	//	MemFile::currentFile->fwrite(&RoomTilesets[i].gBackground, 4, 1);
+	//	MemFile::currentFile->fwrite(&RoomTilesets[i].TSAMap, 4, 1);
+	//	MemFile::currentFile->fwrite(&RoomTilesets[i].EffectSet, 4, 1);
+	//}
 
 
 
@@ -90,7 +85,7 @@ void TilesetManager::ReadTSA(gTileData* tileData)
 	void* hey = &MemFile::currentFile->currentFile->GetFile()[MemFile::currentFile->ftell()-1];
 	TSA.max = 0;
 	//MemFile::currentFile->fread(&TSA.nTSA,sizeof(short),0x1080,_gbaMethods->ROM);
-	for (int byteCounter = 0; byteCounter < 0xFFFF; byteCounter++) {
+	for (int byteCounter = 0; byteCounter < 16384; byteCounter++) {
 		MemFile::currentFile->fread(&TileCheck, 2, 1);
 		TSA.nTSA[byteCounter] = TileCheck;
 		if (TileCheck == 0x2 || TileCheck==0xffff) {
@@ -116,12 +111,11 @@ void TilesetManager::GetPal(gTileData* tileset)
 		MemFile::currentFile->seek(0x3ED51C);
 		MemFile::currentFile->fread(&_gbaMethods->GBAPal[16], sizeof(short), 16);
 	}
-
-	else if (currentRomType == 1) {
+	else if (currentRomType == 1) 
+	{
 		_gbaMethods->GBAPal[0] = 0;
 		MemFile::currentFile->seek(0x40805E);
 		MemFile::currentFile->fread(&_gbaMethods->GBAPal[1], 2, 47);
-
 	}
 
 }
@@ -161,7 +155,6 @@ void TilesetManager::GetBaseGFX(gTileData* tileset)
 
 void TilesetManager::GetBaseTileset(unsigned char TilesetVal)
 {
-
 	long decomplength = 0;
 	//long Tileset=0;
 	unsigned short  TileCheck = 0;
@@ -169,7 +162,7 @@ void TilesetManager::GetBaseTileset(unsigned char TilesetVal)
 	memset(&GBAGraphics::VRAM->fGbuf, 0, sizeof(GBAGraphics::VRAM->fGbuf));
 	memset(&GBAGraphics::VRAM->BGBuf, 0, sizeof(GBAGraphics::VRAM->BGBuf));
 	memset(&GBAGraphics::VRAM->PcPalMem, 0, sizeof(GBAGraphics::VRAM->PcPalMem));
-	gTileData* roomTileset = &RoomTilesets[TilesetVal];
+	gTileData* roomTileset = RoomTilesets[TilesetVal];
 
 
 	ReadTSA(roomTileset);
@@ -217,7 +210,7 @@ int TilesetManager::GetBackground(gTileData* thisTileset)
 
 int TilesetManager::GetTileset(Image* dst, unsigned char TilesetVal, int bg3)
 {
-	gTileData* thisTileset = &RoomTilesets.at(TilesetVal);
+	gTileData* thisTileset = RoomTilesets.at(TilesetVal);
 
 	GetBaseTileset(TilesetVal);
 	if (animTiles)
@@ -393,7 +386,7 @@ int TilesetManager::GetCBG(unsigned long backgroundPointer) {
 	unsigned long points[3] = { 0 };
 	int decmpsize = 0;
 	rom->seek(backgroundPointer - 0x8000000);
-	nMapBuffer * thisbuf = NULL;// RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer);
+	nMapBuffer * thisbuf = RD1Engine::theGame->mainRoom->mapMgr->GetLayer(MapManager::BackgroundLayer);
 	rom->fread(&thisbuf->size, 1, 1);
 	if (thisbuf->size == 0) {
 		thisbuf->X = 32;

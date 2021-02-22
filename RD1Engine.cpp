@@ -19,7 +19,7 @@ int  DrawRect(HDC hdc, long theColor, RECT* mpointer, int mul)
 #include "FusionSamus.h"
 void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer* SpriteImage, int spriteindex)
 {
-	mgrDoors->SetupDoors(area);
+	
 	memset(&DrawStatus, 0, sizeof(drawstate));
 	DrawStatus.dirty = true;
 	DrawStatus.BG0 = true;
@@ -28,33 +28,46 @@ void RD1Engine::LoadRoomSpriteSet(int area, int room, Image* Tileset, TileBuffer
 	DrawStatus.BG3 = true;
 	DrawStatus.Doors = true;
 	DrawStatus.Sprites = true;
-
-	if (mainRoom->mapMgr->GetLayer(MapManager::ForeGround)) {
-		mainRoom->mapMgr->GetLayer(MapManager::ForeGround)->Dirty = 1;
-	}
-	if (mainRoom->mapMgr->GetLayer(MapManager::LevelData))
+	if (mainRoom->mapMgr != NULL)
 	{
-		mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Dirty = 1;
+		if (mainRoom->mapMgr->GetLayer(MapManager::ForeGround)) {
+			mainRoom->mapMgr->GetLayer(MapManager::ForeGround)->Dirty = 1;
+		}
+		if (mainRoom->mapMgr->GetLayer(MapManager::LevelData))
+		{
+			mainRoom->mapMgr->GetLayer(MapManager::LevelData)->Dirty = 1;
+		}
+		if (mainRoom->mapMgr->GetLayer(MapManager::Backlayer))
+		{
+			mainRoom->mapMgr->GetLayer(MapManager::Backlayer)->Dirty = 1;
+		}
 	}
-	if (mainRoom->mapMgr->GetLayer(MapManager::Backlayer))
-	{
-		mainRoom->mapMgr->GetLayer(MapManager::Backlayer)->Dirty = 1;
-	}
-
 	//	LoadingLevel = 1;
 	unsigned long offset = 0;
 	char buffer[256];
 	sprintf(buffer, "Loading Area: %d Room: %X, Offset %X", area, room, offset);
 	Logger::log->LogIt(Logger::DEBUG, buffer);
-//	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
+	//	offset = (RoomOffsets[area] - 0x8000000) + (room * 0x3C);
 	GameArea* currentArea = theGame->areaManager->GetCurrentArea();
 	RHeader* thisHeader = currentArea->GetCurrentRoom();
+	ThisBackBuffer.Destroy();
+	ThisBackBuffer.Create(0xff*16, 0xff*16);
+	SetBkMode(ThisBackBuffer.DC(), TRANSPARENT);
+	SetTextColor(ThisBackBuffer.DC(), RGB(255, 255, 255));
+
 	LoadRoom(area, room, Tileset, SpriteImage, thisHeader);
 	////Change to room header 
 	mainRoom->LoadUpSprites(spriteindex, SpriteImage);
-
 }
 
+void RD1Engine::LoadROM()
+{
+	theGame->mgrDoors->GetDoorArray();
+	mgrScrolls->GetScrollArray();
+	LoadAreaTable();
+	theGame->GetArrays();
+
+}
 
 void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, RHeader*currHeader)
 {
@@ -68,7 +81,7 @@ void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteI
 	}
 	areaManager->SetCurrentArea(area);
 	areaManager->GetCurrentArea()->SetCurrentRoom(room);
-	mainRoom = new RoomClass(currentRomType, Tileset, (SpritesetData*)NULL, _gbaMethods, (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*)NULL, area, room, areaManager->GetCurrentArea()->GetCurrentRoom() );
+	mainRoom = new RoomClass(currentRomType, Tileset, (SpritesetData*)NULL, _gbaMethods, (std::map<int, std::vector<unsigned long>>*)NULL, (FrameManager*)NULL, area, room, areaManager->GetCurrentArea()->GetCurrentRoom());
 }
 
 void RD1Engine::LoadRoom(int area, int room, Image* Tileset, TileBuffer* SpriteImage, unsigned long offset)
@@ -120,6 +133,9 @@ void RD1Engine::GetArrays()
 	{
 		((MetroidFusion*)(RD1Engine::theGame->titleInstance))->LoadGameData();
 	}
+	unsigned short* ptr = currentRomType == 1 ? ((MetroidFusion*)(titleInstance))->MFSprSize : NULL;
+	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods, ptr, (int)theGame->thisTitle);
+
 }
 
 int RD1Engine::LoadAreaTable()
@@ -131,7 +147,7 @@ int RD1Engine::LoadAreaTable()
 	unsigned long areaTable = 0;
 	MemFile::currentFile->fread(&areaTable, 1, 4);
 
-	areaManager->LoadAreas(areaTable-0x8000000);
+	areaManager->LoadAreas(areaTable - 0x8000000);
 
 
 	return areas->MemberCount;
@@ -140,9 +156,11 @@ int RD1Engine::LoadAreaTable()
 
 RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, TileBuffer * bg, TileBuffer* TileImage, Image* ImageTileset)
 {
+	roomLock = true;
+	LeakFinder::finder->PollHeap();
 	ThisBackBuffer.Create(1024, 1024);
 	Image *tmp = new Image(1024, 1024);
-	long pal[512] = { 0 };
+	long pal[1] = { 0 };
 	tmp->SetPalette(pal);
 	tmp->Fill(0, 0, 1024, 1024, 0);
 	tmp->Blit(ThisBackBuffer.DC(), 0, 0, 1024, 1024, 0, 0);
@@ -150,22 +168,14 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	_theLog = Logger::log;
 	currentRomType = (int)theTitle;
 	_gbaMethods = new GBAMethods();
-	mgrDoors = new DoorManager(_gbaMethods);
-	mgrTileset = new TilesetManager(_gbaMethods, currentRomType, bg, TileImage);
-	mgrScrolls = new clsRoomScrolls();
-	frameTables = _oAMFrameTable;
-	mgrOAM = new cOAMManager(&frameTables->OAMFrameTable, _gbaMethods, (int)theTitle);
-	_bgBuffer = bg;
-	_tileset = ImageTileset;
-	titleInstance = NULL;
-	titleInstance = NULL;
-	this->thisTitle = theTitle;
+
+	LeakFinder::finder->PollHeap();
 	switch (theTitle)
 	{
 	case SupportedTitles::titleMF:
 		titleInstance = new MetroidFusion(_gbaMethods, MemFile::currentFile);
 		_theLog->LogIt(Logger::LOGTYPE::DEBUG, "LOADED MF");
-		mgrOAM->MFSprSize = ((MetroidFusion*)(titleInstance))->MFSprSize;
+		
 
 
 		break;
@@ -190,9 +200,17 @@ RD1Engine::RD1Engine(SupportedTitles theTitle, OamFrameTable*  _oAMFrameTable, T
 	if (titleInstance != NULL)
 	{
 		LoadModifiers((char*)titleInstance->GetPoseFile());
-	}
+		mgrDoors = new DoorManager(_gbaMethods);
+		mgrTileset = new TilesetManager(_gbaMethods, currentRomType, bg, TileImage);
+		mgrScrolls = new clsRoomScrolls();
+		frameTables = _oAMFrameTable;
+		LeakFinder::finder->PollHeap();
 
-	mainRoom = new RoomClass(theTitle, ImageTileset, NULL, _gbaMethods, &frameTables->OAMFrameTable, NULL);
+		_bgBuffer = bg;
+		_tileset = ImageTileset;
+		this->thisTitle = theTitle;
+		mainRoom = new RoomClass(theTitle, ImageTileset, NULL, _gbaMethods, &frameTables->OAMFrameTable, NULL);
+	}roomLock = false;
 }
 void RD1Engine::LoadModifiers(char* fn)
 {
@@ -227,7 +245,7 @@ void RD1Engine::LoadModifiers(char* fn)
 		}
 		fclose(fp);
 	}
-	
+
 
 }
 RD1Engine::~RD1Engine()
@@ -248,6 +266,7 @@ RD1Engine::~RD1Engine()
 }
 
 void RD1Engine::DrawSprites(Image* pic) {
+	return;
 	int i = 0;
 	int relX = 0;
 	int relY = 0;
@@ -255,18 +274,18 @@ void RD1Engine::DrawSprites(Image* pic) {
 	int d = 0;
 	RECT myrect;
 	HBRUSH curbrush;
-
+	return;
 	//RECT blah = {0,0,0,0};
-	nEnemyList* Sprites = &mainRoom->mgrSpriteObjects->SpriteObjects[0];
+	vector<MapObjectSprite*>* Sprites = &mainRoom->mgrSpriteObjects->SpriteObjects[0];
 	Frame* tmpFrame = NULL;
 
 
-	for (i = 0; i < Sprites->Max(); i++) {
+	for (i = 0; i < Sprites->size(); i++) {
 
 		//Draw a rect around the sprite for distiction
 		bool badFrame = 0;
 		//	if(BaseGame::theGame->mgrOAM->SpriteOAM[BaseGame::theGame->mgrOAM->sprite_in[(Sprites.Enemies[i].Creature & 0xF)-1].sprtype]==0) continue;
-		tSprite = ((Sprites->Enemies[i].Creature) & 0xF) - 1;
+		tSprite = ((Sprites->at(i)->Creature) & 0xF) - 1;
 		if (tSprite >= mainRoom->mgrSpriteObjects->RoomSprites.size())
 		{
 			continue;
@@ -302,8 +321,8 @@ void RD1Engine::DrawSprites(Image* pic) {
 			i++;
 		}
 		//}
-		int SpriteX = (Sprites->Enemies[i].X) * 16;; //((Sprites->Enemies[i].X) - ((SpriteWidth/8)*8) / 16) * 16;
-		int SpriteY = (Sprites->Enemies[i].Y) * 16;//(Sprites->Enemies[i].Y - ((SpriteHeight / 8) * 8) / 16) * 16;
+		int SpriteX = (Sprites->at(i)->XPosition()) * 16;; //((Sprites->at(i).X) - ((SpriteWidth/8)*8) / 16) * 16;
+		int SpriteY = (Sprites->at(i)->YPosition()) * 16;//(Sprites->at(i).Y - ((SpriteHeight / 8) * 8) / 16) * 16;
 		PosModify* modifer = &RD1Engine::theGame->poseModifier[sprite_in->spriteID];
 
 		if (modifer)
@@ -421,14 +440,13 @@ int RD1Engine::DisplayDoors(unsigned char Room) {
 	SetBkMode(ThisBackBuffer.DC(), TRANSPARENT);
 	for (i = 0; i < mgrDoors->CurrentRoomDoorIndexes.size(); i++) {
 		int CurDoorIndex = mgrDoors->CurrentRoomDoorIndexes[i];
-		MousePointer* thisDoor = &mgrDoors->Doors[CurDoorIndex].virtualDoor;
-		if (mgrDoors->Doors[CurDoorIndex].rawDoor.OwnerRoom == Room) {
-			curX = thisDoor->sX;
-			curY = thisDoor->sY;
-			curH = thisDoor->Height;//-Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY)+1;
-			curW = thisDoor->Width;//-Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sX)+1;
-			//	ShowWindow((HWND)hDoors[i],SW_SHOW);
-			//	MoveWindow((HWND)hDoors[i],(unsigned short)(curX-minX)*16,(unsigned short)(curY-minY)*16,(curW+1)*16,(curH-curY+1)*16,0);
+		ObjectDoor* thisDoor = mgrDoors->Doors[CurDoorIndex];
+		if (mgrDoors->Doors[CurDoorIndex]->GetDoor()->OwnerRoom == Room) {
+			curX = thisDoor->XPosition();
+			curY = thisDoor->YPosition();
+			curH = thisDoor->Height();
+			curW = thisDoor->Width();
+
 			RECT blah;
 			for (int d = 0; d < 2; d++) {
 				blah.left = (curX) * 16 + d;
@@ -452,13 +470,21 @@ int RD1Engine::DisplayDoors(unsigned char Room) {
 	return 0;
 }
 
-
+bool DontPanic2() {
+	return  !RD1Engine::theGame->mainRoom->lockSprites && !RD1Engine::theGame->mainRoom->lockRoom;
+}
 int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex) {
-
+	if (mainRoom->lockSprites) return -1;
+	/*while (roomLock) {
+		Sleep(30);
+	}*/
+	roomLock = true;
+	LeakFinder::finder->PollHeap();
 	unsigned char cSize = 0;
 	unsigned char fd = 0;
 	unsigned long fWidth = 0, fHeight = 0;
 	int k = 0;
+	if (mainRoom == NULL) return -1;
 	MapManager* mgr = mainRoom->mapMgr;
 	if (!mgr->created)
 	{
@@ -472,7 +498,7 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 	bool DrawLevelLayer = DrawStatus.BG1;
 	bool DrawForeground = DrawStatus.BG0;
 	bool HideSprites = DrawStatus.SpriteRect;
-	bool ShowScrolls = DrawStatus.Scrolls;
+	bool ShowScrolls = DrawStatus.ScrollsFlag;
 	bool ShowClip = DrawStatus.Clipdata;
 
 
@@ -490,25 +516,22 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 		Logger::log->LogIt(Logger::ERRORZ, "WASTED DRAW ROOM");
 		return 0;
 	}
+	//RD1Engine::theGame->mainRoom->lockSprites = true;RD1Engine::theGame->mainRoom->lockRoom = true;
 	//Some setup
 	TileImage->Load(GBAGraphics::VRAM->fGbuf, 1024);
 	BGImage->Load(GBAGraphics::VRAM->BGBuf, 1024);
-	ThisBackBuffer.Destroy();
-	ThisBackBuffer.Create(Width, Height);
-	SetBkMode(ThisBackBuffer.DC(), TRANSPARENT);
-	SetTextColor(ThisBackBuffer.DC(), RGB(255, 255, 255));
 
 	//Setup rendermap
 
 
 	if (mainRoom->roomHeader->lBg3 & 0x40) {
 
-		int mX = mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->X ;
+		int mX = mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->X;
 		int mY = mainRoom->mapMgr->GetLayer(MapManager::Clipdata)->Y;
 		Image* bg3Img = new Image();
 		bg3Img->Create(mX * 16, mY * 16);
 
-		
+
 		bg3Img->SetPalette(GBAGraphics::VRAM->PcPalMem);
 
 		DrawLayer(buffBackground, bg3Img, 0x40);// BGImage);
@@ -522,41 +545,37 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 
 	imgMap.SetPalette(GBAGraphics::VRAM->PcPalMem);
 
-	if (DrawStatus.BG2) {
-
+	if (DrawStatus.BG2) 
+	{
 		DrawLayer(buffBackLayer, &imgMap, mainRoom->roomHeader->bBg2);//Backlayer
 		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
 		buffBackLayer->Dirty = 0;
-
 	}
 
 	imgMap.Clear();
-	if (DrawStatus.BG1) {
-
-		int
-			alphaHigh = 16;
+	if (DrawStatus.BG1) 
+	{
+		int	alphaHigh = 16;
 		int alphaLow = 0;
+
 		DrawLayer(buffLevelData, &imgMap, mainRoom->roomHeader->bBg1);
-
 		imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0, Width, Height, 0, 0);
-
-
 		buffLevelData->Dirty = 0;
-
 	}
-	imgMap.Clear();
-	bool val = HideSprites;; //SendMessage(GetDlgItem(GlobalVars::gblVars->frameControls, chkHS), BM_GETCHECK, 0, 0) == 0;
-
-	DrawSprites(&imgMap);//Foreground
-	mainRoom->mgrSpriteObjects->ShowSprites(val, 0, &ThisBackBuffer);
-
 
 	imgMap.Clear();
+	bool val = true;// HideSprites;; //SendMessage(GetDlgItem(GlobalVars::gblVars->frameControls, chkHS), BM_GETCHECK, 0, 0) == 0;
 
-	if (DrawStatus.BG0) {
+	if (DrawStatus.Sprites)
+	{
+		DrawSprites(&imgMap);//Foreground
+		mainRoom->mgrSpriteObjects->ShowSprites(val, 0, &ThisBackBuffer);
+	}
 
+	imgMap.Clear();
+	if (DrawStatus.BG0)
+	{
 		DrawLayer(buffForeground, &imgMap, mainRoom->roomHeader->bBg0);//Foreground
-
 		if ((signed)mainRoom->roomHeader->TransForeground > 16)
 		{
 			BLENDFUNCTION bfn = { 0 }; // Struct with info for AlphaBlend
@@ -565,37 +584,38 @@ int RD1Engine::DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIn
 			bfn.SourceConstantAlpha = 150;;//Need to unhard code
 			bfn.AlphaFormat = 0;// AC_SRC_ALPHA;
 			AlphaBlend(ThisBackBuffer.DC(), 0, 0, Width, Height, imgMap.DC(), 0, 0, Width, Height, bfn); // Display bitmap
-
 		}
-		else {
+		else 
+		{
 			imgMap.TransBlit(ThisBackBuffer.DC(), 0, 0xFF - mainRoom->roomHeader->bSceneryYPos, Width, Height, 0, 0);
 		}
 
 		buffForeground->Dirty = 0;
-
 	}
 
 
 
 	buffForeground->Dirty = 0;
-
 	DisplayDoors(mainRoom->Room);
 
 	if (ShowClip)//GlobalVars::gblVars->ViewClip.value() == 1)
 	{
-
 		DrawClipIdent();
 	}
 
-	if (ShowScrolls && !ShowClip) {//(GlobalVars::gblVars->ScrollCheck.value() && GlobalVars::gblVars->ViewClip.value() == 0) {
+	if (ShowScrolls && !ShowClip) 
+	{
 
-		DrawScrolls(ScrollIndex, mgrScrolls->GetScrollInfo());
+		DrawScrolls(ScrollIndex);
 	}
 
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
 
 
 	DrawStatus.dirty = false;
+	LeakFinder::finder->PollHeap();
+	RD1Engine::theGame->mainRoom->lockSprites = false;RD1Engine::theGame->mainRoom->lockRoom = false;
+	roomLock = false;
 	return 0;
 }
 
@@ -612,8 +632,7 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 	{
 		return -1;
 	}
-
-
+	
 
 
 	if (ctype == 0x40) {
@@ -621,17 +640,21 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 		pic->SetPalette(GBAGraphics::VRAM->PcPalMem);
 		//this type uses the background set for tiles.
 
-		int repeatX = pic->Width  / X ;
-		int repeatY = pic->Height / Y;
+		int repeatX = X/pic->Width;
+		int repeatY =Y/ pic->Height;
 		for (int rX = 0; rX < repeatX; rX++)
 		{
 			for (int ry = 0; ry < repeatY; ry++)
 			{
-				for (thisX = 0; thisX < X; thisX++) 
+				for (thisX = 0; thisX < X; thisX++)
 				{
 					for (thisY = 0; thisY < Y; thisY++)
 					{
-						pic->Draw(*_bgBuffer, (rX*X*8) + (thisX) * 8, (ry*Y*8) +  (thisY) * 8, TileBuf2D[(thisX)+(thisY * X)]);
+						if ((thisX)+(thisY * X) > Map->X*Map->Y)
+						{
+							throw new exception("TOO LARGE");
+						}
+						pic->Draw(*_bgBuffer, (rX*X * 8) + (thisX) * 8, (ry*Y * 8) + (thisY) * 8, TileBuf2D[(thisX)+(thisY * X)]);
 					}
 				}
 			}
@@ -639,9 +662,14 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 	}
 	else
 		if (ctype == 0x10) {
-		for (thisY = 0; thisY < (Map->Y); thisY++) 
-		{				for (thisX = 0; thisX < (Map->X); thisX++) 
+			for (thisY = 0; thisY < (Map->Y); thisY++)
+			{
+				for (thisX = 0; thisX < (Map->X); thisX++)
 				{// from here if something is enabled then draw it 
+					if ((thisX)+(thisY * X) > Map->X*Map->Y)
+					{
+						throw new exception("TOO LARGE");
+					}
 					TILE = (TileBuf2D[thisX + (thisY * X)]);
 
 					BitBlt(pic->DC(), (thisX) << 4, (thisY) << 4, 16, 16, _tileset->DC(), (TILE % 16) << 4, (TILE >> 4) << 4, SRCCOPY);
@@ -655,11 +683,11 @@ int RD1Engine::DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype) {//im
 
 void RD1Engine::DrawDoorIndicators(HDC g)
 {
-	std::vector<vDoor>* theDoors = &mgrDoors->Doors;
+	std::vector<ObjectDoor*>* theDoors = &mgrDoors->Doors;
 
 	for (int doorCounter = 0; doorCounter < theDoors->size(); doorCounter++)
 	{
-		sDoor  *thisDoor = &theDoors->at(doorCounter).rawDoor;
+		sDoor  *thisDoor = theDoors->at(doorCounter)->GetDoor();
 		//make a rect 
 		int x = ((thisDoor->XEntrance + thisDoor->DWidth / 2) * 16);
 		int y = ((thisDoor->YEntrance + thisDoor->DHeight / 2) * 16);
@@ -728,7 +756,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 
 
 	BackBuffer* theBigPicture = new BackBuffer();
-	theBigPicture->Create(percentage(maxMapWidth, 0.8), percentage(maxMapHeight, 0.8));
+	theBigPicture->Create((int)percentage(maxMapWidth, 0.8f), (int)percentage(maxMapHeight, 0.8f));
 
 	//Image thebigImage = theBigPicture;
 	std::vector<RECT> overLapList;// = new List<Rectangle>();
@@ -742,7 +770,7 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 
 		DrawStatus.dirty = 1;
 		theGame->DrawRoom(tileImage, bgImage, -1);
-		vector<nEnemyList>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;
+		vector<vector<MapObjectSprite*>>* hey = &mainRoom->mgrSpriteObjects->SpriteObjects;
 		RHeader* header = theGame->mainRoom->roomHeader;
 		nMapBuffer* bounds = mainRoom->mapMgr->GetLayer(MapManager::Clipdata);
 		sprintf(infoString, "%sArea %X: Room %X", infoString, thisArea, roomCounter);
@@ -751,9 +779,9 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 		room.Create(bounds->X * 16, bounds->Y * 16);
 
 		HDC r = room.DC();
-		if (hey->size() > 0) sprintf(infoString, "%s\nEnemies1: %d", infoString, (hey->at(0)).Max());
-		if (hey->size() > 1) sprintf(infoString, "%s\nEnemies2: %d : Event Trigger - %X", infoString, (hey->at(1)).Max(), header->bEventSwitch);
-		if (hey->size() > 2) sprintf(infoString, "%s\nEnemies3: %d : Event Trigger - %X", infoString, (hey->at(2)).Max(), header->bEventSwitch2);
+		if (hey->size() > 0) sprintf(infoString, "%s\nEnemies1: %d", infoString, (hey->at(0)).size());
+		if (hey->size() > 1) sprintf(infoString, "%s\nEnemies2: %d : Event Trigger - %X", infoString, (hey->at(1)).size(), header->bEventSwitch);
+		if (hey->size() > 2) sprintf(infoString, "%s\nEnemies3: %d : Event Trigger - %X", infoString, (hey->at(2)).size(), header->bEventSwitch2);
 		//sprintf(infoString, "%s\nHas %d  doors", infoString, theGame->mgrDoors->CurrentRoomDoorIndexes.size());
 
 		sprintf(infoString, "%s\nRoom X:%d\nRoomY:%d\nRoom Width:%d\nRoom Height:%d\n", infoString, header->bMiniMapRoomX, header->bMiniMapRoomX, bounds->X, bounds->Y);
@@ -779,16 +807,16 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 			8,
 			(bounds->Y / 2) * 16,
 			infoString,
-			strlen(infoString)+1
+			strlen(infoString) + 1
 		);
 
 
 
 		StretchBlt(g,
-			percentage(header->bMiniMapRoomX * 16 * 16, 0.8),
-			percentage(header->bMiniMapRoomY * 16 * 16, 0.8),
-			percentage(bounds->X * 16, 0.8),
-			percentage(bounds->Y * 16, 0.8),
+			(int)percentage(header->bMiniMapRoomX * 16 * 16, 0.8f),
+			(int)percentage(header->bMiniMapRoomY * 16 * 16, 0.8f),
+			(int)percentage(bounds->X * 16, 0.8f),
+			(int)percentage(bounds->Y * 16, 0.8f),
 			r, 0, 0, bounds->X * 16, bounds->Y * 16, SRCCOPY);
 
 	}
@@ -802,10 +830,12 @@ void RD1Engine::DumpAreaAsImage(char* fn, Image* Tileset, TileBuffer* SpriteImag
 	//	ThisBackBuffer.DC(), 0, 0, SRCCOPY);
 	//delete minimap;
 	//delete Tileset;
-	FILE* fp = fopen("boom2.bmp", "w+b");
+	FILE* fp = nullptr;
+	fopen_s(&fp, "boom2.bmp", "w+b");
 	theBigPicture->SaveToFile(fp);
 	fclose(fp);
 	delete theBigPicture;
+	LeakFinder::finder->PollHeap();
 }
 
 
@@ -847,26 +877,23 @@ int             RD1Engine::DrawClipIdent()
 	return 0;
 }
 
-int RD1Engine::DrawScrolls(int ScrollToDraw, Scroller *scroll) {
+int RD1Engine::DrawScrolls(int ScrollToDraw) {
 
 	RECT blah;
 
-	MousePointer thisscroll;
+	RECT* thisscroll;
 
-	if (scroll->Room != 0xFF) {
+	if (mgrScrolls->Room != 0xFF) {
+		if (ScrollToDraw == -1)
+		{
+			for (int i = 0; i < mgrScrolls->Scrolls.size(); i++) DrawScrolls(i);
+			return 0;
+		}
 
+		thisscroll = mgrScrolls->Scrolls[ScrollToDraw]->GetRect();
 
-		thisscroll = scroll->Scrolls[ScrollToDraw].rect;
-
-
-
-		if ((thisscroll.sX != 0xFF) && (thisscroll.Height != 0xFF)) {
-
-
-
-
-
-
+		if ((thisscroll->left != 0xFF) && (thisscroll->bottom != 0xFF)) 
+		{
 
 
 			HBRUSH curbrush = CreateSolidBrush(
@@ -880,10 +907,10 @@ int RD1Engine::DrawScrolls(int ScrollToDraw, Scroller *scroll) {
 
 
 			for (int d = 0; d < 2; d++) {
-				blah.left = (thisscroll.sX) * 16 + d;
-				blah.top = (thisscroll.sY) * 16 + d;
-				blah.right = (thisscroll.Width) * 16 + d;
-				blah.bottom = (thisscroll.Height) * 16 + d;
+				blah.left = (thisscroll->left) * 16 + d;
+				blah.top = (thisscroll->top) * 16 + d;
+				blah.right = (thisscroll->right) * 16 + d;
+				blah.bottom = (thisscroll->bottom) * 16 + d;
 				FrameRect(RD1Engine::theGame->ThisBackBuffer.DC(), &blah, curbrush);
 
 			}
@@ -894,8 +921,8 @@ int RD1Engine::DrawScrolls(int ScrollToDraw, Scroller *scroll) {
 			DeleteObject(curbrush);
 
 			TextOut(RD1Engine::theGame->ThisBackBuffer.DC(),
-				((thisscroll.sX) + (((thisscroll.Width - thisscroll.sX) / 2)))*(16),
-				((thisscroll.sY) + (((thisscroll.Height - thisscroll.sY) / 2)))*(16), "Sc", 1);
+				((thisscroll->left) + (((thisscroll->right - thisscroll->left) / 2)))*(16),
+				((thisscroll->top) + (((thisscroll->bottom - thisscroll->top) / 2)))*(16), "Sc", 1);
 
 		}
 
@@ -1074,7 +1101,7 @@ int             RD1Engine::Save(MemFile * fp)
 	delete[] compBuffer;
 	return 0;
 }
-int  RD1Engine::SaveLevel(unsigned long HeaderOffset) {
+int  RD1Engine::SaveLevel() {
 
 	MemFile* theFile = MemFile::currentFile;
 	RHeader* roomHeader;
@@ -1085,44 +1112,11 @@ int  RD1Engine::SaveLevel(unsigned long HeaderOffset) {
 		//   if(BaseGame::theGame->mainRoom->roomHeader->lBackLayer!=BaseGame::theGame->mainRoom->roomHeader->lLevelData) break;
 		//	}
 		RD1Engine::theGame->mainRoom->mgrSpriteObjects->SaveSprites(theGame->mainRoom->roomHeader);
-		theFile->seek(HeaderOffset);
-		roomHeader = RD1Engine::theGame->mainRoom->roomHeader;
 
-
-		theFile->fwrite(&roomHeader->bTileset, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bBg0, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bBg1, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bBg2, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->lBg3, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->lForeground, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->lLevelData, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->lBackLayer, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->lClipData, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->lBackgroundTSA, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->bUnknown1, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->TransForeground, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->iSep1, sizeof(unsigned short), 1);
-		theFile->fwrite(&roomHeader->lSpritePointer, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->bSpriteIndex1, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bEventSwitch, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->iSep2, sizeof(unsigned short), 1);
-		theFile->fwrite(&roomHeader->lSpritePointer2, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->bSpriteIndex2, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bEventSwitch2, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->iSeperator, sizeof(unsigned short), 1);
-		theFile->fwrite(&roomHeader->lSpritePointer3, sizeof(unsigned long), 1);
-		theFile->fwrite(&roomHeader->bSpriteIndex3, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bMiniMapRoomX, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bMiniMapRoomY, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bEffect, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bSceneryYPos, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bNothing, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->bMusic, sizeof(unsigned char), 1);
-		theFile->fwrite(&roomHeader->blank, sizeof(unsigned char), 1);
-
+		
 		RD1Engine::theGame->mgrScrolls->SaveScroll(_gbaMethods);
 		RD1Engine::theGame->mgrDoors->SaveDoors(RD1Engine::theGame->mainRoom->Area);
-		RD1Engine::theGame->mainRoom->LoadHeader(HeaderOffset);
+		//RD1Engine::theGame->mainRoom->LoadHeader(HeaderOffset);
 		MemFile::currentFile->save();
 
 	}

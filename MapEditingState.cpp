@@ -7,8 +7,8 @@ MapEditingState::MapEditingState()
 	lastState = editingStates::MAP;
 	curState = editingStates::MAP;
 
-	editingActions curAction = editingActions::PLACETILE;
-	editingActions lastAction = editingActions::PLACETILE;
+	curAction = editingActions::PLACETILE;
+	lastAction = editingActions::PLACETILE;
 	stateObjId = 0;
 	lastStateObjId = 0;
 }
@@ -30,6 +30,14 @@ bool MapEditingState::SetState(editingStates newState)
 }
 
 
+bool MapEditingState::SetAction(int obj, editingActions newAction)
+{
+	SetObjId(obj);
+	lastAction = curAction;
+	curAction = newAction;
+	return lastAction == newAction;
+}
+
 bool MapEditingState::SetAction(editingActions newAction)
 {
 	lastAction = curAction;
@@ -39,6 +47,7 @@ bool MapEditingState::SetAction(editingActions newAction)
 int MapEditingState::GetObjId() {
 	return stateObjId;
 }
+
 bool MapEditingState::SetObjId(int obj) {
 	if (obj == -1) {
 		lastStateObjId = stateObjId;

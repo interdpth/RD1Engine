@@ -1,5 +1,6 @@
 #include "cOAMManager.h"
 #include <Windows.h>
+#include "MetroidFusion.h"
 extern sSpritev idkVRAM;
 extern int currentRomType;
 void DumpLayers();
@@ -11,11 +12,15 @@ const char* sizesStr[3][4] = {
 	{ "8,16\0", "8,32\0" ,"16,32\0", "32,64\0" },
 };
 
-cOAMManager::cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, int crf)
+cOAMManager::cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, unsigned short* Size, int crf)
 {
 	memset(&oamPiece, 0, 2 * 17);
 	memset(&roomSpriteIds, 0, sizeof(sprite_entry) * 32);
-	memset(&MFSprSize, 0, 2 * 384);
+
+	if (crf == 1)
+	{		
+		MFSprSize = Size;
+	}
 	OAMFrameTable = _oAMFrameTable;
 	_gbaMethods = gba;
 	currentRomType = crf;
@@ -175,7 +180,7 @@ int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 	ty = 0;
 
 
-	delete SpriteDetails->sprTileBuffer;
+	if(SpriteDetails->sprTileBuffer!=NULL)delete SpriteDetails->sprTileBuffer;
 	SpriteDetails->sprTileBuffer = new TileBuffer();
 
 	SpriteDetails->PreviewSprite.Create(512, 512);
@@ -346,7 +351,7 @@ int cOAMManager::DecodeOAM(bool OAMED, SpriteObject* tSprite, unsigned long Offs
 	unsigned short OAM1 = 0;
 	unsigned short OAM2 = 0;
 
-	if (!Offset || Offset == 0x8BADBEEF || Offset == 0xBADBEEF)
+	if (!Offset || Offset == 0x8BADBEEF || Offset == 0xBADBEEF || tSprite->IsEdited)
 		return 0;
 
 
@@ -355,6 +360,8 @@ int cOAMManager::DecodeOAM(bool OAMED, SpriteObject* tSprite, unsigned long Offs
 		MemFile::currentFile->fread(&so, 4, 1);
 		MemFile::currentFile->seek(so - 0x8000000);
 	}
+
+
 	MemFile::currentFile->fread(&tSprite->maxparts, 2, 1);
 	tSprite->OAM.clear();
 
@@ -376,6 +383,7 @@ int cOAMManager::DecodeOAM(bool OAMED, SpriteObject* tSprite, unsigned long Offs
 }
 
 int cOAMManager::LoadRoomOAM() {
+	LeakFinder::finder->PollHeap();
 	unsigned short spritecount = 0;
 	unsigned char spriteID = 0;
 	unsigned short i = 0;
@@ -384,7 +392,7 @@ int cOAMManager::LoadRoomOAM() {
 	unsigned short OAM0 = 0;
 	unsigned short OAM1 = 0;
 	unsigned short OAM2 = 0;
-	char  windowText[256] = { 0 };
+	char  windowText[1024] = { 0 };
 	OverAllOAM* thisSpritesOAM = NULL;;
 	cOAMManager* mgrOAM = RD1Engine::theGame->mgrOAM;
 	int numSprites = RD1Engine::theGame->mainRoom->mgrSpriteObjects->RoomSprites.size();
@@ -398,16 +406,10 @@ int cOAMManager::LoadRoomOAM() {
 	for (spritecount = 0; spritecount < mgrOAM->maxsprite; spritecount++)
 	{
 		spriteID = mgrOAM->roomSpriteIds[spritecount].spriteID;
-		if (spriteID == 0 || OAMFrameTable->at(spriteID).size() == 0)
+		if (spriteID == 0 || OAMFrameTable->count(spriteID)==0 || OAMFrameTable->at(spriteID).size() == 0)
 		{
 			continue;
 		}
-
-		if (OAMFrameTable->at(spriteID).size() == 0)//&& !OAMFrameTable[spriteID].front())
-		{
-			continue;
-		}
-
 
 		MemFile::currentFile->seek(OAMFrameTable->at(spriteID)[0]);
 		sprintf(windowText, "Processing %d\n", spriteID);
@@ -431,10 +433,12 @@ int cOAMManager::LoadRoomOAM() {
 			delete newFrameSet;
 		}
 	}
+	LeakFinder::finder->PollHeap();
 	return 0;
 }
 
 int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo, sprite_entry* spriteset, unsigned char* GraphicsBuffer, TileBuffer* tb) {
+	LeakFinder::finder->PollHeap();
 	unsigned long addybuf = 0;
 	unsigned long size = 0;
 	unsigned short i = 0;
@@ -468,6 +472,7 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 	tb->Load(GraphicsBuffer, 1024);
 	delete[] decompbuf;
 	delete[] compBuffer;
+	LeakFinder::finder->PollHeap();
 	return usedGfx;
 }
 
@@ -475,7 +480,7 @@ int cOAMManager::LoadSpriteToMem(bool romSwitch, GBAMethods* gba, GFXData* ginfo
 
 //if (GlobalVars::gblVars->frameTables->FramesExist(currentSprite->id].front() == 0) return 0;
 int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targetFrame) {
-
+	LeakFinder::finder->PollHeap();
 	long GFXPnt = 0;
 	long PalPnt = 0;
 	unsigned char*  compBuffer = new unsigned char[32688];
@@ -528,12 +533,13 @@ int cOAMManager::SetupPreview(GBAMethods* methods, int TitleChoice, Frame* targe
 		RD1Engine::theGame->titleInstance->GetGFX(currentSprite->id, &currentSprite->PreRAM[0x4000]);
 
 	}
-	
+	delete[] decompbuf;
+	delete[] compBuffer;
+	LeakFinder::finder->PollHeap();
 	if (targetFrame->frameOffset < 0x8000000) return -1;
 
 	
-	delete[] decompbuf;
-	delete[] compBuffer;
+	LeakFinder::finder->PollHeap();
 	return 0;
 }
 

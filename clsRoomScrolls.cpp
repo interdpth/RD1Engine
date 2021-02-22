@@ -4,7 +4,7 @@
 clsRoomScrolls::clsRoomScrolls()
 {
 	RoomScrollOffset = -1;
-
+	Room = 0;
 	pnt2ScrollPointer = -1;
 	scrollpnt = -1;
 	scrollInfoContainer = NULL;
@@ -16,64 +16,52 @@ clsRoomScrolls::~clsRoomScrolls()
 }
 
 
-void clsRoomScrolls::GetScrollArray(FILE* fp)
+void clsRoomScrolls::GetScrollArray()
 {
 	if (scrollInfoContainer == NULL) 
 	{
 		scrollInfoContainer = GameConfiguration::mainCFG->GetDataContainer("Scrolls");
 	}
 	MemFile::currentFile->seek(scrollInfoContainer->Value);
-	MemFile::currentFile->fread(scrollInfoContainer->DataArray, 4, scrollInfoContainer->MemberCount);
+	MemFile::currentFile->fread(&scrollInfoContainer->DataArray[0], 4, scrollInfoContainer->MemberCount);
 }
 
 
 
 int clsRoomScrolls::GetScroll() {
-	mScrollInfo.Scrolls.clear();
-	mScrollInfo.Number = 0;
-	MemFile::currentFile->seek(scrollpnt);
-	MemFile::currentFile->fread(&mScrollInfo.Room, 1, 1);
-	if (mScrollInfo.Room == 0xFF) {
+
+	for (int scrollCounter = 0; scrollCounter < Scrolls.size(); scrollCounter++) delete Scrolls[scrollCounter];
+	Scrolls.clear();
+	MemFile* f = MemFile::currentFile;
+	f->seek(scrollpnt);
+	f->fread(&Room, 1, 1);
+	if (Room == 0xFF) {
 		return 0;
 	}
-	MemFile::currentFile->fread(&mScrollInfo.Number, 1, 1);
+	int max = 0;
+	f->fread(&max, 1, 1);
 
-	for (int i = 0; i < mScrollInfo.Number; i++) {
-		scrollData sD;
-		sctype tmp;
-		MemFile::currentFile->fread(&tmp.xStart, 1, 1);
-		MemFile::currentFile->fread(&tmp.xEnd, 1, 1);
-		MemFile::currentFile->fread(&tmp.yStart, 1, 1);
-		MemFile::currentFile->fread(&tmp.yEnd, 1, 1);
-		memset(&sD.rect, 0, sizeof(MousePointer));
-		sD.rect.sX = tmp.xStart;
-		sD.rect.sY = tmp.yStart;
-		sD.rect.Height = tmp.yEnd;
-		sD.rect.Width = tmp.xEnd;
+	for (int i = 0; i < max; i++) {
+		ObjectScroll*  sD = new ObjectScroll();
+		sD->SetXPosition(f->fgetc());
+		sD->SetWidth(f->fgetc());
+		sD->SetYPosition(f->fgetc());
+		sD->SetHeight(f->fgetc());
 
-		MemFile::currentFile->fread(&sD.unkData, 4, 1);
-		if (sD.unkData != -1) {
-			sD.unkData = sD.unkData;
-		}
-		mScrollInfo.Scrolls.push_back(sD);
+		f->fread(&sD->unkData1, 2, 1);
+		f->fread(&sD->unkData2, 2, 1);
+		
+		Scrolls.push_back(sD);
 	}
-	mScrollInfo.oldScrollCount = mScrollInfo.Scrolls.size();
+	oldScrollCount = Scrolls.size();
 	return 0;
 }//End Function
 
-
-
-Scroller*  clsRoomScrolls::GetScrollInfo()
+int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) 
 {
-
-	return &mScrollInfo;
-}
-
-int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) {
-
 	MemFile* thisFile = MemFile::currentFile;
 
-	if (mScrollInfo.Scrolls.size() > mScrollInfo.oldScrollCount) {
+	if (Scrolls.size() > oldScrollCount) {
 		//We need to find space...
 
 		//destroy the old data 
@@ -82,12 +70,12 @@ int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) {
 
 		thisFile->fputc(writebyte);
 		thisFile->fputc(writebyte);
-		thisFile->fwrite(&writebyte, mScrollInfo.oldScrollCount, 8);
+		thisFile->fwrite(&writebyte, oldScrollCount, 8);
 
 
 
 		//write data at new address
-		scrollpnt = mGBA->FindFreeSpace(1 + 1 + (mScrollInfo.Number * 4 * 2) + 32, 0xFF) + 0x8000000;
+		scrollpnt = mGBA->FindFreeSpace(1 + 1 + (Scrolls.size() * 4 * 2) + 32, 0xFF) + 0x8000000;
 		thisFile->seek(pnt2ScrollPointer);
 		thisFile->fwrite(&scrollpnt, 4, 1);
 		scrollpnt -= 0x8000000;
@@ -97,23 +85,23 @@ int  clsRoomScrolls::SaveScroll(GBAMethods* mGBA) {
 
 	thisFile->seek(scrollpnt);
 
-	if (mScrollInfo.Room == 0xFF) {
+	if (Room == 0xFF) {
 		return 0;
 	}
-	thisFile->fwrite(&mScrollInfo.Room, 1, 1);
-	mScrollInfo.Number = mScrollInfo.Scrolls.size();
-	thisFile->fwrite(&mScrollInfo.Number, 1, 1);
+	thisFile->fwrite(&Room, 1, 1);
+	int	Number = Scrolls.size();
+	thisFile->fwrite(&Number, 1, 1);
 
-	for (int i = 0; i < mScrollInfo.Number; i++) {
-		scrollData sD = mScrollInfo.Scrolls[i];
-
-
-		thisFile->fwrite(&sD.rect.sX, 1, 1);
-		thisFile->fwrite(&sD.rect.Width, 1, 1);
-		thisFile->fwrite(&sD.rect.sY, 1, 1);
-		thisFile->fwrite(&sD.rect.Height, 1, 1);
-		thisFile->fwrite(&sD.unkData, 4, 1);
-
+	for (int i = 0; i < Number; i++) 
+	{		
+		ObjectScroll*  sD = Scrolls[i];
+		
+		thisFile->fputc(sD->XPosition());
+		thisFile->fputc(sD->Width());
+		thisFile->fputc(sD->YPosition());
+		thisFile->fputc(sD->Height());
+		thisFile->fwrite(&sD->unkData1, 2, 1);
+		thisFile->fwrite(&sD->unkData2, 2, 1);
 	}
 
 
@@ -231,7 +219,7 @@ int clsRoomScrolls::Findmeascroll(int X, int Y, int ScrollNum)//cboScroll.GetLis
 	int             curW = 0;
 	int             i = 0;
 	int             j = 0;
-	MousePointer thisScroll = mScrollInfo.Scrolls[ScrollNum].rect;
+	RECT* thisScroll = Scrolls[ScrollNum]->GetRect();
 	/*
 	* Given an X,Y
 	* This function will find what rectangle you are in, then will go deeper and find
@@ -240,16 +228,15 @@ int clsRoomScrolls::Findmeascroll(int X, int Y, int ScrollNum)//cboScroll.GetLis
 	It wasn't really that interesting.
 	*/
 
-	if ((mScrollInfo.Room != 0xFF) && (thisScroll.sX != 0xFF) && (thisScroll.Height != 0xFF)) {
+	if ((Room != 0xFF) && (thisScroll->left != 0xFF) && (thisScroll->bottom != 0xFF)) {
 
-		MainX = thisScroll.sX;
-		MainY = thisScroll.sY;
-		MainW = thisScroll.Width;
-		MainH = thisScroll.Height;
+		MainX = thisScroll->left;
+		MainY = thisScroll->top;
+		MainW = thisScroll->right;
+		MainH = thisScroll->bottom;;
 		if (((MainX) <= X) && ((MainW) >= X) &&
 			((MainY) <= Y) && ((MainH) >= Y))
 		{
-
 			return ScrollNum;
 		}
 

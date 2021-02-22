@@ -1,21 +1,11 @@
 #include "DoorManager.h"
 
-vDoor::vDoor(sDoor src) {
-	rawDoor = src;
-	memset(&virtualDoor, 0, sizeof(virtualDoor));
-	virtualDoor.sX = src.XEntrance;
-	virtualDoor.sY = src.YEntrance;
-	virtualDoor.Width = src.DWidth;
-	virtualDoor.Height = src.DHeight; 
-}
-
-
-
 DoorManager::DoorManager(GBAMethods* gba)
 {
 	doorInfoContainer = NULL;
 	OriginalDoorCount = 0;
 	_gbaMethods = gba;
+	DoorCount = 0;
 }
 
 
@@ -35,8 +25,8 @@ int DoorManager::AddDoor(int RoomNum)
 	newDoor.DHeight = 1;
 	newDoor.DoorType = 0x14;
 	//Fake setup is done, now get our vDoor
-	vDoor *me = new vDoor(newDoor);
-	Doors.push_back(*me);
+	ObjectDoor *me = new ObjectDoor(&newDoor);
+	Doors.push_back(me);
 	//Also update the currentroom index
 
 	CurrentRoomDoorIndexes.push_back(Doors.size() - 1);
@@ -46,7 +36,7 @@ int DoorManager::AddDoor(int RoomNum)
 
 int   DoorManager::DeleteDoor(int Room, int doorNum)
 {
-
+	delete Doors[doorNum];
 	Doors.erase(Doors.begin()+doorNum);
 
 
@@ -67,16 +57,14 @@ int   DoorManager::GetDoor(int Room, int X, int Y)
 	// Function returns what door the is touching
 	for (i = 0; i < CurrentRoomDoorIndexes.size(); i++)
 	{
-
-		if (Doors[CurrentRoomDoorIndexes[i]].rawDoor.OwnerRoom == Room)
+		sDoor* door = Doors[CurrentRoomDoorIndexes[i]]->GetDoor();
+		if (door->OwnerRoom == Room)
 		{
-			curX = Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sX;
-			curY = Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY;
-			curH = (Doors[CurrentRoomDoorIndexes[i]].virtualDoor.Height); // -Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY)+1;
+			curX = door->XEntrance;
+			curY = door->YEntrance;
+			curH = door->DHeight; // -Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sY)+1;
 
-			curW = (Doors[CurrentRoomDoorIndexes[i]].virtualDoor.Width); // -Doors[CurrentRoomDoorIndexes[i]].virtualDoor.sX)+1;
-														 // ShowWindow((HWND)hDoors[i],SW_SHOW);
-														 // MoveWindow((HWND)hDoors[i],(unsigned short)(curX-minX)*16,(unsigned short)(curY-minY)*16,(curW+1)*16,(curH-curY+1)*16,0);
+			curW = door->DWidth; 
 
 			if ((curX <= X) &&
 				(curW >= X) &&
@@ -90,29 +78,27 @@ int   DoorManager::GetDoor(int Room, int X, int Y)
 	}
 	return -1;
 }
+
 int DoorManager::SaveDoorOffsets()
 {
 	if (doorInfoContainer == NULL) {
 		doorInfoContainer = GameConfiguration::mainCFG->GetDataContainer("Doors");
 	}
 	MemFile::currentFile->seek(doorInfoContainer->Value);
-	MemFile::currentFile->fwrite(doorInfoContainer->DataArray, 4, doorInfoContainer->MemberCount);
+	MemFile::currentFile->fwrite(&doorInfoContainer->DataArray[0], 4, doorInfoContainer->MemberCount);
 	return 0;
 }
 
 
-int DoorManager::GetDoorArray(FILE* fp)
+int DoorManager::GetDoorArray()
 {
 
 	if (doorInfoContainer == NULL) {
 		doorInfoContainer = GameConfiguration::mainCFG->GetDataContainer("Doors");
 	}
 	MemFile::currentFile->seek(doorInfoContainer->Value);
-MemFile::currentFile->fread(doorInfoContainer->DataArray, 4, doorInfoContainer->MemberCount);
+MemFile::currentFile->fread(&doorInfoContainer->DataArray[0], 4, doorInfoContainer->MemberCount);
 	return 0;
-
-
-
 }
 
 
@@ -152,39 +138,30 @@ int DoorManager::SaveDoors(int area) {
 		SaveDoorOffsets();
 	}
 
-
-	
-
-
-
-
 	thisFile->seek(GetAreaOffset(area) - 0x8000000);
 	
 
-
-
 	for (i = 0; i < DoorNum(); i++) {
 		sDoor tmpDoor;
-		memcpy(&tmpDoor, 			&Doors[i].rawDoor, sizeof(sDoor));
-		MousePointer* actualMP = &Doors[i].virtualDoor;
+		memcpy(&tmpDoor, Doors[i]->GetDoor(), sizeof(sDoor));
+	
 		thisFile->fwrite(&tmpDoor.DoorType, sizeof(unsigned char), 1);
 		thisFile->fwrite(&tmpDoor.OwnerRoom, sizeof(unsigned char), 1);
 		
-		thisFile->fwrite(&actualMP->sX, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.XEntrance, sizeof(unsigned char), 1);
 		
-		thisFile->fwrite(&actualMP->Width, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.DWidth, sizeof(unsigned char), 1);
 
-		thisFile->fwrite(&actualMP->sY, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.YEntrance, sizeof(unsigned char), 1);
 		
-		thisFile->fwrite(&actualMP->Height, sizeof(unsigned char), 1);
+		thisFile->fwrite(&tmpDoor.DHeight, sizeof(unsigned char), 1);
 
 		thisFile->fwrite(&tmpDoor.DestDoor, sizeof(unsigned char), 1);
 		thisFile->fwrite(&tmpDoor.xExitDistance, sizeof(unsigned char), 1);
 		thisFile->fwrite(&tmpDoor.yExitDistance, sizeof(unsigned char), 1);
 		thisFile->fwrite(&tmpDoor.doorNum, sizeof(unsigned char), 1);
 		thisFile->fwrite(&tmpDoor.u3, sizeof(unsigned char), 1);
-		thisFile->fwrite(&tmpDoor.u4, sizeof(unsigned char), 1);
-		
+		thisFile->fwrite(&tmpDoor.u4, sizeof(unsigned char), 1);	
 	}
 
 	unsigned long endPoint = 0;
@@ -214,7 +191,10 @@ int DoorManager::SetupDoors(long area) {
 
 
 
-	
+	for each(auto dick in Doors)
+	{
+		delete dick;
+	}
 	Doors.clear();
 	if (_gbaMethods->ROM) {
 
@@ -256,7 +236,7 @@ int DoorManager::SetupDoors(long area) {
 				break;
 			}
 			//memcpy(&Doors[i], &tmpDoor, sizeof(sDoor));
-			Doors.push_back(tmpDoor);
+			Doors.push_back(new ObjectDoor(&tmpDoor));
 		}
 
 	}
@@ -322,7 +302,7 @@ int DoorManager::LoadDoors(int Room) {
 
 
 	for (i = 0; i<DoorNum(); i++) {
-		if ((Doors[i].rawDoor.OwnerRoom == Room)) {
+		if ((Doors[i]->GetDoor()->OwnerRoom == Room)) {
 
 			CurrentRoomDoorIndexes.push_back( i);
 

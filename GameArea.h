@@ -4,7 +4,7 @@
 #include "..\MemFile\MemFile.h"
 class GameArea
 {
-	std::vector<RHeader> _rooms;
+	std::vector<RHeader*> _rooms;
 	int roomIndex;
 	int originalCount;
 public:

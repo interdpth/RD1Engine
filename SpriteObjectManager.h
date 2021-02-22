@@ -9,6 +9,7 @@
 #include "..\Win32GBAImageClasses\backbuffer.h"
 #include "FrameManager.h"
 #include "GBAMethods.h"
+#include "ObjectSprite.h"
 using namespace std;
 class FrameManager;
 class SpriteObjectManager
@@ -29,9 +30,9 @@ public:
 	PalData paltransfer[16]; //0 = pointer to pal, 1 = destination, 2 = WORD count (*2 for bytes)
 	RECT OverallSize[16];
 	vector<FrameManager*> RoomSprites; 
-	CompHeader thiscompheader;
-	vector<nEnemyList> SpriteObjects;
-	void AddSpriteObject(int ObjectSet);
+	CompHeader thiscompheader;	
+	vector<vector<MapObjectSprite*>> SpriteObjects;
+	void AddSpriteObject(int ObjectSet, int creature);
 	void DeleteSpriteObject(int ObjectSet, int ObjID);
 	int LoadEnemies(RHeader* roomHeader);
 	int ShowSprites(bool show, unsigned char Number, BackBuffer* drawBuffer);

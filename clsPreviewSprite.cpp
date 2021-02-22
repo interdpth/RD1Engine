@@ -3,6 +3,9 @@
 clsPreviewSprite::clsPreviewSprite()
 {
 	_fullCache.created = false;
+	AddressesSet = 0;
+	Height = 0;
+	Width = 0;
 	LeakFinder::finder->AddLeak("clsPreviewSprite()", this);
 }
 
@@ -16,7 +19,6 @@ clsPreviewSprite::~clsPreviewSprite()
 
 void clsPreviewSprite::Create(int width, int height)
 {
-	int layerCounter;
 	Width = width;
 	Height = height;	
 	if (!_fullCache.created) {

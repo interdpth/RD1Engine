@@ -31,6 +31,9 @@
     <Filter Include="Title">
       <UniqueIdentifier>{d24db448-3352-4325-8da9-98644ec391e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{65fff990-88c3-44d8-96de-32e9e9c8a15f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedTiles.cpp">
@@ -183,6 +186,18 @@
     <ClCompile Include="..\Win32GBAImageClasses\OpenGL2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectDoor.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="IObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectSprite.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectScroll.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedTiles.h">
@@ -334,6 +349,21 @@
     </ClInclude>
     <ClInclude Include="..\Win32GBAImageClasses\OpenGL2.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectDoor.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="IObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectSprite.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectScroll.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="structures.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

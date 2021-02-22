@@ -19,6 +19,7 @@ int RoomClass::LoadData() {
 
 void RoomClass::LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage) {
 	
+	lockSprites = true;
 	FILE           *fp = NULL;
 	int             sprch = 0; 
 	char            cBuf[1024] = { 0 };
@@ -71,6 +72,7 @@ void RoomClass::LoadUpSprites(int SpriteSetIndex, TileBuffer *     SpriteImage) 
 		
 		
 	}
+	lockSprites = false;
 }
 
 int RoomClass::LoadHeader(long Offset) {//Needs to be seperate
@@ -137,12 +139,9 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 		ELayer[Layer]->BImage = new Image(ELayer[Layer]->X * 16, ELayer[Layer]->Y * 16);
 		ELayer[Layer]->BImage->Create(ELayer[Layer]->X * 16, ELayer[Layer]->Y * 16);
 		ELayer[Layer]->BImage->SetPalette(GBAGraphics::VRAM->PcPalMem);
-		if (ELayer[Layer]->TileBuf2D)
-		{
-			delete ELayer[Layer]->TileBuf2D;
-		}
-		ELayer[Layer]->TileBuf2D = new unsigned short[ELayer[Layer]->X * ELayer[Layer]->Y*2];
-		memset(ELayer[Layer]->TileBuf2D, 0, 2 * ELayer[Layer]->X * ELayer[Layer]->Y);
+	
+		
+		memset(ELayer[Layer]->TileBuf2D, 0, 0xFF * 0xFF * 2);
 		ELayer[Layer]->oSize = _gbaMethods->UncompRle(ELayer[Layer]->X*ELayer[Layer]->Y, compBuffer, (unsigned char*)ELayer[Layer]->TileBuf2D, &ELayer[Layer]->ThisCompsize);
 	}
 	else if (compression == 0x40) {
@@ -167,13 +166,13 @@ int RoomClass::GetLayerData(unsigned char compression, unsigned char Layer, unsi
 		MemFile::currentFile->seek(offset + 4);
 		MemFile::currentFile->fread(compBuffer, sizeof(unsigned char), 32691);
 
-		if (ELayer[Layer]->TileBuf2D)
-		{
-			delete ELayer[Layer]->TileBuf2D;
-		}
+		//if (ELayer[Layer]->TileBuf2D)
+		//{
+		//	delete ELayer[Layer]->TileBuf2D;
+		//}
+		//
 		
-		ELayer[Layer]->TileBuf2D = new unsigned short[4096];
-		memset(ELayer[Layer]->TileBuf2D, 0, 2 * ELayer[Layer]->X * ELayer[Layer]->Y);
+		memset(ELayer[Layer]->TileBuf2D, 0, 0xFF * 0xFF * 2);
 
 		ELayer[Layer]->oSize = _gbaMethods->LZ77UnComp(compBuffer, (unsigned char*)ELayer[Layer]->TileBuf2D);
 		if (ELayer[Layer]->BImage != NULL)
@@ -194,20 +193,22 @@ void RoomClass::Load(Image* tilesetsrc, int area, int room, RHeader* offset)
 	//int area = comboArea.GetListIndex;
 	//int room = comboRoom.GetListIndex();
 	roomHeader = offset;
+	lockRoom = true;
 	Setup(tilesetsrc, area, room);
+	lockRoom = false;
 }
 void RoomClass::Load(Image* tilesetsrc, int area, int room, unsigned long offset )
 {
 	//int area = comboArea.GetListIndex;
 	//int room = comboRoom.GetListIndex();
-
+	lockRoom = true;
 	LoadHeader(offset);
 	Setup(tilesetsrc, area, room);
+	lockRoom = false;
 }
 
 void RoomClass::Setup(Image* tilesetsrc, int area, int room )
 {
-
 	int load = RD1Engine::theGame->mgrTileset->GetTileset(tilesetsrc, roomHeader->bTileset, roomHeader->lBg3);
 
 	LoadData();
@@ -218,6 +219,13 @@ void RoomClass::Setup(Image* tilesetsrc, int area, int room )
 	RD1Engine::theGame->mgrScrolls->initScroll(area, room);
 	RD1Engine::theGame->mgrScrolls->GetScroll();
 	LeakFinder::finder->LogActiveLeaks(Logger::log);
+	MapObjects[editingStates::SPRITE] = (vector<RD1Object*>*)(&mgrSpriteObjects->SpriteObjects[0]);//Need to support the others somehow, maybe pointer to active
+
+	MapObjects[editingStates::DOOR] = (vector<RD1Object*>*)(&RD1Engine::theGame->mgrDoors->Doors);
+    
+
+
+
 }
 RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, RHeader* offset)
 {
@@ -233,6 +241,7 @@ RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GB
 }
 RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames, int area, int room, unsigned long offset)
 {
+	lockSprites = true;
 	currentRomType = romType;
 	_gbaMethods = gba;
 	mgrEntities = new cEntityManager(_gbaMethods);
@@ -242,26 +251,30 @@ RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GB
 	Area = area;
 	Room = room;
 	Load(tilsetsrc, area, room, offset);
+	lockSprites = false;
 }
 
 
 RoomClass::RoomClass(int romType, Image* tilsetsrc, SpritesetData* spriteset, GBAMethods* gba, std::map<int, std::vector<unsigned long>>* OAMFrameTable, FrameManager* currentFrames)
 {
+	lockSprites = true;
 	currentRomType = romType;
 	_gbaMethods = gba;
 	mgrEntities = new cEntityManager(_gbaMethods);
-	mapMgr = new MapManager();	
 	mgrSpriteObjects = new SpriteObjectManager(spriteset,gba, OAMFrameTable, currentFrames, 1);
 	memset(&roomHeader, 0, sizeof(RHeader));
+	lockSprites = false;
 }
 
 
 RoomClass::~RoomClass()
 {
+	lockSprites = true;
 	delete mgrSpriteObjects;
 	delete mapMgr;
 	
 	delete mgrEntities;
+	lockSprites = false;
 }
 
 void RoomClass::SaveHeader(unsigned long offset)
@@ -299,4 +312,24 @@ void RoomClass::SaveHeader(unsigned long offset)
 	MemFile::currentFile->fwrite(&roomHeader->blank, sizeof(unsigned char), 1);
 
 
+}
+
+RD1Object* RoomClass::GetRD1Object(editingStates type, int index) 
+{
+	return MapObjects[type]->at(index);
+}
+
+RD1Object* RoomClass::GetRD1Object(editingStates type, int x, int y) 
+{
+
+	vector<RD1Object*>* objs = MapObjects[type];
+	for (int objCounter = 0; objCounter < objs->size(); objCounter++)
+	{
+		RD1Object* obj = MapObjects[type]->at(objCounter);
+		if (x == obj->XPosition() && y == obj->YPosition())
+		{
+			return obj;
+		}
+	}
+	return NULL;
 }

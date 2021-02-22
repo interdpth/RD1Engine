@@ -3,42 +3,17 @@
 #include "Structures.h"
 #include "GBAMethods.h"
 #include "..\MemFile\MemFile.h"
-struct sctype {
-	unsigned char xStart;
-	unsigned char xEnd;
-	unsigned char yStart;
-	unsigned char yEnd;
-};
-
-
-struct scrollData {
-	MousePointer rect;
-	unsigned long unkData;
-
-};
-class Scroller {
-	sctype privScrolls[0xFF];
-public:
-	Scroller()
-	{
-	}
-	~Scroller()
-	{
-	}
-	unsigned char Room;
-	unsigned char Number;
-	int oldScrollCount;
-	std::vector<scrollData> Scrolls;
-};
+#include "ObjectScroll.h"
 
 
 class clsRoomScrolls
 {
 
-private:
-	Scroller mScrollInfo;
 
 public:
+	unsigned char Room;
+	int oldScrollCount;
+	std::vector<ObjectScroll*> Scrolls;
 	clsRoomScrolls();
 	~clsRoomScrolls();
 	DataContainer* scrollInfoContainer;
@@ -46,11 +21,13 @@ public:
 	int SaveScroll(GBAMethods* mGBA);
 	int initScroll( int area, int room);
 	int EditScrollData(GBAMethods* mGBA);
-	Scroller* GetScrollInfo();
+	void LoadScrollControls();
+
+	void LoadScrollInfo(int s);
 	long RoomScrollOffset;
 	int             Findmeascroll(int X, int Y, int ScrollNum);
 	long		pnt2ScrollPointer;
 	long        scrollpnt;
-	void GetScrollArray(FILE* fp);
+	void GetScrollArray();
 };
 

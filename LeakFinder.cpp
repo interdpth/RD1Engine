@@ -2,31 +2,43 @@
 
 LeakFinder* LeakFinder::finder;
 
-Leak::Leak(char* name, void * addr)
+Leak::Leak(char* name, void * addr, bool r)
 {
-	LeakName = new char[strlen(name) + 1];
-	memset(LeakName, 0, strlen(name) + 1);
-	sprintf(LeakName, "%s", name);
+	IsArray = r;
+	LeakName= name;
 	Address = addr;
 }
 
 Leak::~Leak()
 {
-	if (LeakName)
-	{
-		delete[] LeakName;
-	}
+	
 }
 
 LeakFinder::LeakFinder()
-{
+{	
+	_addedCount = 0;
+	_removeCount = 0;
+	_processHandle = GetProcessHeap();
 }
 
 LeakFinder::~LeakFinder()
 {
 }
 
+void* LeakFinder::New(int size, bool isarray)
+{
+	void* addr = new unsigned char[size];
+	AddLeak("SelfAdded",  addr, isarray);
+	return addr;
+}
 
+void LeakFinder::Delete(void* addr)
+{
+
+	int add = GetLeakIndex(addr);
+	delete[] addr;
+
+}
 int LeakFinder::GetLeakIndex(void* addr)
 {	
 	for (int returnValue = 0; returnValue < Leaks.size(); returnValue++)
@@ -39,9 +51,9 @@ int LeakFinder::GetLeakIndex(void* addr)
 	return -1;
 }
 
-void LeakFinder::AddLeak(char* name, void * addr)
+void LeakFinder::AddLeak(char* name, void * addr, bool r)
 {
-	Leaks.push_back(new Leak(name, addr));
+	Leaks.push_back(new Leak(name, addr, r));
 	_addedCount++;
 }
 
@@ -77,16 +89,25 @@ int LeakFinder::NumActiveLeaks()
 void LeakFinder::LogActiveLeaks(Logger* instance)
 {
 
-	//char* data = new char[2048];
-	//memset(data, 0, 2048);
-	//sprintf(data, "Showing active addreses\nPossible leaks %d\n", NumActiveLeaks());
-	//instance->LogIt(Logger::LOGTYPE::DEBUG, data);
-	//for each(Leak* l in Leaks)
-	//{
-	//	sprintf(data, "\tLeak Name: %s, Address: %X\n",l->LeakName, l->Address);
-	//	instance->LogIt(Logger::LOGTYPE::DEBUG, data);
-	//}
-	//sprintf(data, "End active leaks\n", data); 
-	//instance->LogIt(Logger::LOGTYPE::DEBUG, data);
-	//delete[] data;
+	/*char* data = new char[2048];
+	memset(data, 0, 2048);
+	sprintf(data, "Showing active addreses\nPossible leaks %d\n", NumActiveLeaks());
+	instance->LogIt(Logger::LOGTYPE::DEBUG, data);
+	for each(auto l in Leaks)
+	{
+		sprintf(data, "\tLeak Name: %s, Address: %X\n",l->LeakName.c_str(), (unsigned int)l->Address);
+		instance->LogIt(Logger::LOGTYPE::DEBUG, data);
+	}
+	sprintf(data, "End active leaks\n"); 
+	instance->LogIt(Logger::LOGTYPE::DEBUG, data);
+	delete[] data;*/
+}
+
+bool LeakFinder::PollHeap() 
+{
+	if (HeapValidate(_processHandle, 0, NULL)==0)
+	{
+		throw "HEAP gone my guy, debug it";
+	}
+	return true;
 }

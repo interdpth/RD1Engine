@@ -1,14 +1,16 @@
 #include "GameArea.h"
 GameArea::GameArea(unsigned long areaOffset, int count)
 {
-	MemFile::currentFile->seek(areaOffset-0x8000000);
-	_rooms.clear();
-	for (int roomCounter = 0; roomCounter < count; roomCounter++)
+	if (areaOffset == 0)
 	{
-		RHeader currHeader;
-		memset(&currHeader, 0, sizeof(RHeader));
-		MemFile::currentFile->fread(&currHeader,1, sizeof(RHeader));
-		_rooms.push_back(currHeader);
+		throw new exception("oh no");
+	}
+	
+	_rooms.clear();
+
+	for (int roomCounter = 0; roomCounter < count; roomCounter++)
+	{		
+		_rooms.push_back((RHeader*)&MemFile::currentFile->GetFile()[areaOffset - 0x8000000+(0x3c*roomCounter)]);	
 	}
 }
 
@@ -19,7 +21,7 @@ int GameArea::GetRoomCount()
 
 RHeader* GameArea::GetCurrentRoom()
 {
-	return &_rooms[roomIndex];
+	return _rooms[roomIndex];
 }
 
 int GameArea::SetCurrentRoom(int index)

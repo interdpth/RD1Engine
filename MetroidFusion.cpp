@@ -7,7 +7,7 @@ void MetroidFusion::LoadGameData()
 {
 	DataContainer* sprSize = GameConfiguration::mainCFG->GetDataContainer("SpriteSizes");
 	MemFile::currentFile->seek(sprSize->Value);
-	MemFile::currentFile->fread(&MFSprSize, 2, 0x180);
+	MemFile::currentFile->fread(&this->MFSprSize[0], 2, 0x180);
 	MemFile::currentFile->seek(0x3e419c);
 	MemFile::currentFile->fread(&GBAGraphics::VRAM->SprVRAM[0x900], 1, 0x36E0);
 	MemFile::currentFile->seek(0x58b466);
@@ -32,7 +32,7 @@ int MetroidFusion::GetGFX(int sprID, unsigned char* gfxBuffer)
 
 MetroidFusion::MetroidFusion(GBAMethods* g, MemFile* theGame) :BaseTitle(g, theGame, (char*)MetroidFusion::CodeName)
 {
-
+	/*memset(MFSprSize, 0,2 * 0x180);*/
 }
 
 const char* MetroidFusion::GetPoseFile()

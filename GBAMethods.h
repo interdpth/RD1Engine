@@ -44,7 +44,7 @@ public:
 		
 		static short GBAPal[1024];
 
-		static  char FileLoc[MAX_PATH];
+		static  char FileLoc[512];
 
 
 };

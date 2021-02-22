@@ -1,8 +1,11 @@
 #include "clsScroll.h"
 
-clsUIScroll::clsUIScroll() {
-
-
+clsUIScroll::clsUIScroll() 
+{
+	curpos = 0;
+	max = 0;
+	me = NULL;
+	vert = 0;
 }
 clsUIScroll::~clsUIScroll() {
 

@@ -9,6 +9,7 @@
 #include "SpriteObjectManager.h"
 #include "BaseGame.h"
 #include "FrameManager.h"
+#include "IObject.h"
 #include <vector>
 
 using namespace std;
@@ -34,6 +35,8 @@ public:
 	void Setup(Image* tilesetsrc, int area, int room);
 	~RoomClass();
 	MapManager * mapMgr;
+	//editingStates, pointer to objects
+	map<int, vector<RD1Object*>*> MapObjects;
 	SpriteObjectManager* mgrSpriteObjects;
 	cEntityManager* mgrEntities;
 	RHeader* roomHeader;
@@ -48,5 +51,9 @@ public:
 	void Export(char* name);
 	void Import(char* name);
 	void SaveHeader(unsigned long offset);
+	RD1Object* GetRD1Object(editingStates type, int index);
+	RD1Object* GetRD1Object(editingStates type, int x, int y);
+	bool lockRoom;
+	bool lockSprites;
 };
 

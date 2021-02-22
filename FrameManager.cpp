@@ -2,12 +2,13 @@
 
 FrameManager::~FrameManager()
 {
-	
-	for each(Frame* theFrame in theFrames)
+	if (theFrames.size() > 0)
 	{
-		delete theFrame;
+		for each(Frame* theFrame in theFrames)
+		{
+			delete theFrame;
+		}
 	}
-	
 	theFrames.clear();
 	
 	 _staticFrame=NULL;
@@ -98,11 +99,13 @@ FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, int spriteID, 
 ///Frame maanger constructor
 FrameManager::FrameManager(GBAMethods* GBA, unsigned long offset, int spriteID, int romType, unsigned char* tileGFX, long* pal, bool NoFrameTable )
 {
+	LeakFinder::finder->PollHeap();
 	_gbaMethods = GBA;
 	Empty();
 	
 	LoadFrames(offset, spriteID, romType,  tileGFX,  pal, NoFrameTable);
 	originalFrameCount = theFrames.size();
+	LeakFinder::finder->PollHeap();
 }
 
 //Handles animating
@@ -123,7 +126,7 @@ bool FrameManager::Animate()
 
 		}
 		_currentAnimatedFrame = theFrames.at(animFrameIndex);
-//		_currentAnimatedFrame->theSprite->PreviewSprite.RefreshImage();
+		_currentAnimatedFrame->theSprite->PreviewSprite.RefreshImage();
 		_currentAnimatedFrame->animUpdated = true;
 	}
 	else if (animCounter == _currentAnimatedFrame->frameTimer)
@@ -141,6 +144,7 @@ bool FrameManager::Animate()
 
 void FrameManager::LoadFrames(unsigned long offset,  int spriteID, int romType, unsigned char* tileGFX, long* pal, bool NoFrameTable)
 {
+	LeakFinder::finder->PollHeap();
 	if (!NoFrameTable)
 	{
 
@@ -158,8 +162,7 @@ void FrameManager::LoadFrames(unsigned long offset,  int spriteID, int romType, 
 			if (frameOffset == 0 || frameOffset < 0x8000000 || frameOffset>0xA000000)
 			{
 				delete currentFrame;
-				currentFrame = NULL;
-				
+				currentFrame = NULL;				
 			}
 			else
 			{
@@ -194,6 +197,7 @@ void FrameManager::LoadFrames(unsigned long offset,  int spriteID, int romType, 
 	_staticFrame = theFrames.front();
 	_currentAnimatedFrame = _staticFrame;
 	animFrameIndex = 0;
+	LeakFinder::finder->PollHeap();
 }
 
 
@@ -259,6 +263,10 @@ int FrameManager::UpdateSprite(int frame, int thisPart, unsigned short tile, uns
 	unsigned short oamPiece = 0;
 
 	DecodedOAM  deOAM;
+	if (thisPart == -1)
+	{
+		printf("wtf");
+	}
 	EncodedOAM* bitOAM = &theFrames[frame]->theSprite->OAM[thisPart].enOAM;
 	memset(&deOAM, 0, sizeof(DecodedOAM));
 	oamPiece = bitOAM->OAM0;
@@ -329,7 +337,7 @@ int FrameManager::UpdateSprite(int frame, int thisPart, unsigned short tile, uns
 	bitOAM->OAM1 = EncodeOAM1(deOAM.objRot, deOAM.xCoord, deOAM.rotation, deOAM.HorizontalFlip, deOAM.VerticalFlip, deOAM.ObjSize);
 	bitOAM->OAM2 = EncodeOAM2(deOAM.TileNumber, deOAM.priority, deOAM.Palette);
 
-	RD1Engine::theGame->mgrOAM->DrawPSprite(GetStaticFrame()->theSprite);
+	//RD1Engine::theGame->mgrOAM->DrawPSprite(GetStaticFrame()->theSprite);
 
 	return 0;
 }

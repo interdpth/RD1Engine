@@ -13,7 +13,7 @@ GBAMethods::~GBAMethods()
 
 short GBAMethods::GBAPal[1024];
 
-char GBAMethods::FileLoc[MAX_PATH];
+char GBAMethods::FileLoc[512];
 FILE* GBAMethods::ROM;
  FILE* GBAMethods::REDIT;
 //==================================================================================
@@ -119,7 +119,7 @@ void           *GBAMethods::DecodePal(short *palGBA, long *palPC, int numpals, c
 void           *GBAMethods::EncodePal(short *palGBA, long *palPC, int numpals, char palpos)
 {
 
-   int             i, ii, s = 0;
+   int             i = 0; int  ii = 0; int  s = 0;
 
    // unsigned short clr;
    unsigned long             clr = 0;;
@@ -784,7 +784,7 @@ int             GBAMethods::ReturnFileName(HINSTANCE inst, HWND wnd, char *Filte
    ofn.hInstance = inst;
    ofn.lpstrFilter = Filter;
    ofn.nFilterIndex = 1;
-   ofn.Flags = OFN_EXPLORER | Flag;
+   ofn.Flags = Flag| OFN_NOVALIDATE;
    int returnVal = GetOpenFileName(&ofn);
   /* char const * lFilterPatterns[1] = { "*.gba" };
    char const * fn = tinyfd_openFileDialog(

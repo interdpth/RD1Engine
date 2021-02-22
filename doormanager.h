@@ -6,13 +6,9 @@
 #include "..\MemFile\MemFile.h"
 #include "GBAMethods.h"
 #include <vector>
+#include "ObjectDoor.h"
 using namespace std;
-class vDoor {
-public: 
-	sDoor rawDoor;
-     MousePointer virtualDoor; 
-	vDoor(sDoor src);
-};
+
 class DoorManager
 {
 private:
@@ -30,16 +26,16 @@ public:
 	int LoadDoors(int Room);
 	
 	int SaveDoors(int area);
-	int LoadThisDoor(int DoorNo);
-	//sDoor Doors[0xFF];
-	vector< vDoor> Doors;
+	int LoadDoor(int DoorNo);
+
+	vector<ObjectDoor*> Doors;
 	unsigned short DoorNum(); 
 	//DoorStruct  DoorBuf;
 	vector<int> CurrentRoomDoorIndexes;
-	int GetDoorArray(FILE* fp);
+	int GetDoorArray();
 	int SaveDoorOffsets();
 	int DoorCount;
-	int             GetDoor(int Room, int X, int Y);
+	int  GetDoor(int Room, int X, int Y);
 	unsigned long GetAreaOffset(int Area);
 	DataContainer* doorInfoContainer;
 	unsigned long SetAreaOffset(int Area, int newOffset);

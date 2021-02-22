@@ -42,10 +42,7 @@ public:
 	
 	//debug
 public:
-	BYTE* layerPixelsPoint[8];
-
 	void SetAddresses();
 	void CheckAddresses();
-
 };
 

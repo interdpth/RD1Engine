@@ -25,7 +25,7 @@ public:
 	unsigned char newX;
 	unsigned char newY;
 	unsigned char CompMode;
-	unsigned short* TileBuf2D;
+	unsigned short  TileBuf2D[0xFF * 0xFF];
 	
 };
 

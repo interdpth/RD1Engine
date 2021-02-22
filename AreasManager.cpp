@@ -10,7 +10,7 @@ AreasManager::AreasManager(MemFile* file, vector<string>* areaList, int areaMax,
 	_areaCount = areaMax;
 	_myTitle = title;
 	_currentArea = 0;
-
+	_currentOffset = 0;
 }
 
 
@@ -26,7 +26,10 @@ void AreasManager::LoadAreas(unsigned long offset) {
 		unsigned long curDAD = 0;
 		MemFile::currentFile->fread(&gamePointer, sizeof(long), 1);
 		curDAD = MemFile::currentFile->ftell();
-
+		if (gamePointer == 0)
+		{
+			throw new exception("oh no");
+		}
 		areas.push_back(new GameArea(gamePointer, areasData->DataArray[i]));
 		MemFile::currentFile->seek(curDAD);
 

@@ -45,7 +45,7 @@ public:
 	int DisplayDoors(unsigned char Room);
 	drawstate DrawStatus;
 	int             DrawClipIdent();
-	int DrawScrolls(int ScrollToDraw, Scroller *scroll);
+	int DrawScrolls(int ScrollToDraw);
 	int LoadAreaTable();
 	void LoadModifiers(char* fn);
 	void LoadRoomSpriteSet(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, int spriteset = 0);
@@ -55,7 +55,7 @@ public:
 	void LoadRoom(int Area, int Offset, Image* Tileset, TileBuffer* SpriteImage, RHeader*currHeader
 	);
 
-	
+	void LoadROM();
 	void DrawSprites(Image* pic);
 	int DrawLayer(nMapBuffer* Map, Image* pic, unsigned char ctype);
 	int DrawRoom(TileBuffer* TileImage, TileBuffer* BGImage, int ScrollIndex);
@@ -71,12 +71,13 @@ public:
 	DoorManager * mgrDoors;
 	sSpritev SpriteVRAM;
 	int             Save(MemFile * fp);
-	int SaveLevel(unsigned long HeaderOffset);
+	int SaveLevel();
 	bool CheckHeader(RHeader* tstHeader);
 	bool IsValidPointer(unsigned long pnt);
 	bool IsValidCompression(unsigned char tstByte);
 		int GetRoomCount(long RoomTableOffset);
     void GetArrays();
 	~RD1Engine();
+	bool roomLock;
 };
 

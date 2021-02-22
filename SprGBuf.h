@@ -9,6 +9,7 @@ public:
 	SpriteObject();
 	~SpriteObject();
 	void Create(unsigned char* gfxRam, long* pal);
+	bool IsEdited;
 	bool selfInitPal;
 	bool selfInitGFX;
 	int id;

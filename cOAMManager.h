@@ -12,7 +12,7 @@ class cOAMManager
 {
 public:
 	static int CalcSpriteBounds(SpriteObject* SpriteDetails);
-	cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, int crf);
+	cOAMManager(std::map<int, std::vector<unsigned long>>* _oAMFrameTable, GBAMethods* gba, unsigned short* Size, int crf);
 	~cOAMManager();
 	GBAMethods* _gbaMethods;
 	unsigned short*  MFSprSize;

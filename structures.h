@@ -26,7 +26,7 @@ enum SaveOptions
 struct sTilesetBlockStructure {
 	int max;
 	unsigned short ID;
-	unsigned short nTSA[0x4000];
+	unsigned short nTSA[0x1080];
 };
 
 struct gTileData {
@@ -50,8 +50,6 @@ struct SE {
 	int _curFrame;
 	int animCounter;
 };
-
-
 struct RHeader {
 	unsigned char bTileset;
 	unsigned char bBg0;
@@ -126,30 +124,12 @@ struct sDoor {
 
 
 
-struct virtualEnemy 
-{
-	//This creature is actually the real spriteobject.
-	unsigned char Creature;
 
-	unsigned char screenX;
-	unsigned char screenY;
-};
 struct nEnemies {
 	unsigned char Y;
 	unsigned char X;
 	unsigned char Creature;
-
-	virtualEnemy onScreen;
 };
-
-
-
-struct  nEnemyList {
-	int oldCount;
-	unsigned char Max() { return (unsigned char)Enemies.size(); };
-	vector<nEnemies> Enemies;// nEnemies Enemies[0x20];
-};
-
 
 struct CompHeader {
 	unsigned char check_ten;       //Check byte should be 0x10 for lz
@@ -214,7 +194,7 @@ struct MFS {
 
 
 struct sSpritev {
-	
+	unsigned char RAM[0x10000];
 };
 
 
@@ -237,19 +217,12 @@ struct SpritesetData
 	unsigned long usedGFX;
 	unsigned long usedPAL;
 	unsigned char  graphics[0x8000];
-
+	int spriteCount;
 	long pal[512];
-	unsigned char spriteCount;
+	unsigned char total;
 };
 
 
-//struct RECORD {
-//	unsigned char	*data;
-//	unsigned long	width;
-//	unsigned long	height;
-//};
-
-//wtf
 class wndCPal {
 	HWND me;
 	long epal[256];

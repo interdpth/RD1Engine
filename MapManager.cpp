@@ -5,10 +5,12 @@
 #include "SpriteObjectManager.h"
 #include "clsRoomScrolls.h"
 #include "BaseGame.h"
+
 #define GetX(lParam) LOWORD(lParam)
 #define GetY(lParam) HIWORD(lParam)
 void MapManager::MoveObject(LPARAM lParam, int index) {
 	editingStates thisState = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetState();//Wait what
+	int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
 	if (thisState == editingStates::MAP) {
 //		mpMap.sY = GetY(lParam) / 16;
 	//	mpMap.sX = GetX(lParam) / 16;
@@ -16,55 +18,41 @@ void MapManager::MoveObject(LPARAM lParam, int index) {
 	else if (thisState == editingStates::DOOR) {
 
 		//Get shit to our door
-		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
-		if (objID != -1) {
-			MousePointer *myDoor = &RD1Engine::theGame->mgrDoors->Doors[objID].virtualDoor;
-			myDoor->Height -= myDoor->sY;
-			myDoor->Width -= myDoor->sX;
-			myDoor->sX = GetX(lParam) / 16;//;
-			myDoor->sY = GetY(lParam) / 16;//;
-			myDoor->Height += myDoor->sY;
-			myDoor->Width += myDoor->sX;
+		
+		if (objID != -1) 
+		{			
+			RD1Engine::theGame->mgrDoors->Doors[objID]->Move(GetX(lParam) / 16, GetY(lParam) / 16);
 		}
 	}
 	else if (thisState == editingStates::SPRITE) {
 
 		//Get shit to our door
-		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
+	
 		if (objID != -1) {
 			switch (index) {
-			case 0:
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].X = (GetX(lParam) / 16);//;
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[0].Enemies[objID].Y = (GetY(lParam) / 16);//;
-				break;
+			case 0:				
 			case 1:
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].X = (GetX(lParam) / 16);//;
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[1].Enemies[objID].Y = (GetY(lParam) / 16);//;
-				break;
 			case 2:
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].X = (GetX(lParam) / 16);//;
-				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[2].Enemies[objID].Y = (GetY(lParam) / 16);//;
+				RD1Engine::theGame->mainRoom->mgrSpriteObjects->SpriteObjects[index][objID]->Move( GetX(lParam) / 16, ( GetY(lParam) / 16)) ;//;
 				break;
-			}
-
-		
+			}		
 		}
 	}
 	else if (thisState == editingStates::SCROLL) {
 
 		//Get shit to our door
-		int objID = RD1Engine::theGame->mainRoom->mapMgr->GetState()->GetObjId();
-		MousePointer* thisScroll = &RD1Engine::theGame->mgrScrolls->GetScrollInfo()->Scrolls[objID].rect;
+		
+		RECT* thisScroll = RD1Engine::theGame->mgrScrolls->Scrolls[objID]->GetRect();
 
 
-		thisScroll->Width -= thisScroll->sX;
-		thisScroll->Height -= thisScroll->sY;
+		thisScroll->right -= thisScroll->left;
+		thisScroll->bottom -= thisScroll->top;
 
 
-		thisScroll->sX = GetX(lParam) / 16;//;
-		thisScroll->sY = GetY(lParam) / 16;//;
-		thisScroll->Width += thisScroll->sX;
-		thisScroll->Height += thisScroll->sY;
+		thisScroll->left = GetX(lParam) / 16;//;
+		thisScroll->top = GetY(lParam) / 16;//;
+		thisScroll->right += thisScroll->left;
+		thisScroll->bottom += thisScroll->top;
 
 		
 	}
@@ -165,7 +153,7 @@ int MapManager::SaveLayer(GBAMethods* GBA, unsigned char layerbyte, unsigned lon
 	return 0;
 
 }
-// tmp = &curGame->mgrScrolls->GetScrollInfo()->Scrolls[cboScroll.GetListIndex()].rect
+// tmp = &curGame->mgrScrolls->Scrolls[cboScroll.GetListIndex()].rect
 /*int objID = curGame->mainRoom->mapMgr->GetState()->GetObjId();
 		if (objID != -1) {
 			tmp = &curGame->mgrDoors->Doors[objID].virtualDoor;
@@ -225,8 +213,4 @@ void MapManager::Resize(editingStates thisState, editingActions thisAction, WPAR
 */
 	}
 
-	/*
-
-	InvalidateRect(UiState::stateManager->GetTilesetWindow(), 0, 1);
-	InvalidateRect(UiState::stateManager->GetMapWindow(), 0, 1);*/
 }

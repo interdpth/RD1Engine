@@ -5,7 +5,7 @@ void Frame::Empty()
 {
 	frameOffset = 0;
 	frameTimer = 0;
-	if (theSprite)
+	if (theSprite!=NULL)
 	{
 		delete theSprite;
 	}
@@ -99,6 +99,7 @@ void Frame::AddPart(EncodedOAM* rawOAM)
 	memset(&theSprite->OAM[theSprite->maxparts].deOAM, 0, sizeof(DecodedOAM));
 	theSprite->maxparts++;
 }
+
 int Frame::DeletePart(int partIndex)
 {
 	///So we're deleting OAM, meaning we need to move ever

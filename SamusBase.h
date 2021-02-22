@@ -85,6 +85,26 @@ struct RawOAM
 	__int16 OAM3;
 };
 
+struct PieceSize {
+	unsigned char BotomHalfLen;
+	unsigned char  Top;
+	unsigned char  c;
+};
+
+/* 78 */
+struct SamusAnim
+{
+	unsigned long* Tophalf;
+	unsigned long* BottomHalf;
+	unsigned long OAMPointer;
+	int FrameTimerMaybe;
+};
+/* 75 */
+struct FrameData
+{
+	int OAMTablePointer;
+	int Timer;
+};
 /* 113 */
 struct SamusOamData
 {

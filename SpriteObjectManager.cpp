@@ -10,9 +10,9 @@ SpriteObjectManager::SpriteObjectManager(SpritesetData* spriteset, GBAMethods* g
 	int i = 0;
 	for (i = 0; i < ObjCount; i++)
 	{
-		nEnemyList tmp;
-		memset(&tmp, 0, sizeof(tmp));
-		SpriteObjects.push_back(tmp);
+		vector<MapObjectSprite*> lst;
+	
+		SpriteObjects.push_back(lst);
 	}
 }
 
@@ -23,6 +23,16 @@ SpriteObjectManager::~SpriteObjectManager()
 	{
 		delete mgr;
 	}
+
+	for each(auto o in SpriteObjects)
+	{
+		for each(auto s in o)
+		{
+			delete s;
+		}
+		o.clear();
+	}
+
 	RoomSprites.clear();
 }
 
@@ -32,15 +42,17 @@ int SpriteObjectManager::ExportPal() {
 	int i = 0;
 	_gbaMethods->ReturnFileName(NULL, NULL, "Please select a PAL file to export too\0*.PAL", FileName, 512, 0);
 	strcat(FileName, ".pal");
-	FILE* fp = fopen(FileName, "w+b");
+	FILE* fp = nullptr;
+	fopen_s(&fp, FileName, "w+b");
 	if (fp) {
 
 		for (i = 0; i < _currentFrames->GetStaticFrame()->theSprite->palsize; i++)
 		{
 			//			fwrite(&_currentFrames->GetStaticFrame()->theSprite->PreviewPal[128 + i], 4, 1);
 		}
+		fclose(fp);
 	}
-	fclose(fp);
+
 
 	//size then palettes
 	//FILE* fp  = fopen(
@@ -115,7 +127,8 @@ int SpriteObjectManager::SavePal(int RomSwitch) {
 	return 0;
 }
 
-int SpriteObjectManager::SaveGFX(int RomSwitch) {
+int SpriteObjectManager::SaveGFX(int RomSwitch) 
+{
 	unsigned long GFXPointer = 0;
 	unsigned char*  GFXbuf = new unsigned char[32192];
 	memset(GFXbuf, 0, 32192);
@@ -138,7 +151,7 @@ int SpriteObjectManager::SaveGFX(int RomSwitch) {
 		MemFile::currentFile->fread(&GFXPointer, 1, 4);
 		GFXPointer -= 0x8000000;
 		if (RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]<currSprite->graphicsize || RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1]>currSprite->graphicsize) {
-			RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1] = currSprite->graphicsize;
+			RD1Engine::theGame->mgrOAM->MFSprSize[(SpriteID) << 1] = currSprite->graphicsize & 0xFFFF;
 			MemFile::currentFile->seek(0x2E4A50);
 			MemFile::currentFile->fwrite(&RD1Engine::theGame->mgrOAM->MFSprSize, 4, 0xC0);
 			GFXPointer = _gbaMethods->FindFreeSpace(currSprite->graphicsize, 0xFF);
@@ -197,29 +210,22 @@ int SpriteObjectManager::SavePal(PalData* palinfo, sprite_entry* spriteset, long
 	return 0;
 }
 
-void SpriteObjectManager::AddSpriteObject(int ObjectSet)
+void SpriteObjectManager::AddSpriteObject(int ObjectSet, int creature)
 {
 	nEnemies tmp;
-	tmp.Creature = 0x11;
-	tmp.X = 1;
-	tmp.Y = 1;
-	SpriteObjects[ObjectSet].Enemies.push_back(tmp);
-
-
+	tmp.Creature = 0x10| (creature+1 &0xF);
+	tmp.X = 5;
+	tmp.Y = 5;
+	SpriteObjects[ObjectSet].push_back(new MapObjectSprite(&tmp));
 }
-
-
-
 
 void SpriteObjectManager::DeleteSpriteObject(int ObjectSet, int ObjID)
 {
-	if (ObjID == -1 || SpriteObjects[ObjectSet].Max() < ObjID) {//Can't delete object, doesn't exist
+	if (ObjID == -1 || SpriteObjects[ObjectSet].size() < ObjID) {//Can't delete object, doesn't exist
 		return;
 	}
-
-	SpriteObjects[ObjectSet].Enemies.erase(SpriteObjects[ObjectSet].Enemies.begin() + ObjID);
-
-
+	delete SpriteObjects[ObjectSet][ObjID];
+	SpriteObjects[ObjectSet].erase(SpriteObjects[ObjectSet].begin() + ObjID);
 }
 
 
@@ -279,11 +285,6 @@ int SpriteObjectManager::GetMFSetSZ(long* GFXSizes, long*PalSizes, sprite_entry*
 	//sprite_entry tempit[15]; 
 	unsigned char prevsprdetail = 0;
 	unsigned char max = 0;
-
-
-
-
-
 
 	for (X = 0; X < SpriteSet->spriteCount; X++) {
 		sprite_entry* sprite_in = &RD1Engine::theGame->mgrOAM->roomSpriteIds[X];
@@ -360,7 +361,11 @@ int SpriteObjectManager::LoadEnemies(RHeader* roomHeader) {
 
 	for (i = 0; i < SpriteObjects.size(); i++) {
 		MemFile::currentFile->seek(offsetlist[i] - 0x8000000);
-		SpriteObjects[i].Enemies.clear();//Ayyyy
+		for (size_t i = 0; i < RoomSprites.size(); i++)
+		{
+			delete RoomSprites[i];
+		}
+		SpriteObjects[i].clear();//Ayyyy
 		max = 0;
 		for (j = 0; j < 0x20; j++) {
 
@@ -375,9 +380,7 @@ int SpriteObjectManager::LoadEnemies(RHeader* roomHeader) {
 			if ((tmp.Creature == 0xFF)) {
 				break;
 			}
-			SpriteObjects[i].Enemies.push_back(tmp);
-			SpriteObjects[i].oldCount = SpriteObjects[i].Enemies.size();
-
+			SpriteObjects.at(i).push_back(new MapObjectSprite(&tmp));
 		}
 
 	}
@@ -405,7 +408,8 @@ void DumpLayers()
 				char * string = new char[MAX_PATH];
 				sprintf(string, "C:\\ReleaseFolder\\dumplayer%d_%d.bmp", sprCounter, frameCounter);
 				DeleteFile(string);
-				FILE* fp = fopen(string, "w+b");
+				FILE* fp = nullptr;
+					fopen_s(&fp, string, "w+b");
 
 				//	curFrame->theSprite->PreviewSprite._fullCache->SaveToFile(fp);
 				fclose(fp);
@@ -428,19 +432,19 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 	int d = 0;
 	RECT myrect;
 	HBRUSH curbrush;
-
+	if (SpriteObjects.size() == 0) return 0;
 	//RECT blah = {0,0,0,0};
-	nEnemyList* Sprites = &SpriteObjects[Number];
+	vector<MapObjectSprite*>* Sprites = &SpriteObjects[Number];
 	Frame* tmpFrame = NULL;
 
 	DumpLayers();
-	int m = Sprites->Max();
+	int m = Sprites->size();
 	for (i = 0; i < m; i++) {
 
 		//Draw a rect around the sprite for distiction
 		bool badFrame = 0;
 		//	if(BaseGame::theGame->mgrOAM->SpriteOAM[BaseGame::theGame->mgrOAM->sprite_in[(Sprites.Enemies[i].Creature & 0xF)-1].sprtype]==0) continue;
-		tSprite = ((Sprites->Enemies[i].Creature) & 0xF) - 1;
+		tSprite = ((Sprites->at(i)->Creature) & 0xF) - 1;
 		if (tSprite > RD1Engine::theGame->mainRoom->mgrSpriteObjects->RoomSprites.size())
 		{
 			continue;
@@ -476,8 +480,8 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 			i++;
 		}
 		//}
-		int SpriteX = (Sprites->Enemies[i].X) * 16;; //((Sprites->Enemies[i].X) - ((SpriteWidth/8)*8) / 16) * 16;
-		int SpriteY = (Sprites->Enemies[i].Y) * 16;//(Sprites->Enemies[i].Y - ((SpriteHeight / 8) * 8) / 16) * 16;
+		int SpriteX = (Sprites->at(i)->XPosition()) * 16;; //((Sprites->at(i).X) - ((SpriteWidth/8)*8) / 16) * 16;
+		int SpriteY = (Sprites->at(i)->YPosition()) * 16;//(Sprites->at(i).Y - ((SpriteHeight / 8) * 8) / 16) * 16;
 		PosModify* modifer = &RD1Engine::theGame->poseModifier[sprite_in->spriteID];
 
 		if (modifer)
@@ -568,30 +572,32 @@ int SpriteObjectManager::ShowSprites(bool show, unsigned char Number, BackBuffer
 
 
 int SpriteObjectManager::SaveSprites(RHeader* roomHeader) {
-	int i = 0;
+	size_t i = 0;
+	MemFile* curFile = MemFile::currentFile;
 	//logic
 	unsigned long pnterArray[3] = { roomHeader->lSpritePointer - 0x8000000 ,  roomHeader->lSpritePointer2 - 0x8000000,   roomHeader->lSpritePointer3 - 0x8000000 };
 
 
 	for (i = 0; i < SpriteObjects.size(); i++) {
-		MemFile::currentFile->seek(pnterArray[i]);
+		curFile->seek(pnterArray[i]);
 
-		int j = 0;
-		for (j = 0; j < SpriteObjects[i].Enemies.size(); j++)
+		size_t j = 0;
+		for (j = 0; j < SpriteObjects[i].size(); j++)
 		{
-			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].Y, 1, 1);
-			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].X, 1, 1);
-			MemFile::currentFile->fwrite(&SpriteObjects[i].Enemies[j].Creature, 1, 1);
+			int y = SpriteObjects[i][j]->YPosition();
+			int x = SpriteObjects[i][j]->YPosition();
+			curFile->fwrite(&y, 1, 1);
+			curFile->fwrite(&x, 1, 1);
+			curFile->fwrite(&SpriteObjects[i][j]->Creature, 1, 1);
 
 		}
-		MemFile::currentFile->fputc(0xFF);
-		MemFile::currentFile->fputc(0xFF);
-		MemFile::currentFile->fputc(0xFF);
+		curFile->fputc(0xFF);
+		curFile->fputc(0xFF);
+		curFile->fputc(0xFF);
 	}
 
 	fclose(_gbaMethods->ROM);
-	_gbaMethods->ROM = fopen(_gbaMethods->FileLoc, "r+b");
-
+	fopen_s(&_gbaMethods->ROM, _gbaMethods->FileLoc, "r+b");
 
 	return 0;
 }

@@ -7,10 +7,11 @@ struct PosModify
 
 enum SupportedTitles
 {
+	titleUnsupport = -1,
 	titleZM = 0,
 	titleMF,
 	titleWL,
-	titleUnsupport
+
 };
 
 struct drawstate
@@ -23,6 +24,6 @@ struct drawstate
 	bool Doors;
 	bool Sprites;
 	bool Clipdata;
-	bool Scrolls;
+	bool ScrollsFlag;
 	bool SpriteRect;
 };

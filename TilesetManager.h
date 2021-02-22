@@ -14,7 +14,7 @@ public:
 	sTilesetBlockStructure        TSA;
 	/*gTileData   RoomTilesets[0x50];
 	gTileData   RoomTilesets[0x80];*/
-	vector<gTileData> RoomTilesets;
+	vector<gTileData*> RoomTilesets;
 	TileBuffer* TileImage;
 	//gTileData* GetTileset(int TilesetNum) {
 	//	

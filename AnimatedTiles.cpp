@@ -99,7 +99,7 @@ void AnimatedTiles::ReadTable(int effectNum)
 {
 	MemFile* currentFile = MemFile::currentFile;
 	long  reference_table, tileset_table, ref_offset = 0;
-	long  ani_source, gfx_destination, effectCounter, pointer = 0;
+	long  ani_source,  effectCounter, pointer = 0;
 
 	if (specialEffects)
 	{

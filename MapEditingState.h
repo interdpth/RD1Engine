@@ -32,6 +32,7 @@ public:
 	
 	bool SetState(editingStates newState);
 	int GetObjId();
+	bool SetAction(int obj, editingActions newAction);
 	bool SetObjId(int obj);
 	MapEditingState();
 	~MapEditingState();

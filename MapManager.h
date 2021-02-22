@@ -1,4 +1,5 @@
 #pragma once
+
 #include "nMapBuffer.h"
 #include "GBAMethods.h"
 #include "MapEditingState.h"

@@ -22,7 +22,7 @@ void GameConfiguration::DefaultLoad(int romSwitch)
 	Containers.clear();
 	float zoomTypes[3] = { 1,1.5,2 };
 	
-	Containers.push_back(new DataContainer(-1, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
+	Containers.push_back(new DataContainer(-1, "Framework", "ZoomStates", 0, false, (unsigned long*)&zoomTypes, 3));
 	Containers.push_back(new DataContainer(-1, "Framework", "UIState", 2, false, 0));
 	  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "UIState", 2, false, 0));
 	Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "UIState", 2, false, 0));
@@ -39,7 +39,7 @@ AnimPalettePtr=5E320*/
 
 
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "TilesetPointer", 0x56250, false, 0x50));
-		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AreasPointer", 0x56480, false, 0xA));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AreasPointer", 0x56480, false, 0x6));
 
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "BaseTilesetGFX", 0x5D940C, false, 1));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "BaseRoomGFX", 0x75FAA8, false, 1));
@@ -48,7 +48,7 @@ AnimPalettePtr=5E320*/
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Connections", 0x05EEB8, false, 1));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Tileset", 0x33DFDC, false, 0x50));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "Areas", 0x75FAC4, false, 0x7));
-		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
+		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 3));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AnimReference", 0x35FA78, false, 0x30));
 		Containers.push_back(new DataContainer((int)SupportedTitles::titleZM, "Framework", "AnimTileset", 0x35F948, false, 0x0));
 
@@ -95,7 +95,7 @@ AnimPalettePtr=5E320*/
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "AnimTileset", 0x3C8D58, false, 0x0));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TextGFX", 0x682FAC, false, 0x8000));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "TextPal", 0x598d0c, false, 0x20));
-		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 8));
+		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "ZoomStates", 0, false, (unsigned long*)zoomTypes, 3));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpriteGFX", 0x79A5D8, false, 0));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpritePal", 0x79A8D4, false, 0x0));
 		  Containers.push_back(new DataContainer((int)SupportedTitles::titleMF, "Framework", "SpriteSetTable", 0x79ADD8, false, 0x0));
@@ -147,7 +147,6 @@ void GameConfiguration::Load()
 			std::string Section;
 			int RomSwitch;
 		
-			bool initedVal;
 			// Fetch the keys and print them out.
 			/*std::vector<std::wstring> keys = o->ObjectKeys();
 

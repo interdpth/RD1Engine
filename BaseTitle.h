@@ -3,10 +3,12 @@
 #include "GBAMethods.h"
 #include "GameConfiguration.h"
 #include "structures.h"
+#include <string>
+using namespace std;
 class BaseTitle
 {
 private:
-    char* _codeName;
+    string _codeName;
 	MemFile* _thisTitle;
 public:
 	GBAMethods* GBA;

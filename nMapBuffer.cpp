@@ -6,11 +6,11 @@ nMapBuffer::nMapBuffer()
 {
 	BImage = NULL;
 	//TileBuf2D = new unsigned short[0x10000]; 
-	//memset(TileBuf2D, 0, 0x10000);
+	memset(TileBuf2D, 0, 0xFF*0xFF*2);
 	UndoBuff = new cUndoBuffer();
 	CopyData = new cCopyData();
 	DrawRect = new RECT();
-	TileBuf2D = NULL;
+	//TileBuf2D = NULL;
 	ThisCompsize=0;
 	ThisDecompedpageSize = 0;
 	TilePageCompsize = 0;
@@ -34,10 +34,10 @@ nMapBuffer::~nMapBuffer()
 		delete BImage;
 	}
 
-	if (TileBuf2D)
+	/*if (TileBuf2D)
 	{
 		delete[] TileBuf2D;
-	}
+	}*/
 
 	delete UndoBuff;
 	delete CopyData;

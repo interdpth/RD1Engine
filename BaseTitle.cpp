@@ -16,7 +16,8 @@ void BaseTitle::GetBaseTilesetGFX(gTileData* tileset)
 void BaseTitle::SeekSpriteTable(int spriteID)
 {
 	unsigned long off = 0;
-	_thisTitle->seek((spriteID * 4) + GameConfiguration::mainCFG->GetDataContainer("SpriteSetTable")->Value);
+	int val = GameConfiguration::mainCFG->GetDataContainer("SpriteSetTable")->Value;
+	_thisTitle->seek((spriteID * 4) + val);
 	_thisTitle->fread(&off, sizeof(long), 1);
 	_thisTitle->seek(off - 0x8000000);
 

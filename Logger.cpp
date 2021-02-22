@@ -55,6 +55,7 @@ Logger::~Logger()
 Logger* Logger::log;
 void Logger::LogIt(LOGTYPE t, char* msg)
 {
+	return;
 	int theLen = strlen(msg) + 16;
 	char* debugMessage = new char[theLen];
 	memset(debugMessage, 0, theLen);

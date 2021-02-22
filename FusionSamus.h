@@ -1,28 +1,6 @@
 #pragma once
 #include "SamusBase.h"
 
-/* 33 */
-
-struct PieceSize {
-	unsigned char BotomHalfLen;
-	unsigned char  Top;
-	unsigned char  c;
-};
-
-/* 78 */
-struct SamusAnim
-{
-	unsigned long* Tophalf;
-	unsigned long* BottomHalf;
-	unsigned long OAMPointer;
-	int FrameTimerMaybe;
-};
-/* 75 */
-struct FrameData
-{
-	int OAMTablePointer;
-	int Timer;
-};
 
 /* 76 */
 enum SamusDirStates
@@ -52,6 +30,7 @@ public:
 	unsigned char _8BitFrameCounter;
 	int UpdateSAXSamusPal(unsigned short* a1, int palIndex, int palCount, int issax_1);
 	unsigned short BeamStatus;
+	unsigned short MissileBombStatus;
 	bool MissilesSelected;
 	unsigned short SamusSuitStatus;
 	unsigned short SamusDirection;
