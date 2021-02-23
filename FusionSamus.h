@@ -1,6 +1,7 @@
 #pragma once
 #include "SamusBase.h"
-
+#include <vector>
+using namespace std;
 
 /* 76 */
 enum SamusDirStates
@@ -71,7 +72,7 @@ public:
 		WaveBeam = 0x8,
 		IceBeam = 0x10,
 	};
-	void SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose);
+	void SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long GfxSizeTable);
 	int CurrentAnimation;
 
 	int Invincibilitytimer;
@@ -100,6 +101,46 @@ public:
 	unsigned long XabsorbTable = 0x828E13C;
 	FusionSamus();
 	~FusionSamus();
-	void Logic();
+	
+	void Copy(FusionSamus* dst)
+	{
+		dst->_8BitFrameCounter=_8BitFrameCounter;
+		
+		dst->BeamStatus= BeamStatus;
+		dst->MissileBombStatus= MissileBombStatus;
+		dst->MissilesSelected= MissilesSelected;
+		dst->SamusSuitStatus= SamusSuitStatus;
+		dst->SamusDirection= SamusDirection;
+		dst->byte_3001247= byte_3001247;
+		dst->Button_input=  Button_input;
+		dst->ChargeBeamCounter= ChargeBeamCounter;
+
+		dst->CurrentAnimation= CurrentAnimation;
+
+		dst->Invincibilitytimer= Invincibilitytimer;
+		dst->AbsorbXTimer= AbsorbXTimer;
+		dst->SpeedBoosting= SpeedBoosting;
+		dst->SpeedBoostingindicator= SpeedBoostingindicator;
+		dst->SpeedBoostingindicatorCurrent = SpeedBoostingindicatorCurrent;
+		dst->lastPreviousPositionIndex= lastPreviousPositionIndex;
+		//Fix later
+		/* long* Previous_64_X_positions;
+		 long* Previous_64_Y_positions;*/
+		dst->Previous_SamusX_position = Previous_SamusX_position;
+		dst->startNewPrevPositions = startNewPrevPositions;
+		dst->ArmCannonDirection = ArmCannonDirection;
+		dst->Previous_SamusY_position = Previous_SamusY_position;
+		dst->screwAttackAnimationCounter = screwAttackAnimationCounter;
+		dst->ScrewAttackState = ScrewAttackState;
+		dst->Direction = Direction;
+		dst->isFacingleft = isFacingleft;
+		dst->Shinespark_timer = Shinespark_timer;
+		dst->SpeedBoostCounter = SpeedBoostCounter;
+		dst->GameMode = GameMode;
+		dst->EventController = 	EventController;
+		dst->byte_3001304 =  byte_3001304;
+		//Tables 
+		dst->Animtable = Animtable;
+	}
 };
 

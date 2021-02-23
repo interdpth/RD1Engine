@@ -162,7 +162,7 @@ public:
 	~SamusBase();
 
 	SpriteObject* theSprite;
-	virtual void Logic() {}
+
 	void Load()
 	{
 		memset(Sprite_tiles, 0, 0x8000);
