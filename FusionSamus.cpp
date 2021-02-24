@@ -384,17 +384,18 @@ LABEL_82:
 			{
 				if (SamusSuitStatus & SaxSuit)
 				{
-					PalPointer = ((unsigned short*)rawFile[0x28DDDC]);
+					PalPointer = (unsigned short*)(&rawFile[0x28DDDC]);
 				}
 				else if (SamusSuitStatus & 0x20)
 				{
-					PalPointer = ((unsigned short*)rawFile[0x28DDBC]);
+					PalPointer = (unsigned short*)(&rawFile[0x28DDBC]);
 				}
 				else
 				{
 					PalPointer = (unsigned short*)(&rawFile[0x28DD7C]);
-					if (SamusSuitStatus & 0x10)
-						PalPointer = &((unsigned short*)rawFile[0x28DD7C])[8];
+					if (SamusSuitStatus & 0x10) {
+						PalPointer = (unsigned short*)(&rawFile[0x28DD9C]);//0x28DD7C + 8]);
+					}
 				}
 				UpdateSAXSamusPal(PalPointer, 0, 16, 0);
 				if (CurrentPose != 52)

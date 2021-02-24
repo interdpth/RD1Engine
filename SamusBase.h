@@ -1,9 +1,10 @@
+#pragma once
 #include <stdio.h>
 #include <Windows.h>
 #include "..\MemFile\MemFile.h"
 #include "SprGBuf.h"
 #include "FrameManager.h"
-#pragma once
+
 enum enumSamusPoses
 {
 	Standing = 0x0,
