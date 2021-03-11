@@ -109,6 +109,40 @@ int FusionSamus::UpdateSAXSamusPal(unsigned short* a1, int palIndex, int palCoun
 	return true;
 }
 
+void FusionSamus::DrawMe()
+{
+
+	long PalPnt = 0;
+	long palsize = 0;
+	long addybuf = 0;
+	long size = 0;
+	int i = 0;
+	int ii = 0;
+	unsigned char* compBuffer = new unsigned char[64691];
+	GBAMethods* GBA = new GBAMethods();
+
+
+	unsigned char* decompbuf = new unsigned char[32687];
+
+	unsigned short transferpal[256] = { 0 };
+
+	int  X = 0;
+	long off = 0;
+	int x = 0;
+
+	
+	GBA->DecodePal((short*)this->Suit_color, theSprite->PreviewPal, 16, 0);
+	//theSprite->PreviewSprite.SetPaletteRaw(theSprite->PreviewPal);
+	memcpy(theSprite->PreRAM, Sprite_tiles, 0x8000);
+
+	theSprite->id = 0xFF;
+
+
+	RD1Engine::theGame->mgrOAM->DrawPSprite(theSprite);
+	
+	delete[] compBuffer;
+	delete[] decompbuf;
+}
 
 //Loads up the logic for the specific animation.
 void FusionSamus::SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long GfxSizeTable)

@@ -30,6 +30,8 @@ class FusionSamus :
 public:
 	unsigned char _8BitFrameCounter;
 	int UpdateSAXSamusPal(unsigned short* a1, int palIndex, int palCount, int issax_1);
+
+	void DrawMe();
 	unsigned short BeamStatus;
 	unsigned short MissileBombStatus;
 	bool MissilesSelected;
