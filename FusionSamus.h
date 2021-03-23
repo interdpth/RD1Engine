@@ -76,7 +76,8 @@ public:
 	};
 	void SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long GfxSizeTable);
 	int CurrentAnimation;
-
+	void CannonCode(int SamusPose, unsigned long cannonGfxSizeTable,int samusDirection, int facingDirections);
+	void PalCode();
 	int Invincibilitytimer;
 	int AbsorbXTimer;
 	int SpeedBoosting;
@@ -98,6 +99,7 @@ public:
 	int GameMode = 8;
 	int	EventController;
 	unsigned char byte_3001304;
+
 	//Tables 
 	SamusAnim* Animtable;
 	unsigned long XabsorbTable = 0x828E13C;

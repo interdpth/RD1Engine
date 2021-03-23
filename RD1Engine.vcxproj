@@ -166,6 +166,7 @@
     <ClCompile Include="..\Win32GBAImageClasses\OpenGL2.cpp" />
     <ClCompile Include="..\Win32GBAImageClasses\tilebuffer.cpp" />
     <ClCompile Include="AreasManager.cpp" />
+    <ClCompile Include="AsmII.cpp" />
     <ClCompile Include="BaseTitle.cpp" />
     <ClCompile Include="cCopyData.cpp" />
     <ClCompile Include="cEnitityManager.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="..\Win32GBAImageClasses\image.h" />
     <ClInclude Include="..\Win32GBAImageClasses\OpenGL2.h" />
     <ClInclude Include="AreasManager.h" />
+    <ClInclude Include="AsmII.h" />
     <ClInclude Include="BaseGame.h" />
     <ClInclude Include="BaseTitle.h" />
     <ClInclude Include="BaseTypes.h" />

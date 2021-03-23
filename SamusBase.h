@@ -150,7 +150,7 @@ public:
 	unsigned long SamusGFXLegsBottomOffset;
 
 	int CannonTopHalfGFXLen;
-	unsigned long  CannonTopHalfGFXOffset;
+	unsigned long CannonTopHalfGFXOffset; //offset to a pointer.
 	int CannonBottomHalfGFXLen;
 	unsigned long  CannonBottomHalfGFXOffset;
 
