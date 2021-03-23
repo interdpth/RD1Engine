@@ -77,7 +77,7 @@ public:
 	void SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long GfxSizeTable);
 	int CurrentAnimation;
 	void CannonCode(int SamusPose, unsigned long cannonGfxSizeTable,int samusDirection, int facingDirections);
-	void PalCode();
+	void PalCode(int CurrentPose);
 	int Invincibilitytimer;
 	int AbsorbXTimer;
 	int SpeedBoosting;

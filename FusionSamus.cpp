@@ -337,7 +337,7 @@ void FusionSamus::CannonCode(int SamusPose, unsigned long cannonGfxSizeTable, in
 
 }
 
-void FusionSamus::PalCode()
+void FusionSamus::PalCode(int CurrentPose)
 {
 	unsigned char* rawFile = MemFile::currentFile->GetFile();
 	unsigned short* NewPalPointer = NULL; // r4
@@ -602,7 +602,6 @@ void FusionSamus::SetOAM(int anim, int samusDirection, int facingDirections, int
 
 	IsSamusFacingLeft = true;// isFacingLeft;
 	//loopie loop
-SetOAM:
 
 	theCurrentAnim = &Animtable[anim];
 	SamusOAMPointer = theCurrentAnim->OAMPointer;
@@ -624,7 +623,7 @@ SetOAM:
 	CannonTopHalfGFXLen = 0;
 	CannonBottomHalfGFXLen = 0;
 	CannonCode(SamusPose, cannonGfxSizeTable, samusDirection, facingDirections );
-	PalCode();
+	PalCode(CurrentPose);
 	
 }
 
