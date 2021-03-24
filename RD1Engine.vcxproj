@@ -203,6 +203,7 @@
     <ClCompile Include="RoomClass.cpp" />
     <ClCompile Include="RoomsManager.cpp" />
     <ClCompile Include="SamusBase.cpp" />
+    <ClCompile Include="SamusPiece.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSON.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSONValue.cpp" />
     <ClCompile Include="TilesetMananger.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="RoomClass.h" />
     <ClInclude Include="RoomsManager.h" />
     <ClInclude Include="SamusBase.h" />
+    <ClInclude Include="SamusPiece.h" />
     <ClInclude Include="SimpleJSON-master\src\JSON.h" />
     <ClInclude Include="SimpleJSON-master\src\JSONValue.h" />
     <ClInclude Include="SprGBuf.h" />

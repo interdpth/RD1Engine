@@ -585,7 +585,7 @@ JustUpdatePal:
 
 }
 //Loads up the logic for the specific animation.
-void FusionSamus::SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long cannonGfxSizeTable)
+void FusionSamus::GetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long cannonGfxSizeTable)
 {
 	unsigned char* rawFile = MemFile::currentFile->GetFile();
 	int IsSamusFacingLeft; //

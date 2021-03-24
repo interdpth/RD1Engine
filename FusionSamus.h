@@ -74,7 +74,7 @@ public:
 		WaveBeam = 0x8,
 		IceBeam = 0x10,
 	};
-	void SetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long GfxSizeTable);
+	void GetOAM(int anim, int samusDirection, int facingDirections, int CurrentPose, unsigned long GfxSizeTable);
 	int CurrentAnimation;
 	void CannonCode(int SamusPose, unsigned long cannonGfxSizeTable,int samusDirection, int facingDirections);
 	void PalCode(int CurrentPose);

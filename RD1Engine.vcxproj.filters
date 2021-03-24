@@ -201,6 +201,9 @@
     <ClCompile Include="AsmII.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SamusPiece.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedTiles.h">
@@ -369,6 +372,9 @@
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="AsmII.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SamusPiece.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

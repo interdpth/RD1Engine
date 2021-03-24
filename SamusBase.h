@@ -4,7 +4,7 @@
 #include "..\MemFile\MemFile.h"
 #include "SprGBuf.h"
 #include "FrameManager.h"
-
+#include "SamusPiece.h"
 enum enumSamusPoses
 {
 	Standing = 0x0,
@@ -138,16 +138,8 @@ public:
 	unsigned long DMA3CNT_L;
 	unsigned short   Suit_color[512];
 	unsigned long   OAMPal;
-	int SamusGFXTophalfTileLen;
-	int SamusGFXBottomHalfLen;
-	unsigned long SamusGFXTopHalfOffset;
-	unsigned long SamusGFXBottomOffset;
-
-	unsigned long SamusGFXLegsTopOffset;
-	int SamusGFXLegsTopLen;
-
-	int SamusGFXLegsBottomLen;
-	unsigned long SamusGFXLegsBottomOffset;
+	SamusPiece* SamusTop;
+	SamusPiece* SamusBottom;
 
 	int CannonTopHalfGFXLen;
 	unsigned long CannonTopHalfGFXOffset; //offset to a pointer.
