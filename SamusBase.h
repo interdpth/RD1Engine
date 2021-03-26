@@ -93,13 +93,7 @@ struct PieceSize {
 };
 
 /* 78 */
-struct SamusAnim
-{
-	unsigned long* Tophalf;
-	unsigned long* BottomHalf;
-	unsigned long OAMPointer;
-	int FrameTimerMaybe;
-};
+
 /* 75 */
 struct FrameData
 {
@@ -132,20 +126,17 @@ struct SamusOamData
 class SamusBase
 {
 public:
-	unsigned char*  DMA3SAD;
-	unsigned char*  DMA3DAD;
+	unsigned char* DMA3SAD;
+	unsigned char* DMA3DAD;
 	unsigned char  Sprite_tiles[0x8000];
 	unsigned long DMA3CNT_L;
 	unsigned short   Suit_color[512];
 	unsigned long   OAMPal;
 	SamusPiece* SamusTop;
 	SamusPiece* SamusBottom;
-
-	int CannonTopHalfGFXLen;
-	unsigned long CannonTopHalfGFXOffset; //offset to a pointer.
-	int CannonBottomHalfGFXLen;
-	unsigned long  CannonBottomHalfGFXOffset;
-
+	SamusPiece* SamusCannonTop;
+	SamusPiece* SamusCannonBottom;
+	
 	unsigned long SamusOAMPointer;
 	int SuitPalLen;
 	int	SamusPose;
@@ -156,195 +147,7 @@ public:
 
 	SpriteObject* theSprite;
 
-	void Load()
-	{
-		memset(Sprite_tiles, 0, 0x8000);
-		if (SamusGFXTophalfTileLen)
-		{
-			DMA3CNT_L = (SamusGFXTophalfTileLen);
-
-			DMA3SAD = &MemFile::currentFile->GetFile()[SamusGFXTopHalfOffset];
-
-			DMA3DAD = Sprite_tiles;
-
-			for (unsigned int i = 0; i < DMA3CNT_L; i++) {
-				DMA3DAD[i] = DMA3SAD[i];
-			}
-		}
-
-		if (SamusGFXBottomHalfLen)
-		{
-
-			DMA3SAD = &MemFile::currentFile->GetFile()[SamusGFXBottomOffset];
-			DMA3DAD = &Sprite_tiles[0x400];
-			DMA3CNT_L = (SamusGFXBottomHalfLen);
-			for (int i = 0; i < DMA3CNT_L; i++) {
-				DMA3DAD[i] = DMA3SAD[i];
-			}
-		}
-
-		if (SamusGFXLegsTopLen)
-		{
-			DMA3SAD = &MemFile::currentFile->GetFile()[SamusGFXLegsTopOffset];
-			DMA3DAD = &Sprite_tiles[0x280];
-			DMA3CNT_L = (SamusGFXLegsTopLen);
-			for (int i = 0; i < DMA3CNT_L; i++) {
-				DMA3DAD[i] = DMA3SAD[i];
-			}
-		}
-
-		if (SamusGFXLegsBottomLen)
-		{
-			DMA3SAD = &MemFile::currentFile->GetFile()[SamusGFXLegsBottomOffset];
-			DMA3DAD = &Sprite_tiles[0x680];
-			DMA3CNT_L = (SamusGFXLegsBottomLen);
-			for (int i = 0; i < DMA3CNT_L; i++) {
-				DMA3DAD[i] = DMA3SAD[i];
-			}
-			//memcpy(DMA3DAD, DMA3SAD, DMA3CNT_L);
-		}
-
-		/*	if (CannonTopHalfGFXLen)
-			{
-				DMA3SAD = &MemFile::currentFile->GetFile()[CannonTopHalfGFXOffset];
-				DMA3DAD = &Sprite_tiles[512];
-				DMA3CNT_L = (CannonTopHalfGFXLen >> 2);
-				memcpy(DMA3DAD, DMA3SAD, DMA3CNT_L);
-			}
-			testme = fopen("hey.gfx", "w+b");
-			if (testme)
-			{
-				fwrite(Sprite_tiles, 1, 32 * 4096, testme);
-				fclose(testme);
-			}
-			if (CannonBottomHalfGFXLen)
-			{
-				DMA3SAD = &MemFile::currentFile->GetFile()[CannonBottomHalfGFXOffset];
-				DMA3DAD = &Sprite_tiles[768];
-				DMA3CNT_L = (CannonBottomHalfGFXLen >> 2);
-				memcpy(DMA3DAD, DMA3SAD, DMA3CNT_L);
-			}
-			testme = fopen("hey.gfx", "w+b");
-			if (testme)
-			{
-				fwrite(Sprite_tiles, 1, 32 * 4096, testme);
-				fclose(testme);
-			}
-			*/if (SuitPalLen)
-			{
-				/*		DMA3SAD = Suit_colour;
-						DMA3DAD = &OAMPal;
-						DMA3CNT_L = (SuitPalLen >> 1) | 0x80000000;
-						memcpy(DMA3DAD, DMA3SAD, DMA3CNT_L);*/
-			}
-	}
-	void PackSamus()
-	{
-		theSprite = new SpriteObject();
-
-		unsigned int sloutCounter; // r7
-		unsigned int OamCounter; // r6
-
-		unsigned int HorizMiddleOfSamus = 0; // r8
-		unsigned int Midscreensamus; // r12
-
-		unsigned int nextDrawSlot; // r7
-		unsigned short v3 = 0;
-		int SamusFront = 0;
-		int MiddleOFScreen = 0;
-		int Next_OAM_slot = 0;
-		bool PutSamusFront = false;
-		int MidVertOfScreen = 0;
-		sloutCounter = Next_OAM_slot;
-		OamCounter = Next_OAM_slot;
-		v3 = 0;
-		HorizMiddleOfSamus = 0;
-		Midscreensamus = 2;
-		int startOAMIndex = 0;
-		int MidScreenModifier = 0;
-		MemFile::currentFile->seek(SamusOAMPointer - 0x8000000);
-		int count = MemFile::currentFile->fgetc();
-		MemFile::currentFile->seek(SamusOAMPointer - 0x8000000+2);
-		SamusFront = 2;
-		if (SamusPose == SamusDying)
-		{
-			SamusFront = 0;
-			Next_OAM_slot = 0;
-		}
-		else if (PutSamusFront)
-		{
-			SamusFront = 1;
-		}
-		if (Next_OAM_slot > 0x6Au)
-		{
-			Next_OAM_slot = 0x6A;
-		}
-
-		int x = 256/8;
-		int y = 512/8;
-
-		HorizMiddleOfSamus = ((theSprite->Borders.right - theSprite->Borders.left) /2);
-		//BottomOfSamus = ((theSprite->Borders.bottom - theSprite->Borders.top) / 2) & 0xFFFF;
-		Midscreensamus = ((((theSprite->Borders.bottom - theSprite->Borders.top) / 2)));
-		if (SamusPose > MorphBall || SamusPose < Morphing)
-		{
-
-			MiddleOFScreen = x/2;
-
-
-			HorizMiddleOfSamus = (MiddleOFScreen + MidScreenModifier) ;
-			MidVertOfScreen = (y/2) ;
-		}
-
-		//Midscreensamus = MidVertOfScreen;
-//
-	//	OamCounter = (unsigned __int8)Next_OAM_slot;
-		theSprite->OAM.clear();
-
-		//for (unsigned int countn = 0; countn < count; countn++)
-		//{
-		//	OverAllOAM thisOAM;
-		//	memset(&thisOAM, 0, sizeof(OverAllOAM));
-		//	DecodedOAM* decodedOam = &thisOAM.deOAM;
-
-		//	MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1);
-		//	MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1);
-		//	MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1);
-
-			//thisOAM.enOAM.OAM0 = thisOAM.enOAM.OAM0 & 0xFF00 | (thisOAM.enOAM.OAM0 + Midscreensamus) & 0xFF;
-
-		//	thisOAM.enOAM.OAM1 = thisOAM.enOAM.OAM1 & 0xFE00 | (thisOAM.enOAM.OAM1 + HorizMiddleOfSamus) & 0x1FF;//thisOAM.enOAM.OAM2 = thisOAM.enOAM.OAM2 & 0xFE00 | (thisOAM.enOAM.OAM1 ) & 0x1FF;
-		//	//unsigned short backup = thisOAM.enOAM.OAM2;
-		//thisOAM.enOAM.OAM2 = (thisOAM.enOAM.OAM2 & 0xF3);// | 4 * SamusFront;
-
-
-		//	FrameManager::UnpackOAM(&thisOAM.enOAM, &thisOAM.deOAM);
-
-		//	theSprite->OAM.push_back(thisOAM);
-		//	theSprite->maxparts++;
-		//}
-		
-		for (int OamCount = 0 ; OamCounter<count;OamCounter = (OamCounter + 1) & 0xFF)
-		{
-			OverAllOAM thisOAM;
-			memset(&thisOAM, 0, sizeof(OverAllOAM));
-			MemFile::currentFile->fread(&thisOAM.enOAM.OAM0, 2, 1);
-				MemFile::currentFile->fread(&thisOAM.enOAM.OAM1, 2, 1);
-				MemFile::currentFile->fread(&thisOAM.enOAM.OAM2, 2, 1);
-
-			thisOAM.enOAM.OAM0 = thisOAM.enOAM.OAM0&0xFF00|((thisOAM.enOAM.OAM0 + Midscreensamus)&0xFF);
-
-
-			thisOAM.enOAM.OAM1 = thisOAM.enOAM.OAM1 & 0xFE00 | (thisOAM.enOAM.OAM1 + HorizMiddleOfSamus) & 0x1FF;
-	
-		/*	unsigned short up =  (thisOAM.enOAM.OAM2 & 0xFF00)>>8 & 0xF3;
-			thisOAM.enOAM.OAM2 = up << 8 | thisOAM.enOAM.OAM2 & 0xFF;*/
-				FrameManager::UnpackOAM(&thisOAM.enOAM, &thisOAM.deOAM);
-
-				theSprite->OAM.push_back(thisOAM);
-				theSprite->maxparts++;
-		}
-	}
-
+	void Load();
+	void UnpackSamus();
 };
 

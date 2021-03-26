@@ -150,190 +150,191 @@ void FusionSamus::DrawMe()
 
 void FusionSamus::CannonCode(int SamusPose, unsigned long cannonGfxSizeTable, int samusDirection, int facingDirections)
 {
-	unsigned char* rawFile = MemFile::currentFile->GetFile();
-	unsigned long* CannonBottomHalfFXOffset; // r0
-	unsigned long* CannonBottomTemp;
-	
-	signed __int16 bottomgfxsize; // r0
-	if (SamusPose - 23 > 0x29)
-	{
-	HandleDirection:
-		cannonGfxSizeTable = cannonGfxSizeTable + (4 * 2 * CurrentAnimation);
-		//GfxTablePnt = ;
-		gfxsize = rawFile[cannonGfxSizeTable];
-		if (MissilesSelected & 1)
-		{
-			if (SamusDirection & DirectionRight)
-			{
-				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = GetPointer(0x28F99C + facingDirections);
-				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9B4 + facingDirections)];
-			}
-			else
-			{
-				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = GetPointer(0x28F9CC + facingDirections);
-				CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F9E4 + facingDirections)];
-			}
-		}
-		else if (SamusDirection & DirectionRight)
-		{
-			facingDirections = 4 * samusDirection;
-			CannonTopHalfGFXOffset = GetPointer(0x28F93C + facingDirections);;
-			CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F954 + facingDirections)];
-		}
-		else
-		{
-			facingDirections = 4 * samusDirection;
-			CannonTopHalfGFXOffset = GetPointer(0x28F96C + facingDirections);
-			CannonBottomHalfFXOffset = (unsigned long*)&rawFile[GetPointer(0x28F984 + facingDirections)];
-		}
-	SetCannonBottomHalfFXOffsetTemp:
-		CannonBottomTemp = (facingDirections + CannonBottomHalfFXOffset);
-	SetCannonBottomHalfGFXOffset:
-		CannonBottomHalfGFXOffset = (unsigned long)CannonBottomTemp;
-		bottomgfxsize = 192;
-	SetCannonTopHalfLen:
-		CannonTopHalfGFXLen = bottomgfxsize;
-	SetCannonBottomHalfFXOffsetLen:
-		CannonBottomHalfGFXLen = bottomgfxsize;
-	}
-	else
-	{
-		switch (SamusPose)
-		{
-		case Elevator_:
-			//GfxTablePnt = &((unsigned long*)rawFile[0x28BF98])[2 * screwAttackAnimationCounter];
-			gfxsize = 0x2000;
-			CannonTopHalfGFXOffset = 0x2DE9B0 + samusDirection * 4;
-			CannonBottomTemp = ((unsigned long*)rawFile[0x2DEA70 + samusDirection * 4]);
-			goto SetCannonBottomHalfGFXOffset;
-		case ScrewAttacking:
-			//	GfxTablePnt = &((unsigned long **)rawFile[0x28D66C])[someIndex][2 * screwAttackAnimationCounter];
-			gfxsize = 4096;
-			CannonTopHalfGFXOffset = 0x28FABC + samusDirection * 4 + screwAttackAnimationCounter;
-			CannonBottomHalfFXOffset = &((unsigned long**)rawFile[0x28FACC])[samusDirection][screwAttackAnimationCounter];
-			bottomgfxsize = 256;
-			goto SetCannonTopHalfLen;
-		case CannonLadder:
-		case ShootUpLadder:
-			//GfxTablePnt = (unsigned long*)&rawFile[GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1))];
-			//gfxsize = *GfxTablePnt;
-			if (MissilesSelected & 1)
-			{
-				if (SamusDirection & DirectionRight)
-				{
-					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = 0x28F99C + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9B4 + facingDirections]);
-				}
-				else
-				{
-					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = 0x28F9CC + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9E4 + facingDirections]);
-				}
-			}
-			else if (SamusDirection & DirectionRight)
-			{
-				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = 0x28FA5C + facingDirections;
-				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA74 + facingDirections]);
-			}
-			else
-			{
-				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = 0x28FA8C + facingDirections;
-				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FAA4 + facingDirections]);
-			}
-			goto SetCannonBottomHalfFXOffsetTemp;
-		case HangingHorizLadder:
-		case DelayAfterShootingHOrizladder:
-		case ShootingOnHorizladder:
-		{
-			//THIS IS WRONMG
-			cannonGfxSizeTable = cannonGfxSizeTable + (4 * 2 * CurrentAnimation);
-			//GfxTablePnt = ;
-			gfxsize = rawFile[cannonGfxSizeTable];
-			if (MissilesSelected & 1)
-			{
-				if (SamusDirection & DirectionRight)
-				{
-					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = 0x28F99C + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9B4 + facingDirections]);
-				}
-				else
-				{
-					facingDirections = 4 * samusDirection;
-					CannonTopHalfGFXOffset = 0x28F9CC + facingDirections;
-					CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9E4 + facingDirections]);
-				}
-			}
-			else if (SamusDirection & DirectionRight)
-			{
-				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = 0x28F9FC + facingDirections;
-				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA14 + facingDirections]);
-			}
-			else
-			{
-				facingDirections = 4 * samusDirection;
-				CannonTopHalfGFXOffset = 0x28FA2C + facingDirections;
-				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA44 + facingDirections]);
-			}
-			goto SetCannonBottomHalfFXOffsetTemp;
-		}
-		case UnlockSecurity:
-			//GfxTablePnt = ((unsigned long **)rawFile[0x28D774 + someIndex])[2 * screwAttackAnimationCounter];
-			gfxsize = 0x2000;
-			CannonTopHalfGFXOffset = 0x2E4250 + facingDirections;
-			CannonBottomHalfGFXOffset = 0x2E4450 + facingDirections;
-			bottomgfxsize = 512;
-			goto SetCannonTopHalfLen;
-		case LoadSave:
-			if (ScrewAttackState != 1)
-				break;
-			//GfxTablePnt = &((unsigned long rawFile[0x28CE8C])[samusDirection][2 * screwAttackAnimationCounter];
-			gfxsize = 4096;
-			CannonTopHalfGFXOffset = 0x28FADC + 4 * screwAttackAnimationCounter;
-			CannonBottomHalfGFXOffset = 0x28FB9C + 4 * screwAttackAnimationCounter;
-			CannonTopHalfGFXLen = 384;
-			bottomgfxsize = 256;
-			goto SetCannonBottomHalfFXOffsetLen;
-		case SamusDying:
-			switch (ScrewAttackState)
-			{
-			case 0:
-				/*	DMA3SAD = ((unsigned short *)rawFile[0x2DF730;
-					DMA3DAD = &Sprite_tiles[576];
-					DMA3CNT_L = 0x80000030;
-					v19 = DMA3CNT_L;
-					DMA3SAD = ((unsigned short *)rawFile[0x2DF790;
-					DMA3DAD = &Sprite_tiles[832];
-					DMA3CNT_L = 0x80000020;
-					DMAReturn2 = DMA3CNT_L;*/
-				return;
-			case 2:
-				//	GfxTablePnt = &((unsigned long **)rawFile[0x28D77C])[samusDirection][someIndex];// [2 * screwAttackAnimationCounter];
+	//unsigned char* rawFile = MemFile::currentFile->GetFile();
 
-				gfxsize = 0x2000;
-				/*CannonTopHalfGFXOffset = ((SamusAnim*)rawFile[0x28FC5C])[screwAttackAnimationCounter][samusDirection].Tophalf;
-				CannonBottomHalfGFXOffset = ((SamusAnim*)rawFile[0x28FC74])[screwAttackAnimationCounter][samusDirection].BottomHalf;*/
-				bottomgfxsize = 256;
-				goto SetCannonTopHalfLen;
-			case 3:
-				gfxsize = 0x2000;
-				break;
-			}
-			break;
-		case GrabbedByYakuza:
-			samusDirection = 5;
+	//unsigned long* CannonBottomTemp;
+	//
+	//signed __int16 bottomgfxsize; // r0
+	//if (SamusPose - 23 > 0x29)
+	//{
+	//HandleDirection:
+	//	cannonGfxSizeTable = cannonGfxSizeTable + (4 * 2 * CurrentAnimation);
+	//	//GfxTablePnt = ;
+	//	gfxsize = rawFile[cannonGfxSizeTable];
+	//	if (MissilesSelected & 1)
+	//	{
+	//		if (SamusDirection & DirectionRight)
+	//		{
+	//			facingDirections = 4 * samusDirection;
 
-		default:
-			goto HandleDirection;
-		}
-	}
+	//			SamusCannonTop = new SamusPiece( GetPointer(0x28F99C + facingDirections), rawFile);
+	//			SamusCannonBottom = new SamusPiece(GetPointer(0x28F9B4 + facingDirections), rawFile);
+	//		}
+	//		else
+	//		{
+	//			facingDirections = 4 * samusDirection;
+	//			SamusCannonTop = new SamusPiece(GetPointer(0x28F9CC + facingDirections), rawFile);
+	//			SamusCannonBottom = new SamusPiece(GetPointer(0x28F9E4 + facingDirections), rawFile);
+	//		}
+	//	}
+	//	else if (SamusDirection & DirectionRight)
+	//	{
+	//		facingDirections = 4 * samusDirection;
+	//		SamusCannonTop = new SamusPiece( GetPointer(0x28F93C + facingDirections), rawFile);
+	//		SamusCannonBottom = new SamusPiece(GetPointer(0x28F954 + facingDirections), rawFile);
+	//	}
+	//	else
+	//	{
+	//		facingDirections = 4 * samusDirection;
+	//		SamusCannonTop = new SamusPiece( GetPointer(0x28F96C + facingDirections), rawFile);
+	//		SamusCannonBottom = new SamusPiece(GetPointer(0x28F984 + facingDirections), rawFile);
+	//	}
+	//SetCannonBottomHalfFXOffsetTemp:
+	//	CannonBottomTemp = (facingDirections + CannonBottomHalfFXOffset);
+	//SetCannonBottomHalfGFXOffset:
+	//	CannonBottomHalfGFXOffset = (unsigned long)CannonBottomTemp;
+	//	bottomgfxsize = 192;
+	//SetCannonTopHalfLen:
+	//	CannonTopHalfGFXLen = bottomgfxsize;
+	//SetCannonBottomHalfFXOffsetLen:
+	//	CannonBottomHalfGFXLen = bottomgfxsize;
+	//}
+	//else
+	//{
+	//	switch (SamusPose)
+	//	{
+	//	case Elevator_:
+	//		//GfxTablePnt = &((unsigned long*)rawFile[0x28BF98])[2 * screwAttackAnimationCounter];
+	//		gfxsize = 0x2000;
+	//		SamusCannonTop = new SamusPiece(0x2DE9B0 + samusDirection * 4, rawFile);
+	//		CannonBottomTemp = ((unsigned long*)rawFile[0x2DEA70 + samusDirection * 4]);
+	//		goto SetCannonBottomHalfGFXOffset;
+	//	case ScrewAttacking:
+	//		//	GfxTablePnt = &((unsigned long **)rawFile[0x28D66C])[someIndex][2 * screwAttackAnimationCounter];
+	//		gfxsize = 4096;
+	//		SamusCannonTop = new SamusPiece(0x28FABC + samusDirection * 4 + screwAttackAnimationCounter, rawFile);
+	//		//CannonBottomHalfFXOffset = &((unsigned long**)rawFile[0x28FACC])[samusDirection][screwAttackAnimationCounter];
+	//		bottomgfxsize = 256;
+	//		goto SetCannonTopHalfLen;
+	//	case CannonLadder:
+	//	case ShootUpLadder:
+	//		//GfxTablePnt = (unsigned long*)&rawFile[GetPointer(GfxSizeTable + (4 * 2 * CurrentAnimation + 1))];
+	//		//gfxsize = *GfxTablePnt;
+	//		if (MissilesSelected & 1)
+	//		{
+	//			if (SamusDirection & DirectionRight)
+	//			{
+	//				facingDirections = 4 * samusDirection;
+	//				SamusCannonTop = new SamusPiece(0x28F99C + facingDirections, rawFile);
+	//				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9B4 + facingDirections]);
+	//			}
+	//			else
+	//			{
+	//				facingDirections = 4 * samusDirection;
+	//				SamusCannonTop = new SamusPiece(0x28F9CC + facingDirections, rawFile);
+	//				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9E4 + facingDirections]);
+	//			}
+	//		}
+	//		else if (SamusDirection & DirectionRight)
+	//		{
+	//			facingDirections = 4 * samusDirection;
+	//			SamusCannonTop = new SamusPiece(0x28FA5C + facingDirections, rawFile);
+	//			CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA74 + facingDirections]);
+	//		}
+	//		else
+	//		{
+	//			facingDirections = 4 * samusDirection;
+	//			SamusCannonTop = new SamusPiece(0x28FA8C + facingDirections, rawFile);
+	//			CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FAA4 + facingDirections]);
+	//		}
+	//		goto SetCannonBottomHalfFXOffsetTemp;
+	//	case HangingHorizLadder:
+	//	case DelayAfterShootingHOrizladder:
+	//	case ShootingOnHorizladder:
+	//	{
+	//		//THIS IS WRONMG
+	//		cannonGfxSizeTable = cannonGfxSizeTable + (4 * 2 * CurrentAnimation);
+	//		//GfxTablePnt = ;
+	//		gfxsize = rawFile[cannonGfxSizeTable];
+	//		if (MissilesSelected & 1)
+	//		{
+	//			if (SamusDirection & DirectionRight)
+	//			{
+	//				facingDirections = 4 * samusDirection;
+	//				SamusCannonTop = new SamusPiece(0x28F99C + facingDirections, rawFile);
+	//				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9B4 + facingDirections]);
+	//			}
+	//			else
+	//			{
+	//				facingDirections = 4 * samusDirection;
+	//				SamusCannonTop = new SamusPiece(0x28F9CC + facingDirections, rawFile);
+	//				CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28F9E4 + facingDirections]);
+	//			}
+	//		}
+	//		else if (SamusDirection & DirectionRight)
+	//		{
+	//			facingDirections = 4 * samusDirection;
+	//			SamusCannonTop = new SamusPiece(0x28F9FC + facingDirections, rawFile);
+	//			CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA14 + facingDirections]);
+	//		}
+	//		else
+	//		{
+	//			facingDirections = 4 * samusDirection;
+	//			SamusCannonTop = new SamusPiece(0x28FA2C + facingDirections, rawFile);
+	//			CannonBottomHalfFXOffset = ((unsigned long*)rawFile[0x28FA44 + facingDirections]);
+	//		}
+	//		goto SetCannonBottomHalfFXOffsetTemp;
+	//	}
+	//	case UnlockSecurity:
+	//		//GfxTablePnt = ((unsigned long **)rawFile[0x28D774 + someIndex])[2 * screwAttackAnimationCounter];
+	//		gfxsize = 0x2000;
+	//		SamusCannonTop = new SamusPiece(0x2E4250 + facingDirections, rawFile);
+	//		CannonBottomHalfGFXOffset = 0x2E4450 + facingDirections;
+	//		bottomgfxsize = 512;
+	//		goto SetCannonTopHalfLen;
+	//	case LoadSave:
+	//		if (ScrewAttackState != 1)
+	//			break;
+	//		//GfxTablePnt = &((unsigned long rawFile[0x28CE8C])[samusDirection][2 * screwAttackAnimationCounter];
+	//		gfxsize = 4096;
+	//		SamusCannonTop = new SamusPiece(0x28FADC + 4 * screwAttackAnimationCounter, rawFile);
+	//		CannonBottomHalfGFXOffset = 0x28FB9C + 4 * screwAttackAnimationCounter;
+	//		CannonTopHalfGFXLen = 384;
+	//		bottomgfxsize = 256;
+	//		goto SetCannonBottomHalfFXOffsetLen;
+	//	case SamusDying:
+	//		switch (ScrewAttackState)
+	//		{
+	//		case 0:
+	//			/*	DMA3SAD = ((unsigned short *)rawFile[0x2DF730;
+	//				DMA3DAD = &Sprite_tiles[576];
+	//				DMA3CNT_L = 0x80000030;
+	//				v19 = DMA3CNT_L;
+	//				DMA3SAD = ((unsigned short *)rawFile[0x2DF790;
+	//				DMA3DAD = &Sprite_tiles[832];
+	//				DMA3CNT_L = 0x80000020;
+	//				DMAReturn2 = DMA3CNT_L;*/
+	//			return;
+	//		case 2:
+	//			//	GfxTablePnt = &((unsigned long **)rawFile[0x28D77C])[samusDirection][someIndex];// [2 * screwAttackAnimationCounter];
+
+	//			gfxsize = 0x2000;
+	//			/*SamusCannonTop = new SamusPiece(((SamusAnim*)rawFile[0x28FC5C])[screwAttackAnimationCounter][samusDirection].Tophalf;
+	//			CannonBottomHalfGFXOffset = ((SamusAnim*)rawFile[0x28FC74])[screwAttackAnimationCounter][samusDirection].BottomHalf;*/
+	//			bottomgfxsize = 256;
+	//			goto SetCannonTopHalfLen;
+	//		case 3:
+	//			gfxsize = 0x2000;
+	//			break;
+	//		}
+	//		break;
+	//	case GrabbedByYakuza:
+	//		samusDirection = 5;
+
+	//	default:
+	//		goto HandleDirection;
+	//	}
+	//}
 
 }
 
@@ -606,22 +607,24 @@ void FusionSamus::GetOAM(int anim, int samusDirection, int facingDirections, int
 	theCurrentAnim = &Animtable[anim];
 	SamusOAMPointer = theCurrentAnim->OAMPointer;
 
-	tophalf = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
+	SamusTop = new SamusPiece(theCurrentAnim->Tophalf - 0x8000000, rawFile);
+	
+	/*tophalf = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
 	SamusGFXTophalfTileLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf - 0x8000000];
 	SamusGFXBottomHalfLen = 32 * rawFile[(unsigned long)theCurrentAnim->Tophalf + 1 - 0x8000000];
 
 
 	SamusGFXTopHalfOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000;
-	SamusGFXBottomOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000 + SamusGFXTophalfTileLen;
+	SamusGFXBottomOffset = (unsigned long)theCurrentAnim->Tophalf + 2 - 0x8000000 + SamusGFXTophalfTileLen;*/
 
-	legspointer = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
-	SamusGFXLegsTopLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
-	SamusGFXLegsBottomLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf + 1 - 0x8000000];
-	SamusGFXLegsTopOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000;
-	SamusGFXLegsBottomOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000 + SamusGFXLegsTopLen;
+	SamusBottom = new SamusPiece(theCurrentAnim->BottomHalf - 0x8000000, rawFile);
+	//legspointer = (unsigned long*)&rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
+	//SamusGFXLegsTopLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf - 0x8000000];
+	//SamusGFXLegsBottomLen = 32 * rawFile[(unsigned long)theCurrentAnim->BottomHalf + 1 - 0x8000000];
+	//SamusGFXLegsTopOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000;
+	//SamusGFXLegsBottomOffset = (unsigned long)theCurrentAnim->BottomHalf + 2 - 0x8000000 + SamusGFXLegsTopLen;
 	gfxsize = 0;
-	CannonTopHalfGFXLen = 0;
-	CannonBottomHalfGFXLen = 0;
+
 	CannonCode(SamusPose, cannonGfxSizeTable, samusDirection, facingDirections );
 	PalCode(CurrentPose);
 	

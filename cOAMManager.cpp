@@ -43,6 +43,13 @@ void DrawPart(SpriteObject* SpriteDetails, int x, int y)
 	return;
 }
 
+struct SRECT 
+{
+	signed short   left;
+	signed short    top;
+	signed short    right;
+	signed short    bottom;
+};
 int cOAMManager::CalcSpriteBounds(SpriteObject* SpriteDetails) {
 
 	int width = 0;
@@ -59,7 +66,7 @@ int cOAMManager::CalcSpriteBounds(SpriteObject* SpriteDetails) {
 	int sy = 0;
 	int xFlip = 0;
 	int yFlip = 0;
-	RECT PartSize[128];
+	SRECT PartSize[128];
 	const unsigned char objSizes[3][4][2] =
 	{
 		{ { 8, 8 },{ 16,16 },{ 32,32 },{ 64,64 } },
@@ -73,7 +80,7 @@ int cOAMManager::CalcSpriteBounds(SpriteObject* SpriteDetails) {
 
 	tx = 0;
 	ty = 0;
-	memset(&PartSize, 0, sizeof(RECT) * 128);
+	memset(&PartSize, 0, sizeof(SRECT) * 128);
 
 	vector<OverAllOAM> partCopies;
 	partCopies.insert(partCopies.end(), SpriteDetails->OAM.begin(), SpriteDetails->OAM.end());
@@ -115,12 +122,12 @@ int cOAMManager::CalcSpriteBounds(SpriteObject* SpriteDetails) {
 	}
 
 	//Determine i
-	SpriteDetails->Borders.left = PartSize[0].left;
-	SpriteDetails->Borders.top = PartSize[0].top;
-	SpriteDetails->Borders.right = PartSize[0].left + PartSize[0].right;
-	SpriteDetails->Borders.bottom = PartSize[0].top + PartSize[0].bottom;
+	SpriteDetails->Borders.left = 0;
+		SpriteDetails->Borders.top = 0;
+	SpriteDetails->Borders.right = 0;
+	SpriteDetails->Borders.bottom = 0;
 
-	for (partCounter = 1; partCounter < SpriteDetails->maxparts; partCounter++) {
+	for (partCounter = 0; partCounter < SpriteDetails->maxparts; partCounter++) {
 		//Check for top coord 
 		//0 = Starting X
 		//1 = Startiny Y
@@ -138,7 +145,9 @@ int cOAMManager::CalcSpriteBounds(SpriteObject* SpriteDetails) {
 
 	}
 
-
+	char str[1024] = { 0 };
+	sprintf(str,  "Borders:  %d %d %d %d", SpriteDetails->Borders.left, SpriteDetails->Borders.top, SpriteDetails->Borders.right, SpriteDetails->Borders.bottom);
+		OutputDebugString(str);
 	return 0;
 }
 
@@ -206,7 +215,7 @@ int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 	{
 		adjustedYorigin = 0 - SpriteDetails->Borders.top;
 	}
-	for (partCounter = SpriteDetails->maxparts-1; partCounter >= 0; partCounter--)
+	for (partCounter = 0; partCounter < SpriteDetails->maxparts; partCounter++)
 	{
 		/*for (int BGindex = 0; BGindex < 4; BGindex++)
 		{*/
@@ -275,7 +284,12 @@ int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 			{
 				for (tx = 0; tx < width / 8; tx++)
 				{
-					SpriteDetails->PreviewSprite.Draw(*SpriteDetails->sprTileBuffer, adjustedXorigin + sx + (tx^xFlip) * 8,
+					int nextX = adjustedXorigin + sx;
+					if (nextX > 255)
+					{
+						nextX -= 255;
+					}
+					SpriteDetails->PreviewSprite.Draw(*SpriteDetails->sprTileBuffer, nextX + (tx^xFlip) * 8,
 						adjustedYorigin + sy + ((ty) ^ yFlip) * 8, Tile + tx + (ty * 32) + fh + fw);
 				}
 			}
@@ -301,13 +315,15 @@ int cOAMManager::DrawPSprite(SpriteObject* SpriteDetails) {
 			SpriteDetails->Borders.top = PartSize[partCounter].top;
 
 		SpriteDetails->Borders.right =
-			max(SpriteDetails->Borders.right, PartSize[partCounter].left + PartSize[partCounter].right);
+			max(SpriteDetails->Borders.right,PartSize[partCounter].right);
 		SpriteDetails->Borders.bottom =
-			max(SpriteDetails->Borders.bottom, PartSize[partCounter].top + PartSize[partCounter].bottom);
+			max(SpriteDetails->Borders.bottom, PartSize[partCounter].bottom);
 
 	}
 
+	SpriteDetails->Borders.right += SpriteDetails->Borders.left;
 
+		SpriteDetails->Borders.bottom += SpriteDetails->Borders.top;
 	return 0;
 }
 

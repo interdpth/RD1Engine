@@ -202,6 +202,7 @@
     <ClCompile Include="RD1Engine.cpp" />
     <ClCompile Include="RoomClass.cpp" />
     <ClCompile Include="RoomsManager.cpp" />
+    <ClCompile Include="SamusAnim.cpp" />
     <ClCompile Include="SamusBase.cpp" />
     <ClCompile Include="SamusPiece.cpp" />
     <ClCompile Include="SimpleJSON-master\src\JSON.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="OffsetStorage.h" />
     <ClInclude Include="RoomClass.h" />
     <ClInclude Include="RoomsManager.h" />
+    <ClInclude Include="SamusAnim.h" />
     <ClInclude Include="SamusBase.h" />
     <ClInclude Include="SamusPiece.h" />
     <ClInclude Include="SimpleJSON-master\src\JSON.h" />
