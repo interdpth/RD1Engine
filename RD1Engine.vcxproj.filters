@@ -311,9 +311,6 @@
     <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cprs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stb.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -234,7 +234,6 @@
     <ClInclude Include="clsScroll.h" />
     <ClInclude Include="cOAMManager.h" />
     <ClInclude Include="ConnectionsEditor.h" />
-    <ClInclude Include="cprs.h" />
     <ClInclude Include="cUndoBuffer.h" />
     <ClInclude Include="doormanager.h" />
     <ClInclude Include="fi.h" />
