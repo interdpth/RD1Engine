@@ -25,6 +25,7 @@ unsigned short FrameManager::EncodeOAM0(
 	return newOam;
 }
 
+
 void FrameManager::UnpackOAM(EncodedOAM* src, DecodedOAM* decodedOam)
 {
 	unsigned short OAM0 = src->OAM0;

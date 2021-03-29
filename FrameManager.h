@@ -40,6 +40,7 @@ public:
 	FrameManager(GBAMethods* GBA,unsigned long offset,  int spriteID, int romType, unsigned char* tileGFX, long* pal, bool NoFrameTable=false);
 	~FrameManager();
 public:
+	static int PackOAM(OverAllOAM* oam, unsigned short tile, unsigned short xCoord, signed char yCoord, int objShape, int objSize, bool horizFlip, bool vertflip, int palIndex);
 	static void UnpackOAM(EncodedOAM* src, DecodedOAM* dst);
 	static unsigned short FrameManager::EncodeOAM0(
 		unsigned char yCoord,

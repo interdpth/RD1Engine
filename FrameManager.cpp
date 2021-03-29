@@ -267,15 +267,22 @@ int FrameManager::UpdateSprite(int frame, int thisPart, unsigned short tile, uns
 	{
 		printf("wtf");
 	}
-	EncodedOAM* bitOAM = &theFrames[frame]->theSprite->OAM[thisPart].enOAM;
+	return PackOAM(&theFrames[frame]->theSprite->OAM[thisPart],   tile,   xCoord,   yCoord,  objShape,  objSize, horizFlip,  vertflip, palIndex);
+}
+int FrameManager::PackOAM(OverAllOAM* oam, unsigned short tile, unsigned short xCoord, signed char yCoord, int objShape, int objSize, bool horizFlip, bool vertflip, int palIndex) {//Routine unpacks structure then repacks it 	
+	unsigned short oamPiece = 0;
+
+	DecodedOAM  deOAM;
+
+	EncodedOAM* bitOAM = &oam->enOAM;
 	memset(&deOAM, 0, sizeof(DecodedOAM));
 	oamPiece = bitOAM->OAM0;
 	deOAM.yCoord = yCoord;
-	deOAM.objRot =GetBitField(oamPiece, 8, 1);
-	deOAM.DSaOD =GetBitField(oamPiece, 9, 1);
-	deOAM.ObjMode =GetBitField(oamPiece, 10, 2);
-	deOAM.ObjMosiac =GetBitField(oamPiece, 12, 1);
-	deOAM.Paltype =GetBitField(oamPiece, 13, 1);
+	deOAM.objRot = GetBitField(oamPiece, 8, 1);
+	deOAM.DSaOD = GetBitField(oamPiece, 9, 1);
+	deOAM.ObjMode = GetBitField(oamPiece, 10, 2);
+	deOAM.ObjMosiac = GetBitField(oamPiece, 12, 1);
+	deOAM.Paltype = GetBitField(oamPiece, 13, 1);
 	deOAM.ObjShape = objShape;
 
 
@@ -285,7 +292,7 @@ int FrameManager::UpdateSprite(int frame, int thisPart, unsigned short tile, uns
 	int partHeight = RD1Engine::theGame->mgrOAM->objSizes[deOAM.ObjShape][deOAM.ObjSize][1];
 
 	if (deOAM.objRot == 1) {
-		deOAM.rotation =GetBitField(oamPiece, 9, 5);
+		deOAM.rotation = GetBitField(oamPiece, 9, 5);
 	}
 	else {
 		deOAM.HorizontalFlip = (oamPiece & 0x1000 ? 1 : 0);
@@ -323,7 +330,7 @@ int FrameManager::UpdateSprite(int frame, int thisPart, unsigned short tile, uns
 
 	deOAM.HorizontalFlip = horizFlip;
 	deOAM.VerticalFlip = vertflip;
-	
+
 	oamPiece = bitOAM->OAM2;
 	deOAM.TileNumber = (tile) & 0x3ff;// curoam & 0x3FF;
 	deOAM.priority = ((oamPiece & 0xC00) >> 0xA) & 3; // (oamPiece >> 10) & 3;//cOAMEdit::GetBitField(oamPiece, 10, 2);
@@ -336,8 +343,6 @@ int FrameManager::UpdateSprite(int frame, int thisPart, unsigned short tile, uns
 	bitOAM->OAM0 = EncodeOAM0(deOAM.yCoord, deOAM.objRot, deOAM.DSaOD, deOAM.ObjMode, deOAM.ObjMosiac, deOAM.Paltype, deOAM.ObjShape);
 	bitOAM->OAM1 = EncodeOAM1(deOAM.objRot, deOAM.xCoord, deOAM.rotation, deOAM.HorizontalFlip, deOAM.VerticalFlip, deOAM.ObjSize);
 	bitOAM->OAM2 = EncodeOAM2(deOAM.TileNumber, deOAM.priority, deOAM.Palette);
-
-	//RD1Engine::theGame->mgrOAM->DrawPSprite(GetStaticFrame()->theSprite);
 
 	return 0;
 }
